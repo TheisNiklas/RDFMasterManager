@@ -64,3 +64,6 @@ jobs:
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           results-file: "jest-results.json"
+          create-status-check: false
+          create-pr-comment: true
+          update-comment-if-one-exists: true

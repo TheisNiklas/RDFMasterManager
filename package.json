@@ -9,7 +9,7 @@
     "export": "next export",
     "lint": "next lint",
     "test": "jest --json --outputFile=jest-results.json",
-    "test-cicd": "jest --max --json --outputFile=jest-results.json ",
+    "test-cicd": "jest --maxWorkers=2 --json --outputFile=jest-results.json ",
     "test-dev": "jest --watch"
   },
   "dependencies": {

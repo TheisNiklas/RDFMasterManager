@@ -14,7 +14,7 @@
         "background": {
           "activeOnStart": true,
           "beginsPattern": "- ready .*", // Signals the begin of the Task
-          "endsPattern": "- event compiled successfully .*" // Signals that now the initialization of the task is complete
+          "endsPattern": "- event compiled client and server successfully .*" // Signals that now the initialization of the task is complete
         }
       }
     }

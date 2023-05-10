@@ -1,7 +1,18 @@
 {
-    "editor.formatOnSave": true,
-    "jest.autoRun": {
-        "watch": false,
-        "onSave": "test-only"
-    }
+  "editor.formatOnSave": true,
+  "jest.autoRun": {
+    "watch": false,
+    "onSave": "test-only"
+  },
+  "[javascript]": {
+    "editor.tabSize": 2
+  },
+  "[typescript]": {
+    "editor.tabSize": 2
+  },
+  "[javascriptreact]": {
+    "editor.tabSize": 2
+  },
+  "debug.focusEditorOnBreak": false,
+  "debug.focusWindowOnBreak": false
 }

@@ -1,0 +1,41 @@
+function importBinary(file, replace) {
+    // Erstelle ein neues Objekt für den Dateidialog
+    const dialog = require('electron').remote.dialog;
+
+    // Zeige den Dateiauswahldialog an
+    dialog.showOpenDialog({
+        // Setze einige Optionen für den Dialog
+        buttonLabel: 'Öffnen', // Text des Buttons
+        properties: ['openFile'],
+        filters: [
+            // Filter für den Dateiauswahldialog
+            { name: 'Binärdatei', extensions: ['bin'] }
+        ]
+    }).then(result => {
+        // Wenn der Benutzer eine Datei ausgewählt hat
+        if (!result.canceled) {
+            // Hole den Pfad zur ausgewählten Datei
+            const filePath = result.filePaths[0];
+
+            // Lese den Inhalt der Datei
+            const fs = require('fs');
+            fs.readFile(filePath, 'binary', (err, content) => {
+                if (err) {
+                    console.log(`Fehler beim Lesen der Datei: ${err.message}`);
+                } else {
+                    // Wenn replace gesetzt ist, ersetze den Inhalt der Datei
+                    if (replace) {
+                        file.setContent(content);
+                    } else {
+                        file.appendContent(content);
+                    }
+                    console.log(`Datei erfolgreich importiert aus: ${filePath}`);
+                }
+            });
+        }
+    }).catch(err => {
+        console.log(`Fehler beim Öffnen des Dateiauswahldialogs: ${err.message}`);
+    });
+}
+
+

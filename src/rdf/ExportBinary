@@ -1,0 +1,34 @@
+function exportBinary(tripleList) {
+    // Erstelle ein neues Objekt für den Dateidialog
+    const dialog = require('electron').remote.dialog;
+
+    // Zeige den Speicherortdialog an
+    dialog.showSaveDialog({
+        // Setze einige Optionen für den Dialog
+        buttonLabel: 'Speichern', // Text des Buttons
+        defaultPath: 'meineDatei.bin', // Standard-Dateiname und -Speicherort
+        filters: [
+            // Filter für den Dateidialog
+            { name: 'Binärdatei', extensions: ['bin'] }
+        ]
+    }).then(result => {
+        // Wenn der Benutzer einen Speicherort ausgewählt hat
+        if (!result.canceled) {
+            // Hole den Pfad zur ausgewählten Datei
+            const filePath = result.filePath.toString();
+
+            // Schreibe die Tripleliste in die ausgewählte Datei
+            const fs = require('fs');
+            const content = tripleList.join('\n');
+            fs.writeFile(filePath, content, 'binary', err => {
+                if (err) {
+                    console.log(`Fehler beim Speichern der Datei: ${err.message}`);
+                } else {
+                    console.log(`Datei erfolgreich gespeichert unter: ${filePath}`);
+                }
+            });
+        }
+    }).catch(err => {
+        console.log(`Fehler beim Öffnen des Speicherortdialogs: ${err.message}`);
+    });
+}

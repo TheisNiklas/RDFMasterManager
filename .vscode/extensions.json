@@ -1,0 +1,8 @@
+{
+    "recommendations": [
+        "github.vscode-github-actions",
+        "eamodio.gitlens",
+        "orta.vscode-jest",
+        "christian-kohler.path-intellisense"
+    ]
+}

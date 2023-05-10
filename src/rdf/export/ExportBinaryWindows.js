@@ -1,3 +1,4 @@
+//Download the triple data in a file with the default name "myfile.bin" for download to the Windows download folder.
 function exportBinary(tripleList) {
     const link = document.createElement('a');
     const content = tripleList.join('\n');
@@ -7,6 +8,7 @@ function exportBinary(tripleList) {
     link.click();
 }
 
+//Sample data for the triple export
 function exportBinaryTest() {
     const tripleList = [
         { subject: 'Person1', predicate: 'hasAge', object: '25' },

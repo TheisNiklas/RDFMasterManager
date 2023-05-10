@@ -10,6 +10,18 @@ export class NTriplesImporter extends Importer {
     // };
     // reader.readAsText(file);
 
-    return parser.parse(file.toString());
+    let parserResult =  parser.parse(file.toString());
+
+    let tripleList = []
+
+    parserResult.forEach((item) => {
+      tripleList.push([
+        item.subject.value,
+        item.predicate.value,
+        item.object.value
+      ]);
+    })
+
+    return tripleList;
   }
 }

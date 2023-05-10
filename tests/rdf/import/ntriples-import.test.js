@@ -1,13 +1,15 @@
 import { readFile } from "fs";
 import { NTriplesImporter } from "../../../src/rdf/importer/ntriples-importer";
+import { fixture } from "./fixtures/ntriples-import.test.json";
 
 describe("NTriplesImport", () => {
   test("importFromFile", () => {
     let importer = new NTriplesImporter();
-    readFile("tests/rdf/exampleData.nt", (err, data) => {
+    readFile("fixture/nTripleSample.nt", (err, data) => {
+      let deb = jest;
       if (!err) {
-        res = importer.importFromFile(data);
-        expect(res).toBe(null);
+        let res = importer.importFromFile(data);
+        expect(res).toEqual(fixture);
       }
     });
   });

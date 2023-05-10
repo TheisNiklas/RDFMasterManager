@@ -101,7 +101,6 @@ export default function PersistentDrawerRight() {
         <Typography paragraph>
           3D Ansicht RDF-Graph
         </Typography>
-        <IconButton onClick={() => exportBinaryTest()}>Export</IconButton>
       </Main>
       <Drawer
         sx={{
@@ -121,6 +120,7 @@ export default function PersistentDrawerRight() {
           </IconButton>
         </DrawerHeader>
         <p> Funktionalitäten </p>
+        <IconButton onClick={() => exportBinaryTest()}>Export</IconButton>
       </Drawer>
     </Box>
   );

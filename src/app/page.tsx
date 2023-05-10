@@ -13,6 +13,7 @@ import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { exportBinaryTest } from '../rdf/export/ExportBinaryWindows';
+import { importBinaryTest } from '../rdf/import/ImportBinaryWindows';
 
 const drawerWidth = 500;
 
@@ -121,6 +122,7 @@ export default function PersistentDrawerRight() {
         </DrawerHeader>
         <p> Funktionalitäten </p>
         <IconButton onClick={() => exportBinaryTest()}>Export</IconButton>
+        <IconButton onClick={() => importBinaryTest()}>Import</IconButton>
       </Drawer>
     </Box>
   );

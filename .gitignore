@@ -143,3 +143,4 @@ dist
 # jest-junit test results
 junit.xml
 jest-results.json
+package-lock.json

@@ -12,6 +12,8 @@ import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import { exportBinaryTest } from '../rdf/export/ExportBinaryWindows';
+import { importBinaryTest } from '../rdf/import/ImportBinaryWindows';
 
 const drawerWidth = 500;
 
@@ -98,7 +100,7 @@ export default function PersistentDrawerRight() {
       <Main open={open}>
         <DrawerHeader />
         <Typography paragraph>
-         3D Ansicht RDF-Graph
+          3D Ansicht RDF-Graph
         </Typography>
       </Main>
       <Drawer
@@ -119,6 +121,8 @@ export default function PersistentDrawerRight() {
           </IconButton>
         </DrawerHeader>
         <p> Funktionalitäten </p>
+        <IconButton onClick={() => exportBinaryTest()}>Export</IconButton>
+        <IconButton onClick={() => importBinaryTest()}>Import</IconButton>
       </Drawer>
     </Box>
   );

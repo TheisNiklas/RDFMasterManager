@@ -12,13 +12,11 @@ import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-<<<<<<< HEAD
-import FilterForm from './filter';
-import AddTripleForm from './addtriple';
-=======
 import { exportBinaryTest } from '../rdf/export/ExportBinaryWindows';
 import { importBinaryTest } from '../rdf/import/ImportBinaryWindows';
->>>>>>> 16d5782e374dd8ca7035f2a1b41cf0d14778bfab
+import AddTripleForm from './addtriple';
+import FilterForm from './filter';
+
 
 const drawerWidth = 500;
 
@@ -126,7 +124,8 @@ export default function PersistentDrawerRight() {
             {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <p> Funktionalitäten </p>
+        <FilterForm></FilterForm>
+        <AddTripleForm></AddTripleForm>
         <IconButton onClick={() => exportBinaryTest()}>Export</IconButton>
         <IconButton onClick={() => importBinaryTest()}>Import</IconButton>
       </Drawer>

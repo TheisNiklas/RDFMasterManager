@@ -33,9 +33,9 @@ export class Dictionary {
       let subject = triple[0];
       let predicate = triple[1];
       let object = triple[2];
-      this.inputTriple(subject, predicate, object);
+      this.#inputTriple(subject, predicate, object);
     });
-    this.sortArrays();
+    this.#sortArrays();
   }
 
   /**
@@ -47,7 +47,7 @@ export class Dictionary {
    * @param {string} predicate
    * @param {string} object
    */
-  inputTriple(subject, predicate, object) {
+  #inputTriple(subject, predicate, object) {
     // for subject and object
     [
       [this.S, this.O, subject],
@@ -72,7 +72,7 @@ export class Dictionary {
   /**
    * Sorts the arrays SO, S, P and O ascending
    */
-  sortArrays() {
+  #sortArrays() {
     this.SO.sort();
     this.S.sort();
     this.P.sort();
@@ -86,8 +86,8 @@ export class Dictionary {
    * @param {string} object
    */
   addTriple(subject, predicate, object) {
-    this.inputTriple(subject, predicate, object);
-    this.sortArrays();
+    this.#inputTriple(subject, predicate, object);
+    this.#sortArrays();
   }
 
   /**

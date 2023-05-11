@@ -1,4 +1,4 @@
-import { Rdfcsa } from "../../src/rdf/models/rdfcsa";
+import { Rdfcsa } from "../../src/rdf/rdfcsa";
 import {
   exampleTripleList,
   resultT,

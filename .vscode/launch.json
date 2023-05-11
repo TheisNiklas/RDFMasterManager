@@ -13,24 +13,32 @@
       "webRoot": "${workspaceFolder}"
     },
     {
-      "type": "node",
-      "name": "vscode-jest-tests.v2",
+      "type": "chrome",
       "request": "launch",
-      "args": [
-        "test",
-        "--",
-        "--runInBand",
-        "--watchAll=false",
-        "--testNamePattern",
-        "${jest.testNamePattern}",
-        "--runTestsByPath",
-        "${jest.testFile}"
-      ],
-      "cwd": "l:\\FHBielefeld\\Master\\SGSE\\RDFMasterManager",
-      "console": "integratedTerminal",
-      "internalConsoleOptions": "neverOpen",
-      "disableOptimisticBPs": true,
-      "runtimeExecutable": "npm"
-    }
+      "name": "Launch Chrome against localhost",
+      "url": "http://localhost:3000",
+      "preLaunchTask": "npm: dev",
+      "webRoot": "${workspaceFolder}"
+    },
+    // {
+    //   "type": "node",
+    //   "name": "vscode-jest-tests.v2",
+    //   "request": "launch",
+    //   "args": [
+    //     "test",
+    //     "--",
+    //     "--runInBand",
+    //     "--watchAll=false",
+    //     "--testNamePattern",
+    //     "${jest.testNamePattern}",
+    //     "--runTestsByPath",
+    //     "${jest.testFile}"
+    //   ],
+    //   "cwd": "l:\\FHBielefeld\\Master\\SGSE\\RDFMasterManager",
+    //   "console": "integratedTerminal",
+    //   "internalConsoleOptions": "neverOpen",
+    //   "disableOptimisticBPs": true,
+    //   "runtimeExecutable": "npm"
+    // }
   ]
 }

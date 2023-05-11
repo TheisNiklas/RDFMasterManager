@@ -12,6 +12,8 @@ import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import FilterForm from './filter';
+import AddTripleForm from './addtriple';
 
 const drawerWidth = 500;
 
@@ -63,6 +65,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: 'flex-start',
 }));
+
 
 export default function PersistentDrawerRight() {
   const theme = useTheme();
@@ -118,7 +121,8 @@ export default function PersistentDrawerRight() {
             {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <p> Funktionalitäten </p>
+        <FilterForm></FilterForm>
+        <AddTripleForm></AddTripleForm>
       </Drawer>
     </Box>
   );

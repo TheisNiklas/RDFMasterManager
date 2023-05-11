@@ -14,7 +14,7 @@ const exampleTripleList = [
 /**
  * Class for handling the dictionary encoding for the RDFCSA
  */
-module.export = class Dictionary {
+export class Dictionary {
   constructor() {
     this.SO = [];
     this.S = [];
@@ -27,8 +27,9 @@ module.export = class Dictionary {
    * @param {string[][]} tripleList
    */
   createDictionaries(tripleList) {
+    const tripleListcopy = JSON.parse(JSON.stringify(tripleList));
     // index starts at 0
-    tripleList.forEach((triple) => {
+    tripleListcopy.forEach((triple) => {
       let subject = triple[0];
       let predicate = triple[1];
       let object = triple[2];
@@ -160,15 +161,15 @@ module.export = class Dictionary {
    * @returns
    */
   getIdByElement(element, array) {
-    const arrayIndex = this.SO.findIndex(element);
-    if (arrayIndex === -1) {
-      return SOIndex;
+    const soIndex = this.SO.findIndex((el) => el === element);
+    if (soIndex === -1) {
+      const found = array.findIndex((el) => el === element);
+      if (found === -1) {
+        return -1;
+      }
+      return this.SO.length + found;
     }
-    const found = array.findIndex(element);
-    if (found === -1) {
-      return -1;
-    }
-    return this.SO.length + found;
+    return soIndex;
   }
 
   /**
@@ -177,7 +178,7 @@ module.export = class Dictionary {
    * @returns
    */
   getIdByPredicate(predicate) {
-    return this.P.findIndex(predicate);
+    return this.P.findIndex((el) => el === predicate);
   }
 
   /**
@@ -186,11 +187,11 @@ module.export = class Dictionary {
    * @returns
    */
   getSubjectById(id) {
-    if (id < this.SO.length + S.length) {
+    if (id < this.SO.length + this.S.length) {
       if (id < this.SO.length) {
-        return this.SO.find(id);
+        return this.SO[id];
       }
-      return this.S.find(id - this.SO.length);
+      return this.S[id - this.SO.length];
     }
     return undefined;
   }
@@ -202,9 +203,9 @@ module.export = class Dictionary {
    */
   getObjectById(id) {
     if (id < this.SO.length) {
-      return this.SO.find(id);
+      return this.SO[id];
     } else if (id < this.SO.length + this.O.length) {
-      return this.O.find(id - this.SO.length);
+      return this.O[id - this.SO.length];
     }
     return undefined;
   }
@@ -216,7 +217,7 @@ module.export = class Dictionary {
    */
   getPredicateById(id) {
     if (id < this.P.length) {
-      return this.P.find(id);
+      return this.P[id];
     }
     return undefined;
   }

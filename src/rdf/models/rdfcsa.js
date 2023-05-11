@@ -1,40 +1,63 @@
-import { Dictionary } from './dictionary'
+import { Dictionary } from "./dictionary";
 
 export class Rdfcsa {
   constructor() {
     this.dictionary = new Dictionary();
     this.Tid = [];
     this.T = [];
-
+    this.gaps = [];
   }
 
   /**
-   * 
-   * @param {string[][]} tripleList 
+   * Constructs the array Tid and T from the tipleList
+   * @param {string[][]} tripleList
    */
-  constructTid(tripleList) {
-    var tidArray = []
+  constructTArrays(tripleList) {
+    var tidArray = [];
     this.dictionary.createDictionaries(tripleList);
     tripleList.forEach((triple) => {
       triple[0] = this.dictionary.getIdBySubject(triple[0]);
       triple[1] = this.dictionary.getIdByPredicate(triple[1]);
       triple[2] = this.dictionary.getIdByObject(triple[2]);
-    })
+    });
     tripleList.sort();
+
+    this.#constructT(JSON.parse(JSON.stringify(tripleList)));
+
     tripleList.forEach((triple) => {
       tidArray.push(triple[0]);
       tidArray.push(triple[1]);
       tidArray.push(triple[2]);
-    })
+    });
     this.Tid = tidArray;
   }
 
-  constructT(tid){
-    gaps = [0, this.dictionary.SO.length + this.dictionary.S.length, this.dictionary.SO.length + this.dictionary.S.length + this.dictionary.P.length]
-    tid.forEach((triple) => {
-      triple[1] = triple[1] + gaps[1]
-      triple[2] = triple[2] + gaps[2]
-    })
-  }
+  /**
+   *
+   * @param {Number[][]} tid
+   */
+  #constructT(tripleList) {
+    const gaps = [
+      0,
+      this.dictionary.SO.length + this.dictionary.S.length,
+      this.dictionary.SO.length +
+        this.dictionary.S.length +
+        this.dictionary.P.length,
+    ];
+    tripleList.forEach((triple) => {
+      triple[1] = triple[1] + gaps[1];
+      triple[2] = triple[2] + gaps[2];
+    });
+    this.gaps = gaps;
 
+    var tArray = [];
+    tripleList.forEach((triple) => {
+      tArray.push(triple[0]);
+      tArray.push(triple[1]);
+      tArray.push(triple[2]);
+    });
+    this.T = tArray;
+    // 100 because its a little big bigger
+    this.T.push(this.gaps[2] + this.dictionary.O.length + 100);
+  }
 }

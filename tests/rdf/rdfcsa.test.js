@@ -1,10 +1,17 @@
-import { Rdfcsa } from "../../src/rdf/models/rdfcsa"
-import { exampleTripleList } from "./fixtures"
+import { Rdfcsa } from "../../src/rdf/models/rdfcsa";
+import {
+  exampleTripleList,
+  resultT,
+  resultTid,
+} from "./fixtures/rdfcsa.test.json";
 
 describe("Rdfcsa", () => {
   test("init", () => {
-    const fixture = exampleTripleList
+    const fixture = exampleTripleList;
     let rdfcsa = new Rdfcsa();
-    rdfcsa.constructTid(fixture);
+    rdfcsa.constructTArrays(fixture);
+    expect(rdfcsa.gaps).toEqual([0, 5, 11]);
+    expect(rdfcsa.T).toEqual(resultT);
+    expect(rdfcsa.Tid).toEqual(resultTid);
   });
 });

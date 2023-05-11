@@ -7,8 +7,16 @@
     ["J. Gordon", "appears in", "Inception"],
     ["J. Gordon", "born in", "USA"],
     ["J. Gordon", "lives in", "L.A."],
-    ["E. Page", "lives in", "L.A."],
+    ["E. Page", "born in", "Canada"],
     ["L. DiCaprio", "born in", "USA"],
     ["L. DiCaprio", "awarded", "Oscar 2015"]
+  ],
+  "resultT": [
+    0, 9, 12, 1, 8, 15, 2, 5, 11, 2, 7, 13, 3, 5, 11, 3, 7, 15, 3, 10, 12, 4, 5,
+    11, 4, 6, 14, 4, 7, 15, 114
+  ],
+  "resultTid": [
+    0, 4, 1, 1, 3, 4, 2, 0, 0, 2, 2, 2, 3, 0, 0, 3, 2, 4, 3, 5, 1, 4, 0, 0, 4,
+    1, 3, 4, 2, 4
   ]
 }

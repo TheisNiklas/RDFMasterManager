@@ -15,6 +15,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { exportBinaryTest } from '../rdf/export/ExportBinaryWindows';
 import { importBinaryTest } from '../rdf/import/ImportBinaryWindows';
 import { graph3D } from './Graph3D';
+import { ForceGraph3D, ForceGraphVR, ForceGraphAR } from '../app/externLib3D/react-force-graph/src';
 
 const drawerWidth = 500;
 
@@ -101,7 +102,9 @@ export default function PersistentDrawerRight() {
       <Main open={open}>
         <DrawerHeader />
         <Typography paragraph>
-          <IconButton onClick={() => graph3D()}>3D Ansicht RDF-Graph</IconButton>
+          <ForceGraph3D
+            graphData={graph3D}
+          />
         </Typography>
       </Main>
       <Drawer

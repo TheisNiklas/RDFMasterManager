@@ -1,27 +1,20 @@
 const exampleTripleList = [
-  ["Hans", "hat", "Auto"],
-
-  ["Auto", "ist", "grün"],
-
-  ["Haus", "gehört", "Hans"],
-
-  ["Geld", "ist", "grün"],
-
-  [
-    "http://one.example/subject1",
-
-    "http://one.example/predicate1",
-
-    "http://one.example/object1",
-    ,
-  ],
-  ,
+  ["Inception", "filmed in", "L.A."],
+  ["L.A.", "city of", "USA"],
+  ["E. Page", "appears in", "Inception"],
+  ["L. DiCaprio", "appears in", "Inception"],
+  ["J. Gordon", "appears in", "Inception"],
+  ["J. Gordon", "born in", "USA"],
+  ["J. Gordon", "lives in", "L.A."],
+  ["E. Page", "born in", "Canada"],
+  ["L. DiCaprio", "born in", "USA"],
+  ["L. DiCaprio", "awarded", "Oscar 2015"],
 ];
 
 /**
  * Class for handling the dictionary encoding for the RDFCSA
  */
-class Dictionary {
+module.export = class Dictionary {
   constructor() {
     this.SO = [];
     this.S = [];
@@ -36,12 +29,12 @@ class Dictionary {
   createDictionaries(tripleList) {
     // index starts at 0
     tripleList.forEach((triple) => {
-      subject = triple[0];
-      predicate = triple[1];
-      object = triple[2];
+      let subject = triple[0];
+      let predicate = triple[1];
+      let object = triple[2];
       this.inputTriple(subject, predicate, object);
     });
-    sortArrays();
+    this.sortArrays();
   }
 
   /**
@@ -59,14 +52,14 @@ class Dictionary {
       [this.S, this.O, subject],
       [this.O, this.S, object],
     ].forEach(([array, otherArray, element]) => {
-      if (otherArray.includes(element)) {
-        if (!this.SO.includes(element)) {
+      if (!this.SO.includes(element)) {
+        if (otherArray.includes(element)) {
           this.SO.push(element);
-          pos = otherArray.indexOf(element);
+          let pos = otherArray.indexOf(element);
           otherArray.splice(pos, 1);
+        } else if (!array.includes(element)) {
+          array.push(element);
         }
-      } else if (!array.includes(element)) {
-        array.push(element);
       }
     });
     // for predicate
@@ -101,7 +94,7 @@ class Dictionary {
    * @param {string} subjectObjectToDelete
    */
   deleteSubjectObject(subjectObjectToDelete) {
-    pos = this.SO.indexOf(subjectObjectToDelete);
+    let pos = this.SO.indexOf(subjectObjectToDelete);
     this.SO.splice(pos, 1);
   }
 
@@ -110,7 +103,7 @@ class Dictionary {
    * @param {string} subjectToDelete
    */
   deleteSubject(subjectToDelete) {
-    pos = this.S.indexOf(subjectToDelete);
+    let pos = this.S.indexOf(subjectToDelete);
     this.S.splice(pos, 1);
   }
 
@@ -119,7 +112,7 @@ class Dictionary {
    * @param {string} objectToDelete
    */
   deleteObject(objectToDelete) {
-    pos = this.O.indexOf(objectToDelete);
+    let pos = this.O.indexOf(objectToDelete);
     this.O.splice(pos, 1);
   }
 
@@ -128,7 +121,7 @@ class Dictionary {
    * @param {string} predicateToDelete
    */
   deletePredicate(predicateToDelete) {
-    pos = this.P.indexOf(predicateToDelete);
+    let pos = this.P.indexOf(predicateToDelete);
     this.P.splice(pos, 1);
   }
 

@@ -1,0 +1,14 @@
+{
+  "exampleTripleList": [
+    ["Inception", "filmed in", "L.A."],
+    ["L.A.", "city of", "USA"],
+    ["E. Page", "appears in", "Inception"],
+    ["L. DiCaprio", "appears in", "Inception"],
+    ["J. Gordon", "appears in", "Inception"],
+    ["J. Gordon", "born in", "USA"],
+    ["J. Gordon", "lives in", "L.A."],
+    ["E. Page", "lives in", "L.A."],
+    ["L. DiCaprio", "born in", "USA"],
+    ["L. DiCaprio", "awarded", "Oscar 2015"]
+  ]
+}

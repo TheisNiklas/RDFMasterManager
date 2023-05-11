@@ -8,7 +8,7 @@
     "start": "next start",
     "export": "next export",
     "lint": "next lint",
-    "test": "jest --json --outputFile=jest-results.json",
+    "test": "jest",
     "test-cicd": "jest --maxWorkers=2 --json --outputFile=jest-results.json ",
     "test-dev": "jest --watch"
   },

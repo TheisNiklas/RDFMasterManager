@@ -3,13 +3,12 @@ import { Dictionary } from "./dictionary";
 export class Rdfcsa {
   constructor() {
     this.dictionary = new Dictionary();
-    this.T = [];
     this.gaps = [];
   }
 
   /**
-   * 
-   * @param {string[][]} tripleList 
+   * Construct the arrays being part of the RDFCSA
+   * @param {string[][]} tripleList
    */
   construct(tripleList) {
     const tArray = this.#constructTArrays(tripleList);
@@ -19,8 +18,9 @@ export class Rdfcsa {
   }
 
   /**
-   * Constructs the array Tid and T from the tipleList
+   * Constructs the array Tid and T from the `tipleList`
    * @param {string[][]} tripleList
+   * @returns {number[]} Array T
    */
   #constructTArrays(tripleList) {
     this.dictionary.createDictionaries(tripleList);
@@ -35,15 +35,14 @@ export class Rdfcsa {
   }
 
   /**
-   *
+   * Cunstructs the array T from the `tripleList`
    * @param {Number[][]} tripleList
-   * @returns {number[]} t array
+   * @returns {number[]} Array T
    */
   #constructT(tripleList) {
     const gaps = [
       0,
-      this.dictionary.SO.length + 
-        this.dictionary.S.length,
+      this.dictionary.SO.length + this.dictionary.S.length,
       this.dictionary.SO.length +
         this.dictionary.S.length +
         this.dictionary.P.length,
@@ -60,7 +59,7 @@ export class Rdfcsa {
       tArray.push(triple[1]);
       tArray.push(triple[2]);
     });
-    
+
     // 100 because its a little big bigger
     tArray.push(this.gaps[2] + this.dictionary.O.length + 100);
 
@@ -68,55 +67,53 @@ export class Rdfcsa {
   }
 
   /**
-   * 
-   * @param {number[]} tArray 
-   * @returns {number[]}
+   * Constructs the array A
+   * @param {number[]} tArray
+   * @returns {number[]} Array A
    */
-  #constructA(tArray){
+  #constructA(tArray) {
     let aArray = Array.from(tArray.keys());
     aArray.pop();
-    aArray.sort((a,b) => tArray[a] - tArray[b]);
+    aArray.sort((a, b) => tArray[a] - tArray[b]);
     return aArray;
   }
 
   /**
-   * 
-   * @param {number[]} tArray 
-   * @param {number[]} aArray 
+   * Constructs the bitvector D, currently as an number array
+   * @param {number[]} tArray
+   * @param {number[]} aArray
    * @returns {number[]}
    */
-  #constructD(tArray, aArray){
-    let dArray = []
-    let preElement = -1
+  #constructD(tArray, aArray) {
+    let dArray = [];
+    let preElement = -1;
     aArray.forEach((element) => {
-      if(preElement < tArray[element]){
+      if (preElement < tArray[element]) {
         dArray.push(1);
-      }
-      else{
+      } else {
         dArray.push(0);
       }
       preElement = tArray[element];
-    })
+    });
     return dArray;
   }
 
   /**
-   * 
-   * @param {number[]} aArray 
+   * Constructs the array Psi
+   * @param {number[]} aArray
    * @returns {number[]}
    */
-  #constructPsi(aArray){
+  #constructPsi(aArray) {
     let indexArray = Array.from(aArray.keys());
-    indexArray.sort((a,b) => aArray[a] - aArray[b]);
+    indexArray.sort((a, b) => aArray[a] - aArray[b]);
     let psi = [];
     aArray.forEach((element) => {
-      if(element % 3 === 2){
+      if (element % 3 === 2) {
         psi.push(indexArray[element - 2]);
-      }
-      else{
+      } else {
         psi.push(indexArray[element + 1]);
       }
-    })
+    });
     return psi;
   }
 }

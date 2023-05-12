@@ -139,7 +139,7 @@ export class Dictionary {
   /**
    * Get the id of `subject`
    * @param {string} subject
-   * @returns
+   * @returns {int}
    */
   getIdBySubject(subject) {
     return this.getIdByElement(subject, this.S);
@@ -148,7 +148,7 @@ export class Dictionary {
   /**
    * Get the id of `object`
    * @param {string} object
-   * @returns
+   * @returns {int}
    */
   getIdByObject(object) {
     return this.getIdByElement(object, this.O);
@@ -158,7 +158,7 @@ export class Dictionary {
    * Get the id of the object or subject `element` out of `SO` or `array`
    * @param {string} element
    * @param {string[]} array
-   * @returns
+   * @returns {int}
    */
   getIdByElement(element, array) {
     const soIndex = this.SO.findIndex((el) => el === element);
@@ -175,7 +175,7 @@ export class Dictionary {
   /**
    * Get the id of `predicate`
    * @param {string} predicate
-   * @returns
+   * @returns {int}
    */
   getIdByPredicate(predicate) {
     return this.P.findIndex((el) => el === predicate);
@@ -184,7 +184,7 @@ export class Dictionary {
   /**
    * Get subject with `id`
    * @param {int} id
-   * @returns
+   * @returns {string}
    */
   getSubjectById(id) {
     if (id < this.SO.length + this.S.length) {
@@ -199,7 +199,7 @@ export class Dictionary {
   /**
    * Get object with `id`
    * @param {int} id
-   * @returns
+   * @returns {string}
    */
   getObjectById(id) {
     if (id < this.SO.length) {
@@ -213,7 +213,7 @@ export class Dictionary {
   /**
    * Get object with `id`
    * @param {int} id
-   * @returns
+   * @returns {string}
    */
   getPredicateById(id) {
     if (id < this.P.length) {

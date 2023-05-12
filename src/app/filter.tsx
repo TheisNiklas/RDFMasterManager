@@ -48,9 +48,10 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const FilterForm = () => {
-  const [filterCount, setFilterCount] = useState(1);
 
+const FilterForm = () => {
+
+  //Adds a SPO triple to the previous formField of the filter triple
   const addFilterTriple = () => {
     let object = {
       subjekt: "",
@@ -61,15 +62,19 @@ const FilterForm = () => {
     setFormFields([...formFields, object]);
   };
 
+  //Data call of the interface for data adjustment of the triple in the backend
+  //Sends the filter data
   const handleSubmit = () => {
     //TODO: handleSubmit
     console.log(formFields);
   };
 
+  //Definition of the datastructure for the data tranfer to the interface of the filter elements
   const [formFields, setFormFields] = useState([
     { subjekt: "", prädikat: "", objekt: "" },
   ]);
 
+  //Adaptation of the filter data set in case of user interaction
   const handleFormChange = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
@@ -81,6 +86,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
+  //Removes a triple pair of SPO filter elements
   const deleteFilterTriple = (index: number) => {
     let data = [...formFields];
     data.splice(index, 1);

@@ -45,8 +45,8 @@ export class Rdfcsa {
         this.dictionary.P.length,
     ];
     tripleList.forEach((triple) => {
-      triple[1] = triple[1] + gaps[1];
-      triple[2] = triple[2] + gaps[2];
+      triple[1] += gaps[1];
+      triple[2] += gaps[2];
     });
     this.gaps = gaps;
 
@@ -59,5 +59,40 @@ export class Rdfcsa {
     this.T = tArray;
     // 100 because its a little big bigger
     this.T.push(this.gaps[2] + this.dictionary.O.length + 100);
+  }
+
+  #constructA(tArray){
+    aArray = Array.from(tArray.keys());
+    aArray.pop();
+    aArray.sort((a,b) => tArray[a] - tArray[b]);
+    this.A = aArray;
+  }
+
+  #constructD(tArray, aArray){
+    dArray = []
+    preElement = -1
+    aArray.forEach((element) => {
+        if(preElement < tArray[element]){
+          dArray.push(1);
+        }
+        else{
+          dArray.push(0);
+        }
+      preElement = tArray[element];
+    })
+  }
+
+  #constructSuffixArray(aArray){
+    array = Array.from(aArray.keys());
+    array.sort((a,b) => aArray[a] - aArray[b]);
+    suffixArray = [];
+    aArray.forEach((element) => {
+      if(element % 3 === 2){
+        suffixArray.push(array[element - 2]);
+      }
+      else{
+        suffixArray.push(array[element+1]);
+      }
+    })
   }
 }

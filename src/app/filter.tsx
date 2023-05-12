@@ -86,13 +86,25 @@ const FilterForm = () => {
     { subject: "", predicat: "", object: "", subjectJoin: "", predicatJoin: "", objectJoin: "", subjectBound: "", predicatBound: "", objectBound: "" },
   ]);
 
-  //Adaptation of the filter data set in case of user interaction
+  //Adaptation of the filter data set in case of user interaction with the text boxes
   const handleFormChange = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     let data = [...formFields];
     data[index][event.target.name] = event.target.value;
+    setFormFields(data);
+
+    console.log(formFields);
+  };
+
+  //Adaptation of the filter data set in case of user interaction with the checkboxes
+  const handleFormChangeCheckBox = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index][event.target.name] = event.target.checked;
     setFormFields(data);
 
     console.log(formFields);
@@ -124,7 +136,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="subjectBound"
-                      onChange={(event) => handleFormChange(event, index)}
+                      onChange={(event) => handleFormChangeCheckBox(event, index)}
                       value={form.subjectBound}
                       defaultChecked size="small"
                     />
@@ -142,7 +154,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="predicatBound"
-                      onChange={(event) => handleFormChange(event, index)}
+                      onChange={(event) => handleFormChangeCheckBox(event, index)}
                       value={form.predicatBound}
                       defaultChecked size="small"
                     />
@@ -160,7 +172,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="objectBound"
-                      onChange={(event) => handleFormChange(event, index)}
+                      onChange={(event) => handleFormChangeCheckBox(event, index)}
                       value={form.objectBound}
                       defaultChecked size="small"
                     />

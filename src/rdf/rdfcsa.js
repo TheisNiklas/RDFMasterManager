@@ -3,17 +3,26 @@ import { Dictionary } from "./dictionary";
 export class Rdfcsa {
   constructor() {
     this.dictionary = new Dictionary();
-    this.Tid = [];
     this.T = [];
     this.gaps = [];
+  }
+
+  /**
+   * 
+   * @param {string[][]} tripleList 
+   */
+  construct(tripleList) {
+    const tArray = this.#constructTArrays(tripleList);
+    const aArray = this.#constructA(tArray);
+    this.D = this.#constructD(tArray, aArray);
+    this.psi = this.#constructPsi(aArray);
   }
 
   /**
    * Constructs the array Tid and T from the tipleList
    * @param {string[][]} tripleList
    */
-  constructTArrays(tripleList) {
-    var tidArray = [];
+  #constructTArrays(tripleList) {
     this.dictionary.createDictionaries(tripleList);
     tripleList.forEach((triple) => {
       triple[0] = this.dictionary.getIdBySubject(triple[0]);
@@ -22,24 +31,19 @@ export class Rdfcsa {
     });
     tripleList.sort();
 
-    this.#constructT(JSON.parse(JSON.stringify(tripleList)));
-
-    tripleList.forEach((triple) => {
-      tidArray.push(triple[0]);
-      tidArray.push(triple[1]);
-      tidArray.push(triple[2]);
-    });
-    this.Tid = tidArray;
+    return this.#constructT(JSON.parse(JSON.stringify(tripleList)));
   }
 
   /**
    *
-   * @param {Number[][]} tid
+   * @param {Number[][]} tripleList
+   * @returns {number[]} t array
    */
   #constructT(tripleList) {
     const gaps = [
       0,
-      this.dictionary.SO.length + this.dictionary.S.length,
+      this.dictionary.SO.length + 
+        this.dictionary.S.length,
       this.dictionary.SO.length +
         this.dictionary.S.length +
         this.dictionary.P.length,
@@ -56,43 +60,63 @@ export class Rdfcsa {
       tArray.push(triple[1]);
       tArray.push(triple[2]);
     });
-    this.T = tArray;
+    
     // 100 because its a little big bigger
-    this.T.push(this.gaps[2] + this.dictionary.O.length + 100);
+    tArray.push(this.gaps[2] + this.dictionary.O.length + 100);
+
+    return tArray;
   }
 
+  /**
+   * 
+   * @param {number[]} tArray 
+   * @returns {number[]}
+   */
   #constructA(tArray){
-    aArray = Array.from(tArray.keys());
+    let aArray = Array.from(tArray.keys());
     aArray.pop();
     aArray.sort((a,b) => tArray[a] - tArray[b]);
-    this.A = aArray;
+    return aArray;
   }
 
+  /**
+   * 
+   * @param {number[]} tArray 
+   * @param {number[]} aArray 
+   * @returns {number[]}
+   */
   #constructD(tArray, aArray){
-    dArray = []
-    preElement = -1
+    let dArray = []
+    let preElement = -1
     aArray.forEach((element) => {
-        if(preElement < tArray[element]){
-          dArray.push(1);
-        }
-        else{
-          dArray.push(0);
-        }
-      preElement = tArray[element];
-    })
-  }
-
-  #constructSuffixArray(aArray){
-    array = Array.from(aArray.keys());
-    array.sort((a,b) => aArray[a] - aArray[b]);
-    suffixArray = [];
-    aArray.forEach((element) => {
-      if(element % 3 === 2){
-        suffixArray.push(array[element - 2]);
+      if(preElement < tArray[element]){
+        dArray.push(1);
       }
       else{
-        suffixArray.push(array[element + 1]);
+        dArray.push(0);
+      }
+      preElement = tArray[element];
+    })
+    return dArray;
+  }
+
+  /**
+   * 
+   * @param {number[]} aArray 
+   * @returns {number[]}
+   */
+  #constructPsi(aArray){
+    let indexArray = Array.from(aArray.keys());
+    indexArray.sort((a,b) => aArray[a] - aArray[b]);
+    let psi = [];
+    aArray.forEach((element) => {
+      if(element % 3 === 2){
+        psi.push(indexArray[element - 2]);
+      }
+      else{
+        psi.push(indexArray[element + 1]);
       }
     })
+    return psi;
   }
 }

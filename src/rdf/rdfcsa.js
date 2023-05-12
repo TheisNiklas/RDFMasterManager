@@ -91,7 +91,7 @@ export class Rdfcsa {
         suffixArray.push(array[element - 2]);
       }
       else{
-        suffixArray.push(array[element+1]);
+        suffixArray.push(array[element + 1]);
       }
     })
   }

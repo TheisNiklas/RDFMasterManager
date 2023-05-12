@@ -16,6 +16,12 @@ import {
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import Checkbox from '@mui/material/Checkbox';
+import FormGroup from '@mui/material/FormGroup';
+import RadioGroup from '@mui/material/RadioGroup';
+import FormLabel from '@mui/material/FormLabel';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Radio from '@mui/material/Radio';
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -54,9 +60,15 @@ const FilterForm = () => {
   //Adds a SPO triple to the previous formField of the filter triple
   const addFilterTriple = () => {
     let object = {
-      subjekt: "",
-      prädikat: "",
-      objekt: "",
+      subject: "",
+      predicat: "",
+      object: "",
+      subjectJoin: "",
+      predicatJoin: "",
+      objectJoin: "",
+      subjectBound: "",
+      predicatBound: "",
+      objectBound: ""
     };
 
     setFormFields([...formFields, object]);
@@ -71,7 +83,7 @@ const FilterForm = () => {
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements
   const [formFields, setFormFields] = useState([
-    { subjekt: "", prädikat: "", objekt: "" },
+    { subject: "", predicat: "", object: "", subjectJoin: "", predicatJoin: "", objectJoin: "", subjectBound: "", predicatBound: "", objectBound: "" },
   ]);
 
   //Adaptation of the filter data set in case of user interaction
@@ -103,32 +115,98 @@ const FilterForm = () => {
           {formFields.map((form, index) => {
             return (
               <Grid container spacing={2} key={index}>
+                <Grid item xs={12} sm={12}>
+                  <FormControl>
+                    <FormLabel>Tripeleingabe mit Bound Option</FormLabel>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={1}>
+                  <FormGroup>
+                    <Checkbox
+                      name="subjectBound"
+                      onChange={(event) => handleFormChange(event, index)}
+                      value={form.subjectBound}
+                      defaultChecked size="small"
+                    />
+                  </FormGroup>
+                </Grid>
                 <Grid item xs={12} sm={3}>
                   <StyledTextField
                     label="Subjekt"
-                    name="subjekt"
+                    name="subject"
                     onChange={(event) => handleFormChange(event, index)}
-                    value={form.subjekt}
+                    value={form.subject}
                   />
+                </Grid>
+                <Grid item xs={12} sm={1}>
+                  <FormGroup>
+                    <Checkbox
+                      name="predicatBound"
+                      onChange={(event) => handleFormChange(event, index)}
+                      value={form.predicatBound}
+                      defaultChecked size="small"
+                    />
+                  </FormGroup>
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <StyledTextField
                     label="Prädikat"
-                    name="prädikat"
+                    name="predicat"
                     onChange={(event) => handleFormChange(event, index)}
-                    value={form.prädikat}
+                    value={form.predicat}
                   />
+                </Grid>
+                <Grid item xs={12} sm={1}>
+                  <FormGroup>
+                    <Checkbox
+                      name="objectBound"
+                      onChange={(event) => handleFormChange(event, index)}
+                      value={form.objectBound}
+                      defaultChecked size="small"
+                    />
+                  </FormGroup>
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <StyledTextField
                     label="Objekt"
-                    name="objekt"
+                    name="object"
                     onChange={(event) => handleFormChange(event, index)}
-                    value={form.objekt}
+                    value={form.object}
                   />
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={1}>
                   <DeleteButton onClick={() => deleteFilterTriple(index)} />
+                </Grid>
+                <Grid item xs={12} sm={11}>
+                  <FormControl>
+                    <FormLabel>Join Variablename für nächstes Filtertripel</FormLabel>
+                  </FormControl>
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <StyledTextField
+                    label="S-Join"
+                    name="subjectJoin"
+                    onChange={(event) => handleFormChange(event, index)}
+                    value={form.subjectJoin}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <StyledTextField
+                    label="P-Join"
+                    name="predicatJoin"
+                    onChange={(event) => handleFormChange(event, index)}
+                    value={form.predicatJoin}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={4}>
+                  <StyledTextField
+                    label="O-Join"
+                    name="objectJoin"
+                    onChange={(event) => handleFormChange(event, index)}
+                    value={form.objectJoin}
+                  />
+                </Grid>
+                <Grid item xs={12} sm={12}>
                 </Grid>
               </Grid>
             );
@@ -153,9 +231,9 @@ const FilterForm = () => {
                   <SortFormControl>
                     <InputLabel id="sort-label">Sortieren nach</InputLabel>
                     <Select labelId="sort-label">
-                      <MenuItem value="name">Name</MenuItem>
-                      <MenuItem value="date">Datum</MenuItem>
-                      <MenuItem value="status">Status</MenuItem>
+                      <MenuItem value="sortSubject">Subjekt</MenuItem>
+                      <MenuItem value="sortPredicat">Prädikat</MenuItem>
+                      <MenuItem value="sortObject">Objekt</MenuItem>
                     </Select>
                   </SortFormControl>
                 </Grid>

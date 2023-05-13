@@ -1,4 +1,4 @@
-class QueryTriple {
+export class QueryTriple {
   /**
    *
    * @param {QueryElement | null} subject

@@ -1,6 +1,8 @@
-import { QueryTriple } from "models/query-triple";
+import { QueryTriple } from "../../src/rdf/models/query-triple";
+import { BitvectorTools } from "./bitvector_tools";
+import { Triple } from "./models/triple";
 
-class QueryManager {
+export class QueryManager {
   /**
    *
    * @param {Rdfcsa} rdfcsa
@@ -21,12 +23,14 @@ class QueryManager {
 
   getBoundTriple(query) {
     const pattern = [query.subject.id, query.predicate.id, query.object.id];
-    const result_range = this.#getResultList(pattern);
-    if (result_range.length === 1) {
-      const resultTriple = [
-        Triple(query.subject.id, query.predicate.id, query.object.id),
-      ];
-      return resultTriple;
+    const resultRange = this.#getResultList(pattern);
+    if (resultRange.length === 2) {
+      if (resultRange[0] === resultRange[1]) {
+        const resultTriple = [
+          new Triple(query.subject.id, query.predicate.id, query.object.id),
+        ];
+        return resultTriple;
+      }
     }
     return [];
   }
@@ -40,24 +44,28 @@ class QueryManager {
     let ranges = [];
 
     pattern.forEach((elem) => {
-      range_start = BitvectorTools.select(this.rdfcsa.D, elem);
-      range_end = BitvectorTools.select(this.rdfcsa.D, elem) - 1;
+      const range_start = BitvectorTools.select(this.rdfcsa.D, elem);
+      const range_end = BitvectorTools.select(this.rdfcsa.D, elem + 1) - 1;
       ranges.push([range_start, range_end]);
     });
 
     let range = ranges.shift();
-    ranges.forEach((range) => {
+    ranges.forEach((r, index) => {
       let new_range = [];
       for (let i = range[0]; i <= range[1]; i++) {
-        const val = this.rdfcsa.psi[i];
-        if (val >= range[index + 1][0] && val <= range[index + 1][1]) {
-          new_range.push(val);
+        let val = this.rdfcsa.psi[i];
+        if (index === 1) {
+          val = this.rdfcsa.psi[val];
+        }
+        if (val >= r[0] && val <= r[1]) {
+          new_range.push(i);
         }
       }
       if (new_range.length === 0) {
-        return null;
+        range = [];
+        return;
       }
-      range = new_range;
+      range = [new_range[0], new_range.pop()];
     });
 
     return range;

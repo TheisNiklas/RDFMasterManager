@@ -3,20 +3,60 @@ import { QueryManager } from "../../src/rdf/query-manager";
 import { QueryElement } from "../../src/rdf/models/query-element";
 import { QueryTriple } from "../../src/rdf/models/query-triple";
 import { tripleList } from "./fixtures/rdfcsa.test.json";
+import { Triple } from "../../src/rdf/models/triple";
 
 describe("QueryManager", () => {
   let queryManager;
   beforeEach(() => {
-    let rdfcsa = new Rdfcsa();
-    rdfcsa.construct(tripleList);
+    let rdfcsa = new Rdfcsa(tripleList);
     queryManager = new QueryManager(rdfcsa);
   });
-  test("getBoundTriple", () => {
+  test("getBoundTriple(0,9,12)", () => {
+    const subject = new QueryElement(0);
+    const predicate = new QueryElement(9);
+    const object = new QueryElement(12);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getBoundTriple(queryTriple);
+    expect(result).toEqual([new Triple(0, 9, 12)]);
+  });
+  test("getBoundTriple(3,5,11)", () => {
+    const subject = new QueryElement(3);
+    const predicate = new QueryElement(5);
+    const object = new QueryElement(11);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getBoundTriple(queryTriple);
+    expect(result).toEqual([new Triple(3, 5, 11)]);
+  });
+  test("getBoundTriple(2,5,11)", () => {
+    const subject = new QueryElement(2);
+    const predicate = new QueryElement(5);
+    const object = new QueryElement(11);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getBoundTriple(queryTriple);
+    expect(result).toEqual([new Triple(2, 5, 11)]);
+  });
+  test("getBoundTripleIncorrect(3,7,12)", () => {
+    const subject = new QueryElement(3);
+    const predicate = new QueryElement(7);
+    const object = new QueryElement(12);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getBoundTriple(queryTriple);
+    expect(result).toEqual([]);
+  });
+  test("getBoundTripleIncorrect(0,8,12)", () => {
     const subject = new QueryElement(0);
     const predicate = new QueryElement(8);
     const object = new QueryElement(12);
     const queryTriple = new QueryTriple(subject, predicate, object);
-    const result = queryManager.getBoundTriple([queryTriple]);
-    let deb = 0;
+    const result = queryManager.getBoundTriple(queryTriple);
+    expect(result).toEqual([]);
+  });
+  test("getBoundTripleIncorrect(0,0,0)", () => {
+    const subject = new QueryElement(0);
+    const predicate = new QueryElement(0);
+    const object = new QueryElement(0);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getBoundTriple(queryTriple);
+    expect(result).toEqual([]);
   });
 });

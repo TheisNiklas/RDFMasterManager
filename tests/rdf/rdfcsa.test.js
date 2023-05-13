@@ -8,8 +8,7 @@ import {
 
 describe("Rdfcsa", () => {
   test("init", () => {
-    let rdfcsa = new Rdfcsa();
-    rdfcsa.construct(tripleList);
+    let rdfcsa = new Rdfcsa(tripleList);
     expect(rdfcsa.psi).toEqual(resultPsi);
     expect(rdfcsa.gaps).toEqual(resultGaps);
     expect(rdfcsa.D).toEqual(resultD);

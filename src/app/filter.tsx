@@ -5,23 +5,17 @@ import {
   TextField,
   Button,
   Grid,
-  IconButton,
-  InputAdornment,
   FormControl,
   InputLabel,
   Select,
   MenuItem,
   Container,
-  Box,
+  Checkbox,
+  FormGroup,
+  FormLabel
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import Checkbox from '@mui/material/Checkbox';
-import FormGroup from '@mui/material/FormGroup';
-import RadioGroup from '@mui/material/RadioGroup';
-import FormLabel from '@mui/material/FormLabel';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Radio from '@mui/material/Radio';
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -58,6 +52,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 const FilterForm = () => {
 
   //Adds a SPO triple to the previous formField of the filter triple
+  //true as default value for the checkboxes
   const addFilterTriple = () => {
     let object = {
       subject: "",
@@ -66,9 +61,9 @@ const FilterForm = () => {
       subjectJoin: "",
       predicatJoin: "",
       objectJoin: "",
-      subjectBound: "",
-      predicatBound: "",
-      objectBound: ""
+      subjectBound: true,
+      predicatBound: true,
+      objectBound: true
     };
 
     setFormFields([...formFields, object]);
@@ -82,8 +77,9 @@ const FilterForm = () => {
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements
+  //true as default value for the checkboxes
   const [formFields, setFormFields] = useState([
-    { subject: "", predicat: "", object: "", subjectJoin: "", predicatJoin: "", objectJoin: "", subjectBound: "", predicatBound: "", objectBound: "" },
+    { subject: "", predicat: "", object: "", subjectJoin: "", predicatJoin: "", objectJoin: "", subjectBound: true, predicatBound: true, objectBound: true },
   ]);
 
   //Adaptation of the filter data set in case of user interaction with the text boxes
@@ -110,7 +106,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
-  //Removes a triple pair of SPO filter elements
+  //Removes a triple pair of SPO filter elements with the corresponding join variables
   const deleteFilterTriple = (index: number) => {
     let data = [...formFields];
     data.splice(index, 1);

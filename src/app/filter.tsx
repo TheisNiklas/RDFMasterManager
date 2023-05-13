@@ -16,6 +16,7 @@ import {
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
+import { queryCallData } from '../interface/QueryCall';
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -72,8 +73,7 @@ const FilterForm = () => {
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    //TODO: handleSubmit
-    console.log(formFields);
+    queryCallData(formFields)
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements

@@ -200,7 +200,7 @@ const FilterForm = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ marginBottom: 16 }}>
+    <Container maxWidth="md" sx={{ marginBottom: 8 }}>
       <div>
         <Header variant="h6">Filter</Header>
         <Grid container spacing={2}>

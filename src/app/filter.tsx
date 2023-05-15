@@ -82,7 +82,7 @@ const FilterForm = () => {
     { subject: "", predicat: "", object: "", subjectJoin: "", predicatJoin: "", objectJoin: "", subjectBound: true, predicatBound: true, objectBound: true },
   ]);
 
-  //Adaptation of the filter data set in case of user interaction with the text boxes
+  //Adaptation of the subject filter
   const handleFormChangeSubject = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
@@ -94,7 +94,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
-  //Adaptation of the filter data set in case of user interaction with the text boxes
+  //Adaptation of the predicat filter
   const handleFormChangePredicat = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
@@ -106,7 +106,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
-  //Adaptation of the filter data set in case of user interaction with the text boxes
+  //Adaptation of the object filter
   const handleFormChangeObject = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
@@ -118,7 +118,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
-  //Adaptation of the filter data set in case of user interaction with the text boxes
+  //Adaptation of the subject join identifier
   const handleFormChangeSubjectJoin = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
@@ -130,7 +130,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
-  //Adaptation of the filter data set in case of user interaction with the text boxes
+  //Adaptation of the predicat join identifier
   const handleFormChangePredicatJoin = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
@@ -142,7 +142,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
-  //Adaptation of the filter data set in case of user interaction with the text boxes
+  //Adaptation of the object join identifier
   const handleFormChangeObjectJoin = (
     event: ChangeEvent<HTMLInputElement>,
     index: number

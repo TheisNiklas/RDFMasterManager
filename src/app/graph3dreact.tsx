@@ -2,8 +2,12 @@ import {
     ForceGraph3D
 } from "react-force-graph";
 
-export default function Graph3D() {
+import miserables from "./miserables.js";
+
+export default function graph3DReact() {
+
+    let data = miserables
     return (
-        <p>Hallo</p>
+        <ForceGraph3D graphData={data}></ForceGraph3D>
     )
 }

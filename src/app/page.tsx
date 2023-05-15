@@ -15,7 +15,7 @@ import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { exportBinaryTest } from '../rdf/export/ExportBinaryWindows';
 import { importBinaryTest } from '../rdf/import/ImportBinaryWindows';
 import { graph3D } from './graph3d';
-import Graph3D from './graph3dreact';
+import graph3DReact from './graph3dreact';
 
 const drawerWidth = 500;
 

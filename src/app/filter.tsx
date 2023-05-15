@@ -88,7 +88,7 @@ const FilterForm = () => {
     index: number
   ) => {
     let data = [...formFields];
-    data[index][event.target.name] = event.target.value;
+    data[index]['subject'] = event.target.value;
     setFormFields(data);
 
     console.log(formFields);
@@ -132,7 +132,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="subjectBound"
-                      onChange={(event) => handleFormChangeCheckBox(event, index)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBox(event, index)}
                       value={form.subjectBound}
                       defaultChecked size="small"
                     />
@@ -142,7 +142,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="Subjekt"
                     name="subject"
-                    onChange={(event) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
                     value={form.subject}
                   />
                 </Grid>
@@ -150,7 +150,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="predicatBound"
-                      onChange={(event) => handleFormChangeCheckBox(event, index)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBox(event, index)}
                       value={form.predicatBound}
                       defaultChecked size="small"
                     />
@@ -160,7 +160,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="Prädikat"
                     name="predicat"
-                    onChange={(event) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
                     value={form.predicat}
                   />
                 </Grid>
@@ -168,7 +168,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="objectBound"
-                      onChange={(event) => handleFormChangeCheckBox(event, index)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBox(event, index)}
                       value={form.objectBound}
                       defaultChecked size="small"
                     />
@@ -178,7 +178,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="Objekt"
                     name="object"
-                    onChange={(event) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
                     value={form.object}
                   />
                 </Grid>
@@ -194,7 +194,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="S-Join"
                     name="subjectJoin"
-                    onChange={(event) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
                     value={form.subjectJoin}
                   />
                 </Grid>
@@ -202,7 +202,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="P-Join"
                     name="predicatJoin"
-                    onChange={(event) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
                     value={form.predicatJoin}
                   />
                 </Grid>
@@ -210,7 +210,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="O-Join"
                     name="objectJoin"
-                    onChange={(event) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
                     value={form.objectJoin}
                   />
                 </Grid>

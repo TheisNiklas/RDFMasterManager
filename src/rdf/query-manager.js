@@ -36,11 +36,83 @@ export class QueryManager {
   }
 
   /**
+   * 
+   * @param {QueryTriple} query 
+   */
+  getOneUnboundTriple(query) {
+    const pattern = []
+    if (query.subject === null) {
+      pattern.push(query.predicate.id)
+      pattern.push(query.object.id)
+    } else
+    if (query.predicate === null) {
+      pattern.push(query.object.id)
+      pattern.push(query.subject.id)
+    } else
+    if (query.object === null) {
+      pattern.push(query.subject.id)
+      pattern.push(query.predicate.id)
+    }
+    const result_range = this.#getResultList(pattern)
+    const result = this.#decodeRangeToTriple(result_range, query)
+    return result
+  }
+
+  /**
+   * 
+   * @param {number[]} range 
+   * @param {QueryTriple} query
+   */
+  #decodeRangeToTriple(range, query) {
+    // is one unbound
+    if ((query.subject === null && query.predicate !== null && query.object !== null) ||
+        (query.subject !== null && query.predicate === null && query.object !== null) ||
+        (query.subject !== null && query.predicate !== null && query.object === null)) {
+      const tripleList = [];
+      for (let i = range[0]; i <= range[1]; i++) {
+        const targetIndex = this.rdfcsa.psi[this.rdfcsa.psi[i]];
+        const target = BitvectorTools.rank(this.rdfcsa.D, targetIndex);
+        if (query.subject === null) {
+          tripleList.push([target, query.predicate.id, query.object.id])
+        } else
+        if (query.predicate === null) {
+          tripleList.push([query.subject.id, target, query.object.id])
+        } else
+        if (query.object === null) {
+          tripleList.push([query.subject.id, query.predicate.id, target])
+        }
+      }
+      return tripleList;
+    }
+    // are two unbound
+    else if ((query.subject === null && query.predicate === null && query.object !== null) ||
+    (query.subject === null && query.predicate !== null && query.object === null) ||
+    (query.subject !== null && query.predicate === null && query.object === null)){
+      const tripleList = [];
+      for (let i = range[0]; i <= range[1]; i++) {
+        const targetIndex1 = this.rdfcsa.psi[i];
+        const targetIndex2 = this.rdfcsa.psi[targetIndex1];
+
+        const target1 = BitvectorTools.rank(this.rdfcsa.D, targetIndex1);
+        const target2 = BitvectorTools.rank(this.rdfcsa.D, targetIndex2);
+        if (query.subject !== null) {
+          tripleList.push([query.subject.id, target1, target2])
+        } else
+        if (query.predicate !== null) {
+          tripleList.push([target2, query.predicate.id, target1])
+        } else
+        if (query.object !== null) {
+          tripleList.push([target1, target2, query.object.id])
+        }
+      }
+    }
+  }
+
+  /**
    *
    * @param {QueryTriple} pattern
    */
   #getResultList(pattern) {
-    // [0,9,12] [0,9]
     let ranges = [];
 
     pattern.forEach((elem) => {

@@ -59,4 +59,28 @@ describe("QueryManager", () => {
     const result = queryManager.getBoundTriple(queryTriple);
     expect(result).toEqual([]);
   });
+  test("getOneUnboundTriple(?,5,11)", () => {
+    const subject = null;
+    const predicate = new QueryElement(5);
+    const object = new QueryElement(11);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getOneUnboundTriple(queryTriple);
+    expect(result).toEqual([[2, 5, 11], [3, 5, 11], [4, 5, 11]]);
+  });
+  test("getOneUnboundTriple(1,?,15)", () => {
+    const subject = new QueryElement(1);
+    const predicate = null;
+    const object = new QueryElement(15);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getOneUnboundTriple(queryTriple);
+    expect(result).toEqual([[1, 8, 15]]);
+  });
+  test("getOneUnboundTriple(?,5,11)", () => {
+    const subject = null;
+    const predicate = new QueryElement(5);
+    const object = new QueryElement(11);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getOneUnboundTriple(queryTriple);
+    expect(result).toEqual([[2, 5, 11], [3, 5, 11], [4, 5, 11]]);
+  });
 });

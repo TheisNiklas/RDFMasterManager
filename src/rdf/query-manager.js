@@ -1,5 +1,5 @@
 import { QueryTriple } from "../../src/rdf/models/query-triple";
-import { BitvectorTools } from "./bitvector_tools";
+import { BitvectorTools } from "./bitvector-tools";
 import { Triple } from "./models/triple";
 
 export class QueryManager {

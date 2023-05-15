@@ -83,7 +83,7 @@ const FilterForm = () => {
   ]);
 
   //Adaptation of the filter data set in case of user interaction with the text boxes
-  const handleFormChange = (
+  const handleFormChangeSubject = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
@@ -94,13 +94,97 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
-  //Adaptation of the filter data set in case of user interaction with the checkboxes
-  const handleFormChangeCheckBox = (
+  //Adaptation of the filter data set in case of user interaction with the text boxes
+  const handleFormChangePredicat = (
     event: ChangeEvent<HTMLInputElement>,
     index: number
   ) => {
     let data = [...formFields];
-    data[index][event.target.name] = event.target.checked;
+    data[index]['predicat'] = event.target.value;
+    setFormFields(data);
+
+    console.log(formFields);
+  };
+
+  //Adaptation of the filter data set in case of user interaction with the text boxes
+  const handleFormChangeObject = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index]['object'] = event.target.value;
+    setFormFields(data);
+
+    console.log(formFields);
+  };
+
+  //Adaptation of the filter data set in case of user interaction with the text boxes
+  const handleFormChangeSubjectJoin = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index]['subjectJoin'] = event.target.value;
+    setFormFields(data);
+
+    console.log(formFields);
+  };
+
+  //Adaptation of the filter data set in case of user interaction with the text boxes
+  const handleFormChangePredicatJoin = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index]['predicatJoin'] = event.target.value;
+    setFormFields(data);
+
+    console.log(formFields);
+  };
+
+  //Adaptation of the filter data set in case of user interaction with the text boxes
+  const handleFormChangeObjectJoin = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index]['objectJoin'] = event.target.value;
+    setFormFields(data);
+
+    console.log(formFields);
+  };
+
+  //Adaptation of the filter data set in case of user interaction with the checkboxes for the subject
+  const handleFormChangeCheckBoxSubject = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index]['subjectBound'] = event.target.checked;
+    setFormFields(data);
+
+    console.log(formFields);
+  };
+
+  //Adaptation of the filter data set in case of user interaction with the checkboxes for the object
+  const handleFormChangeCheckBoxPredicat = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index]['predicatBound'] = event.target.checked;
+    setFormFields(data);
+
+    console.log(formFields);
+  };
+
+  //Adaptation of the filter data set in case of user interaction with the checkboxes for the predicat
+  const handleFormChangeCheckBoxObject = (
+    event: ChangeEvent<HTMLInputElement>,
+    index: number
+  ) => {
+    let data = [...formFields];
+    data[index]['objectBound'] = event.target.checked;
     setFormFields(data);
 
     console.log(formFields);
@@ -132,7 +216,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="subjectBound"
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBox(event, index)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxSubject(event, index)}
                       value={form.subjectBound}
                       defaultChecked size="small"
                     />
@@ -142,7 +226,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="Subjekt"
                     name="subject"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeSubject(event, index)}
                     value={form.subject}
                   />
                 </Grid>
@@ -150,7 +234,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="predicatBound"
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBox(event, index)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxPredicat(event, index)}
                       value={form.predicatBound}
                       defaultChecked size="small"
                     />
@@ -160,7 +244,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="Prädikat"
                     name="predicat"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangePredicat(event, index)}
                     value={form.predicat}
                   />
                 </Grid>
@@ -168,7 +252,7 @@ const FilterForm = () => {
                   <FormGroup>
                     <Checkbox
                       name="objectBound"
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBox(event, index)}
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxObject(event, index)}
                       value={form.objectBound}
                       defaultChecked size="small"
                     />
@@ -178,7 +262,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="Objekt"
                     name="object"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeObject(event, index)}
                     value={form.object}
                   />
                 </Grid>
@@ -194,7 +278,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="S-Join"
                     name="subjectJoin"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeSubjectJoin(event, index)}
                     value={form.subjectJoin}
                   />
                 </Grid>
@@ -202,7 +286,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="P-Join"
                     name="predicatJoin"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangePredicatJoin(event, index)}
                     value={form.predicatJoin}
                   />
                 </Grid>
@@ -210,7 +294,7 @@ const FilterForm = () => {
                   <StyledTextField
                     label="O-Join"
                     name="objectJoin"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChange(event, index)}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeObjectJoin(event, index)}
                     value={form.objectJoin}
                   />
                 </Grid>

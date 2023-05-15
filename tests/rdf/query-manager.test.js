@@ -65,7 +65,11 @@ describe("QueryManager", () => {
     const object = new QueryElement(11);
     const queryTriple = new QueryTriple(subject, predicate, object);
     const result = queryManager.getOneUnboundTriple(queryTriple);
-    expect(result).toEqual([[2, 5, 11], [3, 5, 11], [4, 5, 11]]);
+    expect(result).toEqual([
+      [2, 5, 11],
+      [3, 5, 11],
+      [4, 5, 11],
+    ]);
   });
   test("getOneUnboundTriple(1,?,15)", () => {
     const subject = new QueryElement(1);
@@ -75,12 +79,72 @@ describe("QueryManager", () => {
     const result = queryManager.getOneUnboundTriple(queryTriple);
     expect(result).toEqual([[1, 8, 15]]);
   });
-  test("getOneUnboundTriple(?,5,11)", () => {
-    const subject = null;
-    const predicate = new QueryElement(5);
-    const object = new QueryElement(11);
+  test("getOneUnboundTriple(4,7,?)", () => {
+    const subject = new QueryElement(4);
+    const predicate = new QueryElement(7);
+    const object = null;
     const queryTriple = new QueryTriple(subject, predicate, object);
     const result = queryManager.getOneUnboundTriple(queryTriple);
-    expect(result).toEqual([[2, 5, 11], [3, 5, 11], [4, 5, 11]]);
+    expect(result).toEqual([[4, 7, 15]]);
+  });
+  test("getTwoUnboundTriple(3,,)", () => {
+    const subject = new QueryElement(3);
+    const predicate = null;
+    const object = null;
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getTwoUnboundTriple(queryTriple);
+    expect(result).toEqual([
+      [3, 5, 11],
+      [3, 7, 15],
+      [3, 10, 12],
+    ]);
+  });
+  test("getTwoUnboundTriple(4,,)", () => {
+    const subject = new QueryElement(4);
+    const predicate = null;
+    const object = null;
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getTwoUnboundTriple(queryTriple);
+    expect(result).toEqual([
+      [4, 5, 11],
+      [4, 6, 14],
+      [4, 7, 15],
+    ]);
+  });
+  test("getTwoUnboundTriple(,5,)", () => {
+    const subject = null;
+    const predicate = new QueryElement(5);
+    const object = null;
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getTwoUnboundTriple(queryTriple);
+    expect(result).toEqual([
+      [2, 5, 11],
+      [3, 5, 11],
+      [4, 5, 11],
+    ]);
+  });
+  test("getTwoUnboundTriple(,,15)", () => {
+    const subject = null;
+    const predicate = null;
+    const object = new QueryElement(15);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getTwoUnboundTriple(queryTriple);
+    expect(result).toEqual([
+      [1, 8, 15],
+      [3, 7, 15],
+      [4, 7, 15],
+    ]);
+  });
+  test("getTwoUnboundTriple(,,11)", () => {
+    const subject = null;
+    const predicate = null;
+    const object = new QueryElement(11);
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getTwoUnboundTriple(queryTriple);
+    expect(result).toEqual([
+      [2, 5, 11],
+      [3, 5, 11],
+      [4, 5, 11],
+    ]);
   });
 });

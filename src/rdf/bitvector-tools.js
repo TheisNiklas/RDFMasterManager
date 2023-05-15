@@ -14,6 +14,7 @@ export class BitvectorTools {
         return index;
       }
     }
+    return bitvector.length
     /*
     bitvector.forEach((value, index) => {
       if (count === 0) {

@@ -14,14 +14,6 @@ export class BitvectorTools {
         return index;
       }
     }
-    return bitvector.length
-    /*
-    bitvector.forEach((value, index) => {
-      if (count === 0) {
-        return index;
-      }
-      count -= value;
-    });
-      */
+    return bitvector.length;
   }
 }

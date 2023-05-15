@@ -26,9 +26,7 @@ export class QueryManager {
     const resultRange = this.#getResultList(pattern);
     if (resultRange.length === 2) {
       if (resultRange[0] === resultRange[1]) {
-        const resultTriple = [
-          new Triple(query.subject.id, query.predicate.id, query.object.id),
-        ];
+        const resultTriple = [new Triple(query.subject.id, query.predicate.id, query.object.id)];
         return resultTriple;
       }
     }
@@ -83,15 +81,9 @@ export class QueryManager {
     const tripleList = [];
     // is one unbound
     if (
-      (query.subject === null &&
-        query.predicate !== null &&
-        query.object !== null) ||
-      (query.subject !== null &&
-        query.predicate === null &&
-        query.object !== null) ||
-      (query.subject !== null &&
-        query.predicate !== null &&
-        query.object === null)
+      (query.subject === null && query.predicate !== null && query.object !== null) ||
+      (query.subject !== null && query.predicate === null && query.object !== null) ||
+      (query.subject !== null && query.predicate !== null && query.object === null)
     ) {
       for (let i = range[0]; i <= range[1]; i++) {
         const targetIndex = this.rdfcsa.psi[this.rdfcsa.psi[i]];
@@ -107,15 +99,9 @@ export class QueryManager {
     }
     // are two unbound
     else if (
-      (query.subject === null &&
-        query.predicate === null &&
-        query.object !== null) ||
-      (query.subject === null &&
-        query.predicate !== null &&
-        query.object === null) ||
-      (query.subject !== null &&
-        query.predicate === null &&
-        query.object === null)
+      (query.subject === null && query.predicate === null && query.object !== null) ||
+      (query.subject === null && query.predicate !== null && query.object === null) ||
+      (query.subject !== null && query.predicate === null && query.object === null)
     ) {
       for (let i = range[0]; i <= range[1]; i++) {
         const targetIndex1 = this.rdfcsa.psi[i];

@@ -12,7 +12,9 @@ import {
   Container,
   Checkbox,
   FormGroup,
-  FormLabel
+  FormLabel,
+  Tooltip,
+  SelectChangeEvent
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -73,7 +75,7 @@ const FilterForm = () => {
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    queryCallData(formFields)
+    queryCallData(formFields, sortFields)
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements
@@ -82,6 +84,9 @@ const FilterForm = () => {
     { subject: "", predicat: "", object: "", subjectJoin: "", predicatJoin: "", objectJoin: "", subjectBound: true, predicatBound: true, objectBound: true },
   ]);
 
+  const [sortFields, setSortFields] = useState(
+    {sortElement: "sortSubject", sortOrder: "ascending"}
+  );
   //Adaptation of the subject filter
   const handleFormChangeSubject = (
     event: ChangeEvent<HTMLInputElement>,
@@ -190,6 +195,27 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
+  //Adaptation of the selected sorting order (ascending, descending) the user picked 
+  const handleFormChangeSortOrderObject = (
+    event: SelectChangeEvent<string>
+  ) => {
+    let data = sortFields;
+    data.sortOrder = event.target.value;
+    setSortFields(data);
+
+    console.log(sortFields);
+  }
+
+  //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
+  const handleFormChangeSortElementObject = (
+    event: SelectChangeEvent<string>
+  ) => {
+    let data = sortFields;
+    data.sortElement = event.target.value;
+    setSortFields(data);
+
+    console.log(sortFields);
+  }
   //Removes a triple pair of SPO filter elements with the corresponding join variables
   const deleteFilterTriple = (index: number) => {
     let data = [...formFields];
@@ -199,6 +225,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
+  
   return (
     <Container maxWidth="md" sx={{ marginBottom: 8 }}>
       <div>
@@ -213,14 +240,17 @@ const FilterForm = () => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={1}>
-                  <FormGroup>
-                    <Checkbox
-                      name="subjectBound"
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxSubject(event, index)}
-                      value={form.subjectBound}
-                      defaultChecked size="small"
-                    />
-                  </FormGroup>
+                  <Tooltip title="Häkchen setzen für Bound Subjekt" placement="top">
+                    <FormGroup>
+                      <Checkbox
+                        name="subjectBound"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxSubject(event, index)}
+                        value={form.subjectBound}
+                        defaultChecked size="small"
+                      />
+                    </FormGroup>
+                  </Tooltip>
+
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <StyledTextField
@@ -231,14 +261,17 @@ const FilterForm = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={1}>
-                  <FormGroup>
-                    <Checkbox
-                      name="predicatBound"
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxPredicat(event, index)}
-                      value={form.predicatBound}
-                      defaultChecked size="small"
-                    />
-                  </FormGroup>
+                  <Tooltip title="Häkchen setzen für Bound Prädikat" placement="top">
+                    <FormGroup>
+                      <Checkbox
+                        name="predicatBound"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxPredicat(event, index)}
+                        value={form.predicatBound}
+                        defaultChecked size="small"
+                      />
+                    </FormGroup>
+                  </Tooltip>
+
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <StyledTextField
@@ -249,14 +282,17 @@ const FilterForm = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={1}>
-                  <FormGroup>
-                    <Checkbox
-                      name="objectBound"
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxObject(event, index)}
-                      value={form.objectBound}
-                      defaultChecked size="small"
-                    />
-                  </FormGroup>
+                  <Tooltip title="Häkchen setzen für Bound Objekt" placement="top">
+                    <FormGroup>
+                      <Checkbox
+                        name="objectBound"
+                        onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxObject(event, index)}
+                        value={form.objectBound}
+                        defaultChecked size="small"
+                      />
+                    </FormGroup>
+                  </Tooltip>
+
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <StyledTextField
@@ -267,7 +303,9 @@ const FilterForm = () => {
                   />
                 </Grid>
                 <Grid item xs={12} sm={1}>
-                  <DeleteButton onClick={() => deleteFilterTriple(index)} />
+                  <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
+                    <DeleteButton onClick={() => deleteFilterTriple(index)} />
+                  </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={11}>
                   <FormControl>
@@ -275,28 +313,35 @@ const FilterForm = () => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <StyledTextField
-                    label="S-Join"
-                    name="subjectJoin"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeSubjectJoin(event, index)}
-                    value={form.subjectJoin}
-                  />
+                  <Tooltip title="Zeichenkette eingeben, um Subjekte mit identischer Zeichenkette  bei der Filterung zu Joinen" placement="top">
+                    <StyledTextField
+                      label="S-Join"
+                      name="subjectJoin"
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeSubjectJoin(event, index)}
+                      value={form.subjectJoin}
+                    />
+                  </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <StyledTextField
-                    label="P-Join"
-                    name="predicatJoin"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangePredicatJoin(event, index)}
-                    value={form.predicatJoin}
-                  />
+                  <Tooltip title="Zeichenkette eingeben, um Prädikate mit identischer Zeichenkette  bei der Filterung zu Joinen" placement="top">
+                    <StyledTextField
+                      label="P-Join"
+                      name="predicatJoin"
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangePredicatJoin(event, index)}
+                      value={form.predicatJoin}
+                    />
+                  </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={4}>
-                  <StyledTextField
-                    label="O-Join"
-                    name="objectJoin"
-                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeObjectJoin(event, index)}
-                    value={form.objectJoin}
-                  />
+                  <Tooltip title="Zeichenkette eingeben, um Objekte mit identischer Zeichenkette  bei der Filterung zu Joinen" placement="top">
+                    <StyledTextField
+                      label="O-Join"
+                      name="objectJoin"
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeObjectJoin(event, index)}
+                      value={form.objectJoin}
+                    />
+                  </Tooltip>
+
                 </Grid>
                 <Grid item xs={12} sm={12}>
                 </Grid>
@@ -315,14 +360,24 @@ const FilterForm = () => {
               </AddButton>
             </Grid>
             <Grid item xs={12} sm={6}>
-              <StyledTextField label="Limit" />
+              <Grid container spacing={2}>
+                <Grid item xs={12}>
+                  <SortFormControl>
+                    <InputLabel id="sort-label">Sortierreihenfolge</InputLabel>
+                    <Select labelId="sort-label" onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}>
+                      <MenuItem value="ascending">Aufsteigend</MenuItem>
+                      <MenuItem value="descending">Absteigend</MenuItem>
+                    </Select>
+                  </SortFormControl>
+                </Grid>
+              </Grid>
             </Grid>
             <Grid item xs={12} sm={6}>
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <SortFormControl>
-                    <InputLabel id="sort-label">Sortieren nach</InputLabel>
-                    <Select labelId="sort-label">
+                    <InputLabel id="sort-label">Sortierelement</InputLabel>
+                    <Select labelId="sort-label" onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}>
                       <MenuItem value="sortSubject">Subjekt</MenuItem>
                       <MenuItem value="sortPredicat">Prädikat</MenuItem>
                       <MenuItem value="sortObject">Objekt</MenuItem>
@@ -330,6 +385,11 @@ const FilterForm = () => {
                   </SortFormControl>
                 </Grid>
               </Grid>
+            </Grid>
+            <Grid item xs={6}>
+              <Tooltip title="Maximale Anzahl an Ergebnissen der Query" placement="top">
+                <StyledTextField label="Limit" type="number" />
+              </Tooltip>
             </Grid>
             <Grid item xs={12}>
               <SubmitButton
@@ -340,6 +400,7 @@ const FilterForm = () => {
                 Submit
               </SubmitButton>
             </Grid>
+
           </Grid>
         </Grid>
       </div>

@@ -12,8 +12,10 @@ import IconButton from '@mui/material/IconButton';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import { exportBinaryTest } from '../rdf/export/ExportBinaryWindows';
-import { importBinaryTest } from '../rdf/import/ImportBinaryWindows';
+import AddTripleForm from './addtriple';
+import FilterForm from './filter';
+import Import from './import';
+import Export from './export';
 
 const drawerWidth = 500;
 
@@ -65,6 +67,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   ...theme.mixins.toolbar,
   justifyContent: 'flex-start',
 }));
+
 
 export default function PersistentDrawerRight() {
   const theme = useTheme();
@@ -120,9 +123,10 @@ export default function PersistentDrawerRight() {
             {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <p> Funktionalitäten </p>
-        <IconButton onClick={() => exportBinaryTest()}>Export</IconButton>
-        <IconButton onClick={() => importBinaryTest()}>Import</IconButton>
+        <FilterForm></FilterForm>
+        <AddTripleForm></AddTripleForm>
+        <Import></Import>
+        <Export></Export>
       </Drawer>
     </Box>
   );

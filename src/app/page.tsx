@@ -14,9 +14,8 @@ import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import { exportBinaryTest } from '../rdf/export/ExportBinaryWindows';
 import { importBinaryTest } from '../rdf/import/ImportBinaryWindows';
-import { graph3D } from './Graph3D';
-import { ForceGraph3D, ForceGraphVR, ForceGraphAR } from '../app/externLib3D/react-force-graph/src';
-import { Graph3D } from '..\..\3Dgraph.tsx'
+import { graph3D } from './graph3d';
+import Graph3D from './graph3dreact';
 
 const drawerWidth = 500;
 

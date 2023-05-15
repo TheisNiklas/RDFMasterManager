@@ -31,6 +31,8 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 
 const DeleteButton = styled(DeleteForeverIcon)(({ theme }) => ({
   width: "100%",
+  cursor: "pointer",
+  
 }));
 
 const AddButton = styled(Button)(({ theme }) => ({

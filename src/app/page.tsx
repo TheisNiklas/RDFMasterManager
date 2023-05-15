@@ -16,6 +16,7 @@ import { exportBinaryTest } from '../rdf/export/ExportBinaryWindows';
 import { importBinaryTest } from '../rdf/import/ImportBinaryWindows';
 import { graph3D } from './Graph3D';
 import { ForceGraph3D, ForceGraphVR, ForceGraphAR } from '../app/externLib3D/react-force-graph/src';
+import { Graph3D } from '..\..\3Dgraph.tsx'
 
 const drawerWidth = 500;
 
@@ -102,9 +103,7 @@ export default function PersistentDrawerRight() {
       <Main open={open}>
         <DrawerHeader />
         <Typography paragraph>
-          <ForceGraph3D
-            graphData={graph3D}
-          />
+          <Graph3D></Graph3D>
         </Typography>
       </Main>
       <Drawer

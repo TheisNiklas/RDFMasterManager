@@ -16,6 +16,8 @@ import AddTripleForm from './addtriple';
 import FilterForm from './filter';
 import Import from './import';
 import Export from './export';
+//import { graph3D } from './graph3d';
+//import graph3DReact from './graph3dreact';
 
 const drawerWidth = 500;
 
@@ -103,7 +105,7 @@ export default function PersistentDrawerRight() {
       <Main open={open}>
         <DrawerHeader />
         <Typography paragraph>
-          3D Ansicht RDF-Graph
+
         </Typography>
       </Main>
       <Drawer
@@ -128,6 +130,6 @@ export default function PersistentDrawerRight() {
         <Import></Import>
         <Export></Export>
       </Drawer>
-    </Box>
+    </Box >
   );
 }

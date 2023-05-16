@@ -158,7 +158,7 @@ const FilterForm = () => {
                   </FormControl>
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <Tooltip title="?u oder leer für unbound, ein anderes Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Subjekt" placement="top">
+                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Subjekt" placement="top">
                     <StyledTextField
                       label="Subjekt"
                       name="subject"
@@ -168,7 +168,7 @@ const FilterForm = () => {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <Tooltip title="?u oder leer für unbound, ein anderes Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Prädikat" placement="top">
+                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Prädikat" placement="top">
                     <StyledTextField
                       label="Prädikat"
                       name="predicat"
@@ -178,7 +178,7 @@ const FilterForm = () => {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={12} sm={3}>
-                  <Tooltip title="?u oder leer für unbound, ein anderes Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Objekt" placement="top">
+                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Objekt" placement="top">
                     <StyledTextField
                       label="Objekt"
                       name="object"

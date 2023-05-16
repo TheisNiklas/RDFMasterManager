@@ -1,15 +1,16 @@
-/*
-import {
-    ForceGraph3D
-} from "react-force-graph";
+import dynamic from "next/dynamic";
 
-import miserables from "./miserables.js";
+const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
+  ssr: false,
+});
 
-export default function graph3DReact() {
-
-    let data = miserables
-    return (
-        <ForceGraph3D graphData={data}></ForceGraph3D>
-    )
+export default function Graph3DReact() {
+  const data = {
+    nodes: [{ id: "1" }, { id: "2" }, { id: "3" }],
+    links: [
+      { source: "1", target: "2" },
+      { source: "1", target: "3" },
+    ],
+  };
+  return <NoSSRForceGraph graphData={data}></NoSSRForceGraph>;
 }
-*/

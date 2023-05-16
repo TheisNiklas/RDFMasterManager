@@ -223,10 +223,73 @@ export class QueryManager {
         }
     });
 
-    for (const i = 0; i < resultList.length; i++){
-      const item = resultList[i];
-    }
+    const mergedResults  = undefined;
+    for (const i = 1; i < resultList.length; i++){
+      if (mergedResults === undefined){
+        mergedResults = resultList[i]
+      }
+        // get join variable
+        const preJoinVar = this.#getJoinVar(query[i-1]);
+        const curJoinVar = this.#getJoinVar(query[i]);
+        // compare join variable
+        const joinVar = undefined;
+        for (const i = 0; i < curJoinVar.length; i++){
+          if (curJoinVar[i] >= 0 && joinVar === undefined){
+              switch (i) {
+                case 0:
+                  if (curJoinVar[i] === preJoinVar[0]){
+                  joinVar = "S";
+                  }
+                  else if (curJoinVar[i] === preJoinVar[2]){
+                    joinVar = "SO";
+                  }
+                  break;
+                case 1:
+                  if (curJoinVar[i] === preJoinVar[1]){
+                    joinVar = "P";
+                  }
+                  break;
+                case 2:
+                  if (curJoinVar[i] === preJoinVar[0]){
+                    joinVar = "OS";
+                  }
+                  else if (curJoinVar[i] === preJoinVar[2]){
+                    joinVar = "O";
+                  }
+                  break;
+                default:
+                  break;
+              }
+            
+          }
+        }
+        // get merged results
+        mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], joinVar);
+      }
+      return mergedResults;
+  }
 
+  #getJoinVar(query){
+    const joinVar = []
+        if (previous.subject.isJoinVar){
+          joinVar.push(previous.subject.id);
+        }
+        else {
+          joinVar.push(-1);
+        }
+        if (previous.predicate.isJoinVar){
+          joinVar.push(previous.predicate.id);
+        }
+        else {
+          joinVar.push(-1);
+        }
+        if (previous.object.isJoinVar){
+          joinVar.push(previous.object.id);
+        }
+        else {
+          joinVar.push(-1);
+        }
+        return joinVar;
   }
 
   /**
@@ -318,59 +381,4 @@ export class QueryManager {
     }
     return countUnbound;
   }
-
-  // /**
-  //  *
-  //  * @param {QueryTriple} query
-  //  * @returns {number, number[]}
-  //  */
-  // #getQueryType(query) {
-  //   const countUnbound = 0;
-  //   const joinVar = [];
-  //   const ids = [];
-  //   // evaluate subject
-  //   if (query.subject === null) {
-  //     countUnbound += 1;
-  //     joinVar.push(-1);
-  //     ids.push(-1)
-  //   } else if (query.subject.isJoinVar) {
-  //       countUnbound += 1;
-  //       joinVar.push(query.subject.id);
-  //       ids.push(-1);
-  //     }
-  //     else{
-  //     joinVar.push(-1);
-  //     ids.push(query.subject.id);
-  //   }
-  //   // evaluate predicate
-  //   if (query.predicate === null) {
-  //     countUnbound += 1;
-  //     joinVar.push(-1);
-  //     ids.push(-1);
-  //   } else
-  //     if (query.predicate.isJoinVar) {
-  //       countUnbound += 1;
-  //       joinVar.push(query.predicate.id);
-  //       ids.push(-1);
-  //     }
-  //     else{
-  //     joinVar.push(-1);
-  //     ids.push(query.predicate.id);
-  //   }
-  //   // evaluate object
-  //   if (query.object === null) {
-  //     countUnbound += 1;
-  //     ids.push(-1);
-  //   } else 
-  //     if (query.object.isJoinVar) {
-  //     countUnbound += 1;
-  //     joinVar.push(query.object.id);
-  //       ids.push(-1);
-  //     }
-  //     else{
-  //       joinVar.push(-1);
-  //     ids.push(query.object.id);
-  //   }
-  //   return countUnbound, joinVar, ids;
-  // }
 }

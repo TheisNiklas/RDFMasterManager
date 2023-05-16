@@ -32,7 +32,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
 const DeleteButton = styled(DeleteForeverIcon)(({ theme }) => ({
   width: "100%",
   cursor: "pointer",
-  
+
 }));
 
 const AddButton = styled(Button)(({ theme }) => ({
@@ -41,8 +41,7 @@ const AddButton = styled(Button)(({ theme }) => ({
 }));
 
 const SortFormControl = styled(FormControl)(({ theme }) => ({
-  margin: theme.spacing(1),
-  minWidth: 120,
+  margin: theme.spacing(0),
   width: "100%",
   "& .MuiInputLabel-root": {
     minHeight: "1rem",
@@ -87,7 +86,7 @@ const FilterForm = () => {
   ]);
 
   const [sortFields, setSortFields] = useState(
-    {sortElement: "sortSubject", sortOrder: "ascending"}
+    { sortElement: "sortSubject", sortOrder: "ascending" }
   );
   //Adaptation of the subject filter
   const handleFormChangeSubject = (
@@ -227,7 +226,7 @@ const FilterForm = () => {
     console.log(formFields);
   };
 
-  
+
   return (
     <Container maxWidth="md" sx={{ marginBottom: 8 }}>
       <div>
@@ -273,7 +272,6 @@ const FilterForm = () => {
                       />
                     </FormGroup>
                   </Tooltip>
-
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <StyledTextField
@@ -294,7 +292,6 @@ const FilterForm = () => {
                       />
                     </FormGroup>
                   </Tooltip>
-
                 </Grid>
                 <Grid item xs={12} sm={3}>
                   <StyledTextField
@@ -343,14 +340,13 @@ const FilterForm = () => {
                       value={form.objectJoin}
                     />
                   </Tooltip>
-
                 </Grid>
                 <Grid item xs={12} sm={12}>
                 </Grid>
               </Grid>
             );
           })}
-          <Grid container spacing={2} alignItems="center">
+          <Grid container spacing={2}>
             <Grid item xs={12}>
               <AddButton
                 variant="contained"
@@ -361,35 +357,27 @@ const FilterForm = () => {
                 Filter hinzufügen
               </AddButton>
             </Grid>
-            <Grid item xs={12} sm={6}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <SortFormControl>
-                    <InputLabel id="sort-label">Sortierreihenfolge</InputLabel>
-                    <Select labelId="sort-label" onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}>
-                      <MenuItem value="ascending">Aufsteigend</MenuItem>
-                      <MenuItem value="descending">Absteigend</MenuItem>
-                    </Select>
-                  </SortFormControl>
-                </Grid>
-              </Grid>
-            </Grid>
-            <Grid item xs={12} sm={6}>
-              <Grid container spacing={2}>
-                <Grid item xs={12}>
-                  <SortFormControl>
-                    <InputLabel id="sort-label">Sortierelement</InputLabel>
-                    <Select labelId="sort-label" onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}>
-                      <MenuItem value="sortSubject">Subjekt</MenuItem>
-                      <MenuItem value="sortPredicat">Prädikat</MenuItem>
-                      <MenuItem value="sortObject">Objekt</MenuItem>
-                    </Select>
-                  </SortFormControl>
-                </Grid>
-              </Grid>
+            <Grid item xs={6}>
+              <SortFormControl>
+                <InputLabel id="sort-label">Sortierreihenfolge</InputLabel>
+                <Select labelId="sort-label" onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}>
+                  <MenuItem value="ascending">Aufsteigend</MenuItem>
+                  <MenuItem value="descending">Absteigend</MenuItem>
+                </Select>
+              </SortFormControl>
             </Grid>
             <Grid item xs={6}>
-              <Tooltip title="Maximale Anzahl an Ergebnissen der Query" placement="top">
+              <SortFormControl>
+                <InputLabel id="sort-label">Sortierelement</InputLabel>
+                <Select labelId="sort-label" onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}>
+                  <MenuItem value="sortSubject">Subjekt</MenuItem>
+                  <MenuItem value="sortPredicat">Prädikat</MenuItem>
+                  <MenuItem value="sortObject">Objekt</MenuItem>
+                </Select>
+              </SortFormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <Tooltip title="Maximale Anzahl an Ergebnissen der Query">
                 <StyledTextField label="Limit" type="number" />
               </Tooltip>
             </Grid>
@@ -402,7 +390,6 @@ const FilterForm = () => {
                 Submit
               </SubmitButton>
             </Grid>
-
           </Grid>
         </Grid>
       </div>

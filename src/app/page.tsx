@@ -105,7 +105,7 @@ export default function PersistentDrawerRight() {
       <Main open={open}>
         <DrawerHeader />
         <Typography paragraph>
-          <Graph3D></Graph3D>
+
         </Typography>
       </Main>
       <Drawer

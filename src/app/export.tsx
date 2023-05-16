@@ -24,8 +24,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 
 
 const SortFormControl = styled(FormControl)(({ theme }) => ({
-    margin: theme.spacing(1),
-    minWidth: 120,
+    margin: theme.spacing(0),
     width: "100%",
     "& .MuiInputLabel-root": {
         minHeight: "1rem",
@@ -44,7 +43,7 @@ const Export = () => {
                     Eigenen Export einfügen
                 </AddButton>
             </Grid>
-            <Grid item xs={12}>
+            <Grid item xs={5}>
                 <SortFormControl>
                     <InputLabel id="exportFunction">Exportfunktion</InputLabel>
                     <Select labelId="exportFunctionSelect">

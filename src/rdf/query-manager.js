@@ -7,25 +7,59 @@ export class QueryManager {
    * Handles all query directed at the dataset
    * @param {Rdfcsa} rdfcsa
    */
+
+  chosenJoinType = "Merge"
   constructor(rdfcsa) {
     this.rdfcsa = rdfcsa;
   }
 
   /**
    * Get the triples matching a given `query`
-   * @param {QueryTriple[]} query
+   * @param {QueryTriple[]} queries
    * @returns {Triple[]}
    */
-  getTriples(query) {
-    query.forEach((pattern) => {
-      this.#getResultList(pattern);
-    });
+  getTriples(queries) {
+    if (queries.length === 1){
+      // no join query
+      countUnboundType = this.#getQueryType(query);
+      switch (countUnboundType){
+        case 0: 
+          return this.getBoundTriple(query);
+        case 1:
+          return this.getOneUnboundTriple(query);
+        case 2:
+          return this.getTwoUnboundTriple(query);
+        default:
+          return this.getAllTriples();
+      }
+    }
+    // Query is join query
+    const resultsList = []
+    queries.forEach((query) => {
+        switch (this.chosenJoinType) {
+          case "Merge":
+            this.#mergeJoin()
+            break;
+        
+          default:
+            break;
+        }
+      });
+  }
+
+  /**
+   * 
+   * @returns {Triple[]}
+   */
+  getAllTriples() {
+    // TODO: return all triples
+    return [];
   }
 
   /**
    * Queries whether a given fully bound query is in the dataset
    * If true returns the triple in an array, else returns an empty array
-   * @param {QueryTriple} query 
+   * @param {QueryTriple} query
    * @returns {Triple[]}
    */
   getBoundTriple(query) {
@@ -163,30 +197,180 @@ export class QueryManager {
     });
 
     return range;
-
-    // const range_subject_start = BitvectorTools.select(this.rdfcsa.D, pattern.subject.id);           // 0
-    // const range_subject_end = BitvectorTools.select(this.rdfcsa.D, pattern.subject.id + 1) - 1;     // 0
-
-    // const range_predicate_start = BitvectorTools.select(this.rdfcsa.D, pattern.predicate.id);       // 18
-    // const range_predicate_end = BitvectorTools.select(this.rdfcsa.D, pattern.predicate.id + 1) - 1; // 18
-
-    // const range_object_start = BitvectorTools.select(this.rdfcsa.D, pattern.object.id);             // 23
-    // const range_object_end = BitvectorTools.select(this.rdfcsa.D, pattern.object.id + 1) - 1;       // 24
-
-    // for (let i = range_subject_start; i <= range_subject_end; i++) {
-    //   const val = this.rdfcsa.psi[i]
-    //   if (val >= range_predicate_start && val <= range_predicate_end) {
-    //     range.push(val);
-    //   }
-    // }
-    // if (range.length === 0) {
-    //   return null
-    // }
-    // range.forEach((index) => {
-    //   if (this.rdfcsa.psi[index] > range_object_start && this.rdfcsa.psi[index] > range_object_end) {
-    //     return true
-    //   }
-    // })
-    // return null
   }
+
+  /**
+   *
+   * @param {QueryTriple[]} queries
+   */
+  #mergeJoin(queries) {
+    const resultList = [];
+    queries.forEach((query) => {
+      countUnbound = this.#getQueryType(query);
+      switch (countUnboundType){
+        case 0: 
+          resultList.push(this.getBoundTriple(query));
+          break;
+        case 1:
+          resultList.push(this.getOneUnboundTriple(query));
+          break;
+        case 2:
+          resultList.push(this.getTwoUnboundTriple(query));
+          break;
+        default:
+          resultList.push(this.getAllTriples());
+          break;
+        }
+    });
+
+    for (const i = 0; i < resultList.length; i++){
+      const item = resultList[i];
+    }
+
+  }
+
+  /**
+   * 
+   * @param {Triple[]} l1 
+   * @param {Triple[]} l2 
+   * @param {string} joinElement:
+   *    S: Join on subject
+   *    P: Join on predicate
+   *    O: Join on Object
+   *    SO: Join Subject of `l1` on Object of `l2`
+   *    OS: Join Object of `l1` on Subject of `l2`
+   */
+  #intersectTwoResultLists(l1, l2, joinElement) {
+    const resultList = [];
+    switch (joinElement) {
+      case "S":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2, index) => {
+            if (triple2.subject === triple1.subject) {
+              resultList.push(triple1)
+              resultList.push(triple2)
+              // CHECK: pop of triple2 from l2 faster, to reduce nessecary iterations
+            }
+          })
+        })
+        break;
+      case "P":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2) => {
+            if (triple2.predicate === triple1.predicate) {
+              resultList.push(triple1)
+              resultList.push(triple2)
+            }
+          })
+        })
+        break;
+      case "O":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2) => {
+            if (triple2.object === triple1.object) {
+              resultList.push(triple1)
+              resultList.push(triple2)
+            }
+          })
+        })
+        break;
+      case "SO":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2) => {
+            if (triple2.object === triple1.subject){
+              resultList.push(triple1)
+              resultList.push(triple2)
+            }
+          })
+        });
+        break;
+      case "OS":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2) => {
+            if (triple2.subject === triple1.object) {
+              resultList.push(triple1)
+              resultList.push(triple2)
+            }
+          })
+        })
+    }
+    return resultList;
+  }
+
+    /**
+   *
+   * @param {QueryTriple} query
+   * @returns {number}
+   */
+  #getQueryType(query) {
+    const countUnbound = 0;
+    // evaluate subject
+    if (query.subject === null || query.subject.isJoinVar) {
+      countUnbound += 1;
+      }
+    // evaluate predicate
+    if (query.predicate === null || query.predicate.isJoinVar) {
+      countUnbound += 1;
+    }
+    // evaluate object
+    if (query.object === null || query.object.isJoinVar) {
+      countUnbound += 1;
+    }
+    return countUnbound;
+  }
+
+  // /**
+  //  *
+  //  * @param {QueryTriple} query
+  //  * @returns {number, number[]}
+  //  */
+  // #getQueryType(query) {
+  //   const countUnbound = 0;
+  //   const joinVar = [];
+  //   const ids = [];
+  //   // evaluate subject
+  //   if (query.subject === null) {
+  //     countUnbound += 1;
+  //     joinVar.push(-1);
+  //     ids.push(-1)
+  //   } else if (query.subject.isJoinVar) {
+  //       countUnbound += 1;
+  //       joinVar.push(query.subject.id);
+  //       ids.push(-1);
+  //     }
+  //     else{
+  //     joinVar.push(-1);
+  //     ids.push(query.subject.id);
+  //   }
+  //   // evaluate predicate
+  //   if (query.predicate === null) {
+  //     countUnbound += 1;
+  //     joinVar.push(-1);
+  //     ids.push(-1);
+  //   } else
+  //     if (query.predicate.isJoinVar) {
+  //       countUnbound += 1;
+  //       joinVar.push(query.predicate.id);
+  //       ids.push(-1);
+  //     }
+  //     else{
+  //     joinVar.push(-1);
+  //     ids.push(query.predicate.id);
+  //   }
+  //   // evaluate object
+  //   if (query.object === null) {
+  //     countUnbound += 1;
+  //     ids.push(-1);
+  //   } else 
+  //     if (query.object.isJoinVar) {
+  //     countUnbound += 1;
+  //     joinVar.push(query.object.id);
+  //       ids.push(-1);
+  //     }
+  //     else{
+  //       joinVar.push(-1);
+  //     ids.push(query.object.id);
+  //   }
+  //   return countUnbound, joinVar, ids;
+  // }
 }

@@ -1,4 +1,5 @@
 import dynamic from "next/dynamic";
+import myData from "./testDataGraph3D";
 
 const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
   ssr: false,
@@ -12,5 +13,17 @@ export default function Graph3DReact() {
       { source: "1", target: "3" },
     ],
   };
-  return <NoSSRForceGraph graphData={data}></NoSSRForceGraph>;
+
+  const handleNodeLeftClick = (node: any) => {
+    console.log(node.id);
+    console.log(node);
+  };
+
+  return (
+    <NoSSRForceGraph
+      graphData={myData}
+      nodeAutoColorBy="group"
+      onNodeClick={(node) => handleNodeLeftClick(node)}
+    ></NoSSRForceGraph>
+  );
 }

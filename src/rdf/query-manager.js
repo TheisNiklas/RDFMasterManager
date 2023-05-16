@@ -4,7 +4,7 @@ import { Triple } from "./models/triple";
 
 export class QueryManager {
   /**
-   *
+   * Handles all query directed at the dataset
    * @param {Rdfcsa} rdfcsa
    */
   constructor(rdfcsa) {
@@ -12,8 +12,9 @@ export class QueryManager {
   }
 
   /**
-   *
+   * Get the triples matching a given `query`
    * @param {QueryTriple[]} query
+   * @returns {Triple[]}
    */
   getTriples(query) {
     query.forEach((pattern) => {
@@ -21,6 +22,12 @@ export class QueryManager {
     });
   }
 
+  /**
+   * Queries whether a given fully bound query is in the dataset
+   * If true returns the triple in an array, else returns an empty array
+   * @param {QueryTriple} query 
+   * @returns {Triple[]}
+   */
   getBoundTriple(query) {
     const pattern = [query.subject.id, query.predicate.id, query.object.id];
     const resultRange = this.#getResultList(pattern);
@@ -34,8 +41,9 @@ export class QueryManager {
   }
 
   /**
-   *
+   * Queries the dataset for the given query with one unbound element
    * @param {QueryTriple} query
+   * @returns {Triple[]} array with the matching triples, empty if none found
    */
   getOneUnboundTriple(query) {
     const pattern = [];
@@ -55,8 +63,9 @@ export class QueryManager {
   }
 
   /**
-   *
+   * Queries the dataset for the given query with two unbound elements
    * @param {QueryTriple} query
+   * @returns {Triple[]} array with the matching triples, empty if none found
    */
   getTwoUnboundTriple(query) {
     const pattern = [];

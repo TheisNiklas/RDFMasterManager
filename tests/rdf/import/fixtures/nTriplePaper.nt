@@ -1,10 +1,10 @@
-"Inception" "filmed in" "L.A."
-"L.A." "city of" "USA"
-"E. Page" "appears in" "Inception"
-"L. DiCaprio" "appears in" "Inception"
-"J. Gordon" "appears in" "Inception"
-"J. Gordon" "born in" "USA"
-"J. Gordon" "lives in" "L.A."
-"E. Page" "born in" "Canada"
-"L. DiCaprio" "born in" "USA"
-"L. DiCaprio" "awarded" "Oscar 2015"
+_:Inception _:filmed%20in _:L.A. .
+_:L.A. _:city%20of _:USA .
+_:E.%20Page _:appears%20in _:Inception .
+_:L.%20DiCaprio _:appears%20in _:Inception .
+_:J.%20Gordon _:appears%20in _:Inception .
+_:J.%20Gordon _:born%20in _:USA .
+_:J.%20Gordon _:lives%20in _:L.A. .
+_:E.%20Page _:born%20in _:Canada .
+_:L.%20DiCaprio _:born%20in _:USA .
+_:L.%20DiCaprio _:awarded _:Oscar%202015 .

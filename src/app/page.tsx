@@ -16,8 +16,8 @@ import AddTripleForm from './addtriple';
 import FilterForm from './filter';
 import Import from './import';
 import Export from './export';
-import { graph3D } from './graph3d';
-import graph3DReact from './graph3dreact';
+//import { graph3D } from './graph3d';
+//import graph3DReact from './graph3dreact';
 
 const drawerWidth = 500;
 

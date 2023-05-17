@@ -47,7 +47,7 @@ const Export = () => {
                 <SortFormControl>
                     <InputLabel id="exportFunction">Exportfunktion</InputLabel>
                     <Select labelId="exportFunctionSelect">
-                        <MenuItem value="binaer">nativ als Binärdatei</MenuItem>
+                        <MenuItem value="binaer">nativ als Binärdatei (Standard)</MenuItem>
                         <MenuItem value="turtle">Turtle-Datei</MenuItem>
                         <MenuItem value="nTriple">n-Triple-Datei</MenuItem>
                         <MenuItem value="json">JSON-Datei</MenuItem>

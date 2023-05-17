@@ -12,7 +12,8 @@ import {
   Container,
   FormLabel,
   Tooltip,
-  SelectChangeEvent
+  SelectChangeEvent,
+  IconButton
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -27,8 +28,8 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   width: "100%",
 }));
 
-const DeleteButton = styled(DeleteForeverIcon)(({ theme }) => ({
-  width: "100%",
+const DeleteIcon = styled(DeleteForeverIcon)(({ theme }) => ({
+
 }));
 
 const AddButton = styled(Button)(({ theme }) => ({
@@ -152,12 +153,21 @@ const FilterForm = () => {
           {formFields.map((form, index) => {
             return (
               <Grid container spacing={2} key={index}>
-                <Grid item xs={12} sm={11} sx={{ marginTop: 2 }}>
+                <Grid item xs={12} sm={5} sx={{ marginTop: 2 }}>
                   <FormControl>
                     <FormLabel>Join Variablen Namen</FormLabel>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={1}>
+                  <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
+                    <IconButton aria-label="delete">
+                      <DeleteIcon onClick={() => deleteFilterTriple(index)} />
+                    </IconButton>
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={12} sm={6}>
+                </Grid>
+                <Grid item xs={12} sm={4}>
                   <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Subjekt" placement="top">
                     <StyledTextField
                       label="Subjekt"
@@ -167,7 +177,7 @@ const FilterForm = () => {
                     />
                   </Tooltip>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={4}>
                   <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Prädikat" placement="top">
                     <StyledTextField
                       label="Prädikat"
@@ -177,7 +187,7 @@ const FilterForm = () => {
                     />
                   </Tooltip>
                 </Grid>
-                <Grid item xs={12} sm={3}>
+                <Grid item xs={12} sm={4}>
                   <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Objekt" placement="top">
                     <StyledTextField
                       label="Objekt"
@@ -185,11 +195,6 @@ const FilterForm = () => {
                       onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeObject(event, index)}
                       value={form.object}
                     />
-                  </Tooltip>
-                </Grid>
-                <Grid item xs={12} sm={1}>
-                  <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
-                    <DeleteButton onClick={() => deleteFilterTriple(index)} />
                   </Tooltip>
                 </Grid>
               </Grid>

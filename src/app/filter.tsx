@@ -190,7 +190,7 @@ const FilterForm = () => {
                     />
                   </Tooltip>
                 </Grid>
-                <Grid item xs={13} sm={1}>
+                <Grid item xs={13} sm={1} sx={{display: 'flex', justifyContent: 'center',}}>
                   <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
                     <IconButton aria-label="delete">
                       <DeleteIcon onClick={() => deleteFilterTriple(index)} />

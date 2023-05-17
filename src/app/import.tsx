@@ -34,7 +34,7 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
 
 const Import = () => {
     return (
-        <Container maxWidth="md" sx={{ marginBottom: 2 }} sx={{ marginBottom: 3 }}>
+        <Container maxWidth="md" sx={{ marginBottom: 3 }}>
             <Header variant="h6">Import / Upload Database</Header>
             <Grid item xs={12} sm={11}>
                 <FormControlLabel

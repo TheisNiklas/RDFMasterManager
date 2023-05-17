@@ -23,7 +23,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 
 const AddTripleForm = () => {
   return (
-    <Container maxWidth="md"  sx={{ marginBottom: 16 }}>
+    <Container maxWidth="md" sx={{ marginBottom: 3 }}>
       <div>
         <Header variant="h6">Add Triple</Header>
         <Grid container spacing={2}>

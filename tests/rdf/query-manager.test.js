@@ -147,16 +147,12 @@ describe("QueryManager", () => {
       [4, 5, 11],
     ]);
   });
-  test("getJoin(4,8,11)", () => {
-    const subject = new QueryElement(4);
-    const predicate = new QueryElement(8);
-    const object = new QueryElement(11);
+  test("getTriple(0,9,12)", () => {
+    const subject = new QueryElement(0);
+    const predicate = new QueryElement(9);
+    const object = new QueryElement(12);
     const queryTriple = new QueryTriple(subject, predicate, object);
-    const result = queryManager.getTwoUnboundTriple(queryTriple);
-    expect(result).toEqual([
-      [2, 5, 11],
-      [3, 5, 11],
-      [4, 5, 11],
-    ]);
+    const result = queryManager.getTriples([queryTriple]);
+    expect(result).toEqual([new Triple(0, 9, 12)]);
   });
 });

@@ -21,7 +21,8 @@ export class QueryManager {
   getTriples(queries) {
     if (queries.length === 1){
       // no join query
-      countUnboundType = this.#getQueryType(query);
+      const query = queries[0];
+      const countUnboundType = this.#getQueryType(query);
       switch (countUnboundType){
         case 0: 
           return this.getBoundTriple(query);

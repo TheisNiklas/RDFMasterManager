@@ -145,9 +145,9 @@ const FilterForm = () => {
 
 
   return (
-    <Container maxWidth="md" sx={{ marginBottom: 8 }}>
+    <Container maxWidth="md" sx={{ marginBottom: 8 }} sx={{ marginBottom: 3 }}>
       <div>
-        <Header variant="h6" sx={{ marginBottom: 4 }}>Filter</Header>
+        <Header variant="h6" sx={{ marginBottom: 2 }}>Filter</Header>
         <Grid container spacing={2}>
           {formFields.map((form, index) => {
             return (

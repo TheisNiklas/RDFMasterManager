@@ -34,7 +34,7 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
 
 const Import = () => {
     return (
-        <Container maxWidth="md" sx={{ marginBottom: 2 }}>
+        <Container maxWidth="md" sx={{ marginBottom: 2 }} sx={{ marginBottom: 3 }}>
             <Header variant="h6">Import / Upload Database</Header>
             <Grid item xs={12} sm={11}>
                 <FormControlLabel
@@ -42,12 +42,6 @@ const Import = () => {
                         <Checkbox />
                     }
                     label="Daten anfügen"
-                />
-            </Grid>
-            <Grid item xs={6} sm={3} sx={{ marginBottom: 2 }}>
-                <StyledTextField
-                    label="Datei Input"
-                    name="fileInput"
                 />
             </Grid>
             <Grid item xs={6} sm={3}>

@@ -223,8 +223,8 @@ export class QueryManager {
         }
     });
 
-    const mergedResults  = undefined;
-    for (const i = 1; i < resultList.length; i++){
+    var mergedResults  = undefined;
+    for (var i = 1; i < resultList.length; i++){
       if (mergedResults === undefined){
         mergedResults = resultList[i]
       }
@@ -232,8 +232,8 @@ export class QueryManager {
         const preJoinVar = this.#getJoinVar(query[i-1]);
         const curJoinVar = this.#getJoinVar(query[i]);
         // compare join variable
-        const joinVar = undefined;
-        for (const i = 0; i < curJoinVar.length; i++){
+        var joinVar = undefined;
+        for (var i = 0; i < curJoinVar.length; i++){
           if (curJoinVar[i] >= 0 && joinVar === undefined){
               switch (i) {
                 case 0:
@@ -366,7 +366,7 @@ export class QueryManager {
    * @returns {number}
    */
   #getQueryType(query) {
-    const countUnbound = 0;
+    var countUnbound = 0;
     // evaluate subject
     if (query.subject === null || query.subject.isJoinVar) {
       countUnbound += 1;

@@ -19,14 +19,17 @@ export class Rdfcsa {
    * @returns {number[]} Array T
    */
   #constructTArrays(tripleList) {
+    // create SO, S, P and O dictionaries
     this.dictionary.createDictionaries(tripleList);
+    // transform string triple into number triple
     tripleList.forEach((triple) => {
       triple[0] = this.dictionary.getIdBySubject(triple[0]);
       triple[1] = this.dictionary.getIdByPredicate(triple[1]);
       triple[2] = this.dictionary.getIdByObject(triple[2]);
     });
+    // sort triples in list
     tripleList.sort();
-
+    // create and return tArray
     return this.#constructT(JSON.parse(JSON.stringify(tripleList)));
   }
 
@@ -36,6 +39,7 @@ export class Rdfcsa {
    * @returns {number[]} Array T
    */
   #constructT(tripleList) {
+    // create gaps array
     const gaps = [
       0,
       this.dictionary.SO.length + this.dictionary.S.length,
@@ -43,12 +47,14 @@ export class Rdfcsa {
         this.dictionary.S.length +
         this.dictionary.P.length,
     ];
+    // add gaps to triples
     tripleList.forEach((triple) => {
       triple[1] += gaps[1];
       triple[2] += gaps[2];
     });
     this.gaps = gaps;
 
+    // generate tArray (all triples without grouping into triples)
     var tArray = [];
     tripleList.forEach((triple) => {
       tArray.push(triple[0]);

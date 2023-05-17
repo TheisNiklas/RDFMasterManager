@@ -155,4 +155,18 @@ describe("QueryManager", () => {
     const result = queryManager.getTriples([queryTriple]);
     expect(result).toEqual([new Triple(0, 9, 12)]);
   });
+  test("getJoin(3,7,x)(4,7,x)", () => {
+    const subject = new QueryElement(3);
+    const predicate = new QueryElement(7);
+    const object = new QueryElement();
+    object.isJoinVar = true;
+    const firstQueryTriple = new QueryTriple(subject, predicate, object);
+    const subject1 = new QueryElement(4);
+    const predicate1 = new QueryElement(7);
+    const object1 = new QueryElement();
+    object1.isJoinVar = true;
+    const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
+    const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
+    expect(result).toEqual([[3,7,15],[4,7,15]]);
+  });
 });

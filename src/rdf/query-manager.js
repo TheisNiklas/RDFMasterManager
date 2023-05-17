@@ -35,7 +35,10 @@ export class QueryManager {
       }
     }
     // Query is join query
+    return this.#mergeJoin(queries);
+    /*
     const resultsList = []
+
     queries.forEach((query) => {
         switch (this.chosenJoinType) {
           case "Merge":
@@ -46,6 +49,7 @@ export class QueryManager {
             break;
         }
       });
+      */
   }
 
   /**
@@ -207,16 +211,16 @@ export class QueryManager {
   #mergeJoin(queries) {
     const resultList = [];
     queries.forEach((query) => {
-      countUnbound = this.#getQueryType(query);
+      const countUnboundType = this.#getQueryType(query);
       switch (countUnboundType){
         case 0: 
-          resultList.push(this.getBoundTriple(query));
+          resultList.push(this.getBoundTriple(this.#createNormalQueryFromJoinQuery(query)));
           break;
         case 1:
-          resultList.push(this.getOneUnboundTriple(query));
+          resultList.push(this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
           break;
         case 2:
-          resultList.push(this.getTwoUnboundTriple(query));
+          resultList.push(this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
           break;
         default:
           resultList.push(this.getAllTriples());
@@ -230,31 +234,31 @@ export class QueryManager {
         mergedResults = resultList[i]
       }
         // get join variable
-        const preJoinVar = this.#getJoinVar(query[i-1]);
-        const curJoinVar = this.#getJoinVar(query[i]);
+        const preJoinVar = this.#getJoinVar(queries[i-1]);
+        const curJoinVar = this.#getJoinVar(queries[i]);
         // compare join variable
         var joinVar = undefined;
-        for (var i = 0; i < curJoinVar.length; i++){
-          if (curJoinVar[i] >= 0 && joinVar === undefined){
-              switch (i) {
+        for (var j = 0; j < curJoinVar.length; j++){
+          if (curJoinVar[j] >= 0 && joinVar === undefined){
+              switch (j) {
                 case 0:
-                  if (curJoinVar[i] === preJoinVar[0]){
+                  if (curJoinVar[j] === preJoinVar[0]){
                   joinVar = "S";
                   }
-                  else if (curJoinVar[i] === preJoinVar[2]){
+                  else if (curJoinVar[j] === preJoinVar[2]){
                     joinVar = "SO";
                   }
                   break;
                 case 1:
-                  if (curJoinVar[i] === preJoinVar[1]){
+                  if (curJoinVar[j] === preJoinVar[1]){
                     joinVar = "P";
                   }
                   break;
                 case 2:
-                  if (curJoinVar[i] === preJoinVar[0]){
+                  if (curJoinVar[j] === preJoinVar[0]){
                     joinVar = "OS";
                   }
-                  else if (curJoinVar[i] === preJoinVar[2]){
+                  else if (curJoinVar[j] === preJoinVar[2]){
                     joinVar = "O";
                   }
                   break;
@@ -265,27 +269,31 @@ export class QueryManager {
           }
         }
         // get merged results
-        mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], joinVar);
+        if (i === 1) {
+          mergedResults = this.#intersectTwoResultLists(resultList[i-1], mergedResults, joinVar);
+        } else {
+          mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], joinVar);
+        }
       }
       return mergedResults;
   }
 
-  #getJoinVar(query){
+  #getJoinVar(triple){
     const joinVar = []
-        if (previous.subject.isJoinVar){
-          joinVar.push(previous.subject.id);
+        if (triple.subject.isJoinVar){
+          joinVar.push(triple.subject.id);
         }
         else {
           joinVar.push(-1);
         }
-        if (previous.predicate.isJoinVar){
-          joinVar.push(previous.predicate.id);
+        if (triple.predicate.isJoinVar){
+          joinVar.push(triple.predicate.id);
         }
         else {
           joinVar.push(-1);
         }
-        if (previous.object.isJoinVar){
-          joinVar.push(previous.object.id);
+        if (triple.object.isJoinVar){
+          joinVar.push(triple.object.id);
         }
         else {
           joinVar.push(-1);
@@ -382,4 +390,22 @@ export class QueryManager {
     }
     return countUnbound;
   }
+
+  /**
+   * function creates a new query from a given one and sets all
+   * triplElements who are join vars to null
+   * @param {QueryTriple} query
+   * @returns {QueryTriple}
+   */
+  #createNormalQueryFromJoinQuery(query) {
+    const queryTriple = JSON.parse(JSON.stringify(query));
+    if (queryTriple.subject !== null && queryTriple.subject.isJoinVar) {
+      queryTriple.subject = null;
+    }
+    if (queryTriple.object !== null && queryTriple.object.isJoinVar) {
+      queryTriple.object = null;
+    }
+    return queryTriple;
+  }
+
 }

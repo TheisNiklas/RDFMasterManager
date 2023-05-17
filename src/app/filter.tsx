@@ -152,22 +152,15 @@ const FilterForm = () => {
         <Grid container spacing={2}>
           {formFields.map((form, index) => {
             return (
-              <Grid container spacing={2} key={index}>
+              <Grid container spacing={2} key={index} columns={13}>
                 <Grid item xs={12} sm={5} sx={{ marginTop: 2 }}>
                   <FormControl>
                     <FormLabel>Join Variablen Namen</FormLabel>
                   </FormControl>
                 </Grid>
-                <Grid item xs={12} sm={1}>
-                  <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
-                    <IconButton aria-label="delete">
-                      <DeleteIcon onClick={() => deleteFilterTriple(index)} />
-                    </IconButton>
-                  </Tooltip>
-                </Grid>
                 <Grid item xs={12} sm={6}>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={13} sm={4}>
                   <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Subjekt" placement="top">
                     <StyledTextField
                       label="Subjekt"
@@ -177,7 +170,7 @@ const FilterForm = () => {
                     />
                   </Tooltip>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={13} sm={4}>
                   <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Prädikat" placement="top">
                     <StyledTextField
                       label="Prädikat"
@@ -187,7 +180,7 @@ const FilterForm = () => {
                     />
                   </Tooltip>
                 </Grid>
-                <Grid item xs={12} sm={4}>
+                <Grid item xs={13} sm={4}>
                   <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Objekt" placement="top">
                     <StyledTextField
                       label="Objekt"
@@ -195,6 +188,13 @@ const FilterForm = () => {
                       onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeObject(event, index)}
                       value={form.object}
                     />
+                  </Tooltip>
+                </Grid>
+                <Grid item xs={13} sm={1}>
+                  <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
+                    <IconButton aria-label="delete">
+                      <DeleteIcon onClick={() => deleteFilterTriple(index)} />
+                    </IconButton>
                   </Tooltip>
                 </Grid>
               </Grid>

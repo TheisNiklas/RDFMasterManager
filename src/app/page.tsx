@@ -16,6 +16,7 @@ import AddTripleForm from './addtriple';
 import FilterForm from './filter';
 import Import from './import';
 import Export from './export';
+import TextVisualization from './textVisualization'
 //import { graph3D } from './graph3d';
 //import graph3DReact from './graph3dreact';
 
@@ -104,9 +105,7 @@ export default function PersistentDrawerRight() {
       </AppBar>
       <Main open={open}>
         <DrawerHeader />
-        <Typography paragraph>
-
-        </Typography>
+        <TextVisualization />
       </Main>
       <Drawer
         sx={{

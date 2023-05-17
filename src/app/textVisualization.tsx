@@ -35,9 +35,9 @@ const useStyles = makeStyles(({
 }));
 
 
-function load_data(format: number) {
+function load_data(format: string) {
     var data = "";
-    if (format == 10) {
+    if (format === 'nTriple') {
         data =
             `<http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
 <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://purl.org/dc/terms/title> "N-Triples"@en-US .
@@ -87,7 +87,7 @@ _:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett".
  _:art <http://xmlns.com/foaf/0.1/name> "Art Barstow".
  _:dave <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
  _:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett". `
-    } else if (format == 20) {
+    } else if (format === 'Turtle') {
         data =
             `@prefix dbr: <http://dbpedia.org/resource/> .
 @prefix dbo: <http://dbpedia.org/ontology/> .
@@ -122,17 +122,15 @@ export default function TextVisualization() {
     const classes = useStyles();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(15);
-    const [format, setFormat] = React.useState(10);
+    const [format, setFormat] = React.useState('nTriple');
     var rows: string[] = load_data(format);
     var currentId = -1;
-
-    const [title, setTitle] = React.useState('nTriple');;
 
     const columns = [
         {
             id: 'data',
             minWidth: 170,
-            label: 'RDF im %TITLE%-Format'.replace('%TITLE%', title),
+            label: 'RDF im %TITLE%-Format'.replace('%TITLE%', format),
             format: (value: any) => value.toLocaleString(),
         },
     ];
@@ -154,11 +152,6 @@ export default function TextVisualization() {
         setFormat(value);
         rows = load_data(value);
         currentId = -1;
-        if (value == 10) {
-            setTitle('nTriple');
-        } else if (value == 20) {
-            setTitle('Turtle');
-        }
     };
 
     const drownDownMenu = () => {
@@ -176,8 +169,8 @@ export default function TextVisualization() {
                         }}
                         onChange={e => handleChange(e.target.value)}
                     >
-                        <option value={10}>nTriple</option>
-                        <option value={20}>Turtle</option>
+                        <option value={'nTriple'}>nTriple</option>
+                        <option value={'Turtle'}>Turtle</option>
                     </NativeSelect>
                 </FormControl>
             </Box >

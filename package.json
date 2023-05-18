@@ -19,7 +19,7 @@
     "autoprefixer": "10.4.14",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.1",
-    "jsonld": "^8.1.1",
+    "jsonld-streaming-parser": "^3.2.0",
     "n3": "^1.16.4",
     "next": "13.4.1",
     "postcss": "8.4.23",

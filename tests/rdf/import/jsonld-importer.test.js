@@ -1,16 +1,19 @@
+import { readFileSync } from "fs";
 import { JsonldImporter } from "../../../src/rdf/importer/jsonld-importer";
-import * as fixture from "./fixtures/ntriples-import.test.json";
+import { expectedResult } from "./fixtures/ntriples-import.test.json";
 
 describe("NTriplesImport", () => {
-  test("importFromFile", () => {
-    let importer = new NTriplesImporter();
-    readFile("tests/rdf/import/fixtures/nTriplePaper.nt", (err, data) => {
-      if (!err) {
-        let res = importer.importFromFile(data);
-        expect(res).toEqual(fixture);
-      } else {
-        fail("loading fixture file failed");
-      }
-    });
+  test("importFromFile", async () => {
+    let importer = new JsonldImporter();
+    let res = undefined;
+    try {
+      var data = readFileSync("tests/rdf/import/fixtures/paper-sample.jsonld");
+      let blob = new Blob([data.toString()]);
+      let file = new File([blob], "temp.json");
+      res = await importer.importFromFile(file);
+    } catch (error) {
+      fail("loading fixture file failed");
+    }
+    expect(res).toEqual(expectedResult);
   });
 });

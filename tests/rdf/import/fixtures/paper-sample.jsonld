@@ -1,0 +1,49 @@
+{
+  "@graph": [
+    {
+      "@id": "SO:Inception",
+      "P:filmedin": {
+        "@id": "SO:L.A."
+      }
+    },
+    {
+      "@id": "SO:L.A.",
+      "P:cityof": {
+        "@id": "O:USA"
+      }
+    },
+    {
+      "@id": "S:E.Page",
+      "P:appearsin": {
+        "@id": "SO:Inception"
+      },
+      "P:bornin": {
+        "@id": "O:Canada"
+      }
+    },
+    {
+      "@id": "S:L.DiCaprio",
+      "P:appearsin": {
+        "@id": "SO:Inception"
+      },
+      "P:bornin": {
+        "@id": "O:USA"
+      },
+      "P:awarded": {
+        "@id": "O:Oscar2015"
+      }
+    },
+    {
+      "@id": "S:J.Gordon",
+      "P:appearsin": {
+        "@id": "SO:Inception"
+      },
+      "P:bornin": {
+        "@id": "O:USA"
+      },
+      "P:livesin": {
+        "@id": "SO:L.A."
+      }
+    }
+  ]
+}

@@ -1,8 +1,7 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent } from "react";
 import { styled } from '@mui/system';
 import { Typography, TextField, Button, Grid, Container, Checkbox, FormControl, FormControlLabel } from '@mui/material';
 import { importFile } from '../rdf/import/ImportBinaryWindows';
-
 
 const Header = styled(Typography)(({ theme }) => ({
     fontWeight: "bold",
@@ -36,15 +35,15 @@ const Import = () => {
 
     let appendData = false;
 
-    //Adds a SPO triple to the previous formField of the filter triple
-    //true as default value for the checkboxes
-
-    const handleFormChangeCheckBoxAppend = (
+    //Receives the event with true in the checkbox for new data appended to the old 
+    //or false if the old data is replaced by the new one
+    const handleFormChangeCheckBoxAppendData = (
         event: ChangeEvent<HTMLInputElement>,
     ) => {
         appendData = event.target.checked;
     };
 
+    //To start the data input for attaching to or replacing the old triple data
     const userImportRequest = (
     ) => {
         importFile(appendData);
@@ -56,7 +55,7 @@ const Import = () => {
             <Grid item xs={12} sm={11}>
                 <FormControlLabel
                     control={
-                        <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppend(event)} />
+                        <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)} />
                     }
                     label="Daten anfügen"
                 />

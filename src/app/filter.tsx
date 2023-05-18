@@ -49,7 +49,6 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-
 const FilterForm = () => {
 
   //Adds a SPO triple to the previous formField of the filter triple

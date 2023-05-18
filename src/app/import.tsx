@@ -21,7 +21,6 @@ const SubmitButton = styled(Button)(({ theme }) => ({
     width: "100%",
 }));
 
-
 const SortFormControl = styled(FormControl)(({ theme }) => ({
     margin: theme.spacing(1),
     minWidth: 120,

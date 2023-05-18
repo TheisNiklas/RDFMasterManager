@@ -77,6 +77,7 @@ const FilterForm = () => {
   const [sortFields, setSortFields] = useState(
     { sortElement: "sortSubject", sortOrder: "ascending", visualLimit: 0 }
   );
+
   //Adaptation of the subject filter
   const handleFormChangeSubject = (
     event: ChangeEvent<HTMLInputElement>,
@@ -154,7 +155,6 @@ const FilterForm = () => {
 
     console.log(formFields);
   };
-
 
   return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>

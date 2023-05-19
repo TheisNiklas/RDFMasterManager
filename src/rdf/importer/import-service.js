@@ -4,7 +4,7 @@ import { NTriplesImporter } from "./ntriples-importer";
 import { TurtleImporter } from "./turtle-importer";
 import { Rdfcsa } from "../rdfcsa";
 
-class ImportService {
+export class ImportService {
   /** @type {{[key: string]: Importer}} */
   #importers = {};
   #rdfcsa;

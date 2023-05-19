@@ -13,7 +13,7 @@ export class TurtleImporter extends Importer {
       fileReader.onload = (e) => resolve(fileReader.result.toString());
       fileReader.readAsText(file);
     });
-    const parser = new Parser({ format: "Tutle" });
+    const parser = new Parser({ format: "Turtle" });
 
     let tripleList = [];
     const parserResult = parser.parse(fileContent);

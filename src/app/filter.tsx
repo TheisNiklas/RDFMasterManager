@@ -49,7 +49,6 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-
 const FilterForm = () => {
 
   //Adds a SPO triple to the previous formField of the filter triple
@@ -76,8 +75,9 @@ const FilterForm = () => {
     { subject: "", predicat: "", object: "" }]);
 
   const [sortFields, setSortFields] = useState(
-    { sortElement: "sortSubject", sortOrder: "ascending" }
+    { sortElement: "sortSubject", sortOrder: "ascending", visualLimit: 0 }
   );
+
   //Adaptation of the subject filter
   const handleFormChangeSubject = (
     event: ChangeEvent<HTMLInputElement>,
@@ -135,6 +135,18 @@ const FilterForm = () => {
 
     console.log(sortFields);
   }
+
+  //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
+  const handleFormChangeLimit = (
+    event: SelectChangeEvent<number>
+  ) => {
+    let data = sortFields;
+    data.visualLimit = Number(event.target.value);
+    setSortFields(data);
+
+    console.log(sortFields);
+  }
+
   //Removes a triple pair of SPO filter elements with the corresponding join variables
   const deleteFilterTriple = (index: number) => {
     let data = [...formFields];
@@ -143,7 +155,6 @@ const FilterForm = () => {
 
     console.log(formFields);
   };
-
 
   return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>
@@ -161,7 +172,7 @@ const FilterForm = () => {
                 <Grid item xs={12} sm={6}>
                 </Grid>
                 <Grid item xs={13} sm={4}>
-                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Subjekt" placement="top">
+                  <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                     <StyledTextField
                       label="Subjekt"
                       name="subject"
@@ -171,7 +182,7 @@ const FilterForm = () => {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={13} sm={4}>
-                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Prädikat" placement="top">
+                  <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                     <StyledTextField
                       label="Prädikat"
                       name="predicat"
@@ -181,7 +192,7 @@ const FilterForm = () => {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={13} sm={4}>
-                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Objekt" placement="top">
+                  <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                     <StyledTextField
                       label="Objekt"
                       name="object"
@@ -239,8 +250,8 @@ const FilterForm = () => {
               </Grid>
             </Grid>
             <Grid item xs={6}>
-              <Tooltip title="Maximale Anzahl an Ergebnissen der Query" placement="top">
-                <StyledTextField label="Limit" type="number" />
+              <Tooltip title="Maximale Anzahl der Triple-Ergebnisse der Querys, > 0" placement="top">
+                <StyledTextField name="visualLimit" label="Limit" type="number" onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeLimit(event)} />
               </Tooltip>
             </Grid>
             <Grid item xs={12}>

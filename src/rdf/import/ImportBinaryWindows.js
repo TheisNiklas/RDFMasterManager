@@ -1,6 +1,4 @@
-import React, { useState } from 'react';
-
-function importBinary(replace) {
+function importFile(appendData) {
     // Create a new <input> element of type "file
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
@@ -8,19 +6,18 @@ function importBinary(replace) {
     // Add an event handler to get the selected file path.
     fileInput.addEventListener('change', event => {
         const file = event.target.files[0];
-        const reader = new FileReader();
-        reader.onload = () => {
-            console.log(`Datei erfolgreich importiert aus: ${file.name}`);
-            console.log(`Dateiinhalt: ${file.readAsBinaryString}`)
-        };
-        reader.readAsBinaryString(file);
+        console.log("fileInputStart")
+        console.log(file);
+        console.log(appendData)
+        console.log("fileInputEnd")
+        /*
+        call of the backend import missing
+            content
+            appendData
+        */
     });
 
     fileInput.click();
 }
 
-function importBinaryTest() {
-    importBinary(false);
-}
-
-export { importBinaryTest };
+export { importFile };

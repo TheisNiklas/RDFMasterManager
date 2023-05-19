@@ -20,4 +20,38 @@ function exportBinaryTest() {
     exportBinary(tripleList)
 }
 
-export { exportBinaryTest };
+//interface for the export function from the user
+function importExportFunction() {
+    // Create a new <input> element of type "file
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+
+    // Add an event handler to get the selected file path.
+    fileInput.addEventListener('change', event => {
+        const file = event.target.files[0];
+        console.log("fileInputStart")
+        console.log(file);
+        console.log("fileInputEnd")
+        /*
+        call of the backend import missing
+            content
+            appendData
+        */
+    });
+
+    fileInput.click();
+}
+
+//interface for the export of the current selected triple data in the graph
+function exportSubgraphData(exportFunction) {
+    console.log("exportSubgraph")
+    console.log(exportFunction)
+}
+
+//interface for the export of the complete triple data
+function exportGraphData(exportFunction) {
+    console.log("exportGraph")
+    console.log(exportFunction)
+}
+
+export { exportBinaryTest, exportSubgraphData, exportGraphData, importExportFunction };

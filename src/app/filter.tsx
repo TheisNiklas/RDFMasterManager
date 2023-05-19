@@ -172,7 +172,7 @@ const FilterForm = () => {
                 <Grid item xs={12} sm={6}>
                 </Grid>
                 <Grid item xs={13} sm={4}>
-                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Subjekt, ?? für ? als String" placement="top">
+                  <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                     <StyledTextField
                       label="Subjekt"
                       name="subject"
@@ -182,7 +182,7 @@ const FilterForm = () => {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={13} sm={4}>
-                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Prädikat, ?? für ? als String" placement="top">
+                  <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                     <StyledTextField
                       label="Prädikat"
                       name="predicat"
@@ -192,7 +192,7 @@ const FilterForm = () => {
                   </Tooltip>
                 </Grid>
                 <Grid item xs={13} sm={4}>
-                  <Tooltip title="ein  Zeichen nach dem ? gilt als Joinvariable, der Rest bildet das Objekt, ?? für ? als String" placement="top">
+                  <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                     <StyledTextField
                       label="Objekt"
                       name="object"

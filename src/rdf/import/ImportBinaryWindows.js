@@ -18,6 +18,7 @@ function importFile(appendData) {
     });
 
     fileInput.click();
+    return true;
 }
 
 export { importFile };

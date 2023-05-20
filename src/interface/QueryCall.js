@@ -125,7 +125,7 @@ function queryCallData(queryData, sortData) {
 
   }
   console.log("queryDataCall end");
-
+  return true;
   //send Data to the rdf part  
 }
 

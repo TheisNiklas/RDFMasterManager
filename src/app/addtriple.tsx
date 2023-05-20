@@ -1,6 +1,6 @@
 import React, { ChangeEvent, useState } from "react";
 import { styled } from '@mui/system';
-import { Typography, TextField, Button, Grid, Container } from '@mui/material';
+import { Typography, TextField, Button, Grid, Container, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
 import { addTripleInterface } from '../interface/AddTriple';
 
 const Header = styled(Typography)(({ theme }) => ({
@@ -61,8 +61,16 @@ const AddTripleForm = () => {
 
   //call of the interface function for the additional triple
   const addTriple = (
-  ) => {
-    addTripleInterface(formFields);
+  ) => {                                                   
+    setOpen(addTripleInterface(formFields));
+    
+  };
+
+  //State for the Dialog to open/close
+  const [open, setOpen] = React.useState(false);
+
+  const handleClose = () => {
+    setOpen(false);
   };
 
   return (
@@ -85,6 +93,26 @@ const AddTripleForm = () => {
             </SubmitButton>
           </Grid>
         </Grid>
+        <Dialog
+          open={open}
+          onClose={handleClose}
+          aria-labelledby="alert-dialog-title"
+          aria-describedby="alert-dialog-description"
+        >
+          <DialogTitle id="alert-dialog-title">
+            {"Triple kann nicht hinzugefügt werden."}
+          </DialogTitle>
+          <DialogContent>
+            <DialogContentText id="alert-dialog-description">
+              Bitte ändern Sie ihre Eingaben, da das Triple so nicht hinzugefügt werden kann.
+            </DialogContentText>
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={handleClose} autoFocus>
+              OK
+            </Button>
+          </DialogActions>
+        </Dialog>
       </div>
     </Container>
   );

@@ -61,7 +61,7 @@ const Import = () => {
     //To start the data input for attaching to or replacing the old triple data
     const userImportRequest = (
     ) => {
-        setOpen(importFile(appendData));
+        setOpen(!importFile(appendData));
     };
 
     //State for the Dialog to open

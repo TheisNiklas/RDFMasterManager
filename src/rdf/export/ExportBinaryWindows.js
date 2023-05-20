@@ -21,6 +21,7 @@ function exportBinaryTest() {
 }
 
 //interface for the export function from the user
+//Returns false if the export function is incorrect.
 function importExportFunction() {
     // Create a new <input> element of type "file
     const fileInput = document.createElement('input');
@@ -40,6 +41,8 @@ function importExportFunction() {
     });
 
     fileInput.click();
+
+    return false;
 }
 
 //interface for the export of the current selected triple data in the graph

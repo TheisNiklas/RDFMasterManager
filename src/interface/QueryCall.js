@@ -12,6 +12,47 @@ class TripleElement {
   }
 }
 
+//Formats the user query for the rdf backend. 
+//The same query variables marked with a "?" are stored in a list.
+//For the backend these are formatted with "true" and counting up from 0 with an id.
+//The same query variables also have the same id. 
+//If no query variable is given, "false" is stored and the id becomes the data content of the element in the dictionary.
+//"NULL" is stored if no input has been made. The TripleName indicates whether it is a subject, predicate or object.
+//Returns false if the entered data is incorrect.
+
+//Example for the format:
+/*
+?s lives in $x
+$x is in USA
+[
+  {
+    "subject": null,
+    "predicate": {
+      "isVar": false,
+      "id": 15
+    },
+    "object": {
+      "isVar": true,
+      "id": 0
+    }
+  },
+  {
+    "subject": 
+    {
+      "isVar": true,
+      "id": 0
+    },
+    "predicate": {
+      "isVar": false,
+      "id": 14
+    },
+    "object": {
+      "isVar": false,
+      "id": 154
+    }
+  }
+]
+*/
 function queryCallData(queryData, sortData) {
   console.log("queryDataCall start: ");
   console.log(queryData);
@@ -125,49 +166,14 @@ function queryCallData(queryData, sortData) {
 
   }
   console.log("queryDataCall end");
-  return true;
+
   //send Data to the rdf part  
+
+  return false;
 }
 
 function queryDataFormatting(queryData) {
 
 }
-
-
-
-/*
-?s lives in $x
-$x is in USA
-
-[
-  {
-    "subject": null,
-    "predicate": {
-      "isVar": false,
-      "id": 15
-    },
-    "object": {
-      "isVar": true,
-      "id": 0
-    }
-  },
-  {
-    "subject": 
-    {
-      "isVar": true,
-      "id": 0
-    },
-    "predicate": {
-      "isVar": false,
-      "id": 14
-    },
-    "object": {
-      "isVar": false,
-      "id": 154
-    }
-  }
-]
-
-*/
 
 export { queryCallData };

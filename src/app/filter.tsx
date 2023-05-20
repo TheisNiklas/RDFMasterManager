@@ -75,8 +75,8 @@ const FilterForm = () => {
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    setOpen(queryCallData(formFields, sortFields));
-    
+    setOpen(!queryCallData(formFields, sortFields));
+
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements

@@ -61,9 +61,9 @@ const AddTripleForm = () => {
 
   //call of the interface function for the additional triple
   const addTriple = (
-  ) => {                                                   
-    setOpen(addTripleInterface(formFields));
-    
+  ) => {
+    setOpen(!addTripleInterface(formFields));
+
   };
 
   //State for the Dialog to open/close

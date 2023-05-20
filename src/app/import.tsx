@@ -1,6 +1,20 @@
 import React, { ChangeEvent } from "react";
 import { styled } from '@mui/system';
-import { Typography, TextField, Button, Grid, Container, Checkbox, FormControl, FormControlLabel } from '@mui/material';
+import {
+    Typography,
+    TextField,
+    Button,
+    Grid,
+    Container,
+    Checkbox,
+    FormControl,
+    FormControlLabel,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions
+} from '@mui/material';
 import { importFile } from '../rdf/import/ImportBinaryWindows';
 
 const Header = styled(Typography)(({ theme }) => ({
@@ -30,6 +44,8 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
     },
 }));
 
+
+
 const Import = () => {
 
     let appendData = false;
@@ -45,7 +61,14 @@ const Import = () => {
     //To start the data input for attaching to or replacing the old triple data
     const userImportRequest = (
     ) => {
-        importFile(appendData);
+        setOpen(!importFile(appendData));
+    };
+
+    //State for the Dialog to open
+    const [open, setOpen] = React.useState(false);
+
+    const handleClose = () => {
+        setOpen(false);
     };
 
     return (
@@ -63,6 +86,26 @@ const Import = () => {
                 <SubmitButton variant="contained" color="primary" onClick={() => userImportRequest()}>
                     Import
                 </SubmitButton>
+                <Dialog
+                    open={open}
+                    onClose={handleClose}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                >
+                    <DialogTitle id="alert-dialog-title">
+                        {"Import kann nicht ausgeführt werden."}
+                    </DialogTitle>
+                    <DialogContent>
+                        <DialogContentText id="alert-dialog-description">
+                            Die angegebene Datei kann nicht importiert werden.
+                        </DialogContentText>
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleClose} autoFocus>
+                            OK
+                        </Button>
+                    </DialogActions>
+                </Dialog>
             </Grid>
         </Container >
     );

@@ -1,3 +1,5 @@
+//Opens an dialog for the file input
+//Returns false if the file type is incorrect.
 function importFile(appendData) {
     // Create a new <input> element of type "file
     const fileInput = document.createElement('input');
@@ -18,6 +20,7 @@ function importFile(appendData) {
     });
 
     fileInput.click();
+    return false;
 }
 
 export { importFile };

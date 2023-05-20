@@ -35,7 +35,7 @@ const Export = () => {
     //calls the interface function for the import of the export function from the user
     const userImportRequest = (
     ) => {
-        importExportFunction();
+        setOpen(!importExportFunction());
     };
 
     //calls the interface function for the export of the current selected graph data
@@ -50,6 +50,13 @@ const Export = () => {
         exportGraphData(exportFunction);
     };
 
+    //State for the Dialog to open
+    const [open, setOpen] = React.useState(false);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <Container maxWidth="md" sx={{ marginBottom: 2 }}>
             <Header variant="h6">Export</Header>
@@ -59,7 +66,7 @@ const Export = () => {
                     color="primary"
                     onClick={() => userImportRequest()}
                 >
-                    Eigenen Export einfügen
+                    Eigene Exportfunktion einfügen
                 </SubmitButton>
             </Grid>
             <Grid item xs={5}>

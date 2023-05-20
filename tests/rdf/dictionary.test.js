@@ -1,5 +1,5 @@
 import { Dictionary } from "../../src/rdf/dictionary";
-import { exampleTripleList } from "./fixtures/dictionary.test.json";
+import { exampleTripleList } from "./.fixtures/dictionary.test.json";
 
 describe("Rdfcsa", () => {
   let dictionary;
@@ -10,14 +10,7 @@ describe("Rdfcsa", () => {
   test("constructTArrays", () => {
     expect(dictionary.SO).toEqual(["Inception", "L.A."]);
     expect(dictionary.S).toEqual(["E. Page", "J. Gordon", "L. DiCaprio"]);
-    expect(dictionary.P).toEqual([
-      "appears in",
-      "awarded",
-      "born in",
-      "city of",
-      "filmed in",
-      "lives in",
-    ]);
+    expect(dictionary.P).toEqual(["appears in", "awarded", "born in", "city of", "filmed in", "lives in"]);
     expect(dictionary.O).toEqual(["Canada", "Oscar 2015", "USA"]);
   });
   test("addTriple", () => {
@@ -39,55 +32,28 @@ describe("Rdfcsa", () => {
     dictionary.deleteSubjectObject("Inception");
     expect(dictionary.SO).toEqual(["L.A."]);
     expect(dictionary.S).toEqual(["E. Page", "J. Gordon", "L. DiCaprio"]);
-    expect(dictionary.P).toEqual([
-      "appears in",
-      "awarded",
-      "born in",
-      "city of",
-      "filmed in",
-      "lives in",
-    ]);
+    expect(dictionary.P).toEqual(["appears in", "awarded", "born in", "city of", "filmed in", "lives in"]);
     expect(dictionary.O).toEqual(["Canada", "Oscar 2015", "USA"]);
   });
   test("deleteSubject", () => {
     dictionary.deleteSubject("J. Gordon");
     expect(dictionary.SO).toEqual(["Inception", "L.A."]);
     expect(dictionary.S).toEqual(["E. Page", "L. DiCaprio"]);
-    expect(dictionary.P).toEqual([
-      "appears in",
-      "awarded",
-      "born in",
-      "city of",
-      "filmed in",
-      "lives in",
-    ]);
+    expect(dictionary.P).toEqual(["appears in", "awarded", "born in", "city of", "filmed in", "lives in"]);
     expect(dictionary.O).toEqual(["Canada", "Oscar 2015", "USA"]);
   });
   test("deleteObject", () => {
     dictionary.deleteObject("USA");
     expect(dictionary.SO).toEqual(["Inception", "L.A."]);
     expect(dictionary.S).toEqual(["E. Page", "J. Gordon", "L. DiCaprio"]);
-    expect(dictionary.P).toEqual([
-      "appears in",
-      "awarded",
-      "born in",
-      "city of",
-      "filmed in",
-      "lives in",
-    ]);
+    expect(dictionary.P).toEqual(["appears in", "awarded", "born in", "city of", "filmed in", "lives in"]);
     expect(dictionary.O).toEqual(["Canada", "Oscar 2015"]);
   });
   test("deletePredicate", () => {
     dictionary.deletePredicate("born in");
     expect(dictionary.SO).toEqual(["Inception", "L.A."]);
     expect(dictionary.S).toEqual(["E. Page", "J. Gordon", "L. DiCaprio"]);
-    expect(dictionary.P).toEqual([
-      "appears in",
-      "awarded",
-      "city of",
-      "filmed in",
-      "lives in",
-    ]);
+    expect(dictionary.P).toEqual(["appears in", "awarded", "city of", "filmed in", "lives in"]);
     expect(dictionary.O).toEqual(["Canada", "Oscar 2015", "USA"]);
   });
   test("deleteDictionary", () => {

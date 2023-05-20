@@ -1,6 +1,6 @@
 import { NTriplesExporter } from "../../../src/rdf/exporter/ntriples-exporter";
-import { tripleList } from "./fixtures/tripleList.json";
-import { expectedResult } from "./fixtures/ntriples-exporter.test.json";
+import { tripleList } from "./.fixtures/tripleList.json";
+import { expectedResult } from "./.fixtures/ntriples-exporter.test.json";
 import FileSaver from "file-saver";
 
 describe("NTriplesExporter", () => {

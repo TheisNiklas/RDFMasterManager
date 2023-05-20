@@ -1,0 +1,86 @@
+{
+  "quads": [
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "SO:Inception" },
+      "predicate": { "termType": "NamedNode", "value": "P:filmedin" },
+      "object": { "termType": "NamedNode", "value": "SO:L.A." },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "SO:L.A." },
+      "predicate": { "termType": "NamedNode", "value": "P:cityof" },
+      "object": { "termType": "NamedNode", "value": "O:USA" },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "S:E.Page" },
+      "predicate": { "termType": "NamedNode", "value": "P:appearsin" },
+      "object": { "termType": "NamedNode", "value": "SO:Inception" },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "S:E.Page" },
+      "predicate": { "termType": "NamedNode", "value": "P:bornin" },
+      "object": { "termType": "NamedNode", "value": "O:Canada" },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "S:L.DiCaprio" },
+      "predicate": { "termType": "NamedNode", "value": "P:appearsin" },
+      "object": { "termType": "NamedNode", "value": "SO:Inception" },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "S:L.DiCaprio" },
+      "predicate": { "termType": "NamedNode", "value": "P:bornin" },
+      "object": { "termType": "NamedNode", "value": "O:USA" },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "S:L.DiCaprio" },
+      "predicate": { "termType": "NamedNode", "value": "P:awarded" },
+      "object": { "termType": "NamedNode", "value": "O:Oscar2015" },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "S:J.Gordon" },
+      "predicate": { "termType": "NamedNode", "value": "P:appearsin" },
+      "object": { "termType": "NamedNode", "value": "SO:Inception" },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "S:J.Gordon" },
+      "predicate": { "termType": "NamedNode", "value": "P:bornin" },
+      "object": { "termType": "NamedNode", "value": "O:USA" },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    },
+    {
+      "termType": "Quad",
+      "subject": { "termType": "NamedNode", "value": "S:J.Gordon" },
+      "predicate": { "termType": "NamedNode", "value": "P:livesin" },
+      "object": { "termType": "NamedNode", "value": "SO:L.A." },
+      "graph": { "termType": "DefaultGraph", "value": "" }
+    }
+  ],
+  "internalList": [
+    ["SO:Inception", "P:filmedin", "SO:L.A."],
+    ["SO:L.A.", "P:cityof", "O:USA"],
+    ["S:E.Page", "P:appearsin", "SO:Inception"],
+    ["S:E.Page", "P:bornin", "O:Canada"],
+    ["S:L.DiCaprio", "P:appearsin", "SO:Inception"],
+    ["S:L.DiCaprio", "P:bornin", "O:USA"],
+    ["S:L.DiCaprio", "P:awarded", "O:Oscar2015"],
+    ["S:J.Gordon", "P:appearsin", "SO:Inception"],
+    ["S:J.Gordon", "P:bornin", "O:USA"],
+    ["S:J.Gordon", "P:livesin", "SO:L.A."]
+  ]
+}

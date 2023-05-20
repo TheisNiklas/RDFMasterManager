@@ -1,5 +1,6 @@
 import { Parser } from "n3";
 import { Importer } from "./importer";
+import { RdfJsMapper } from "../rdf-js-mapper";
 
 export class NTriplesImporter extends Importer {
   /**
@@ -15,12 +16,8 @@ export class NTriplesImporter extends Importer {
     });
     const parser = new Parser({ format: "N-Triples" });
 
-    let tripleList = [];
     const parserResult = parser.parse(fileContent);
 
-    parserResult.forEach((item) => {
-      tripleList.push([item.subject.value, item.predicate.value, item.object.value]);
-    });
-    return tripleList;
+    return RdfJsMapper.rdfJsToInternalList(parserResult);
   }
 }

@@ -2,7 +2,7 @@ import { Rdfcsa } from "../../src/rdf/rdfcsa";
 import { QueryManager } from "../../src/rdf/query-manager";
 import { QueryElement } from "../../src/rdf/models/query-element";
 import { QueryTriple } from "../../src/rdf/models/query-triple";
-import { tripleList } from "./fixtures/rdfcsa.test.json";
+import { tripleList } from "./.fixtures/rdfcsa.test.json";
 import { Triple } from "../../src/rdf/models/triple";
 
 describe("QueryManager", () => {

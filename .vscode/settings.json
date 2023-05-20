@@ -1,0 +1,7 @@
+{
+    "editor.formatOnSave": true,
+    "jest.autoRun": {
+        "watch": false,
+        "onSave": "test-only"
+    }
+}

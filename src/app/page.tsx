@@ -17,12 +17,10 @@ import FilterForm from './filter';
 import Import from './import';
 import Export from './export';
 import TextVisualization from './textVisualization'
-import Graph3D from './graph3d';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import NativeSelect from '@mui/material/NativeSelect';
 import { makeStyles } from '@material-ui/core/styles';
-//import graph3DReact from './graph3dreact';
 
 const drawerWidth = 500;
 
@@ -110,7 +108,13 @@ export default function PersistentDrawerRight() {
       )
     } else if (mainFrame === '3d') {
       return (
-        <Graph3D />
+        //<Graph3D />
+        <div />
+      )
+    } else if (mainFrame === '2d') {
+      return (
+        //<Graph2D />
+        <div />
       )
     }
   }
@@ -130,6 +134,7 @@ export default function PersistentDrawerRight() {
             onChange={e => handleDropDownChange(e.target.value)}
           >
             <option value={'text'}>Text</option>
+            <option value={'2d'}>2D</option>
             <option value={'3d'}>3D</option>
           </NativeSelect>
         </FormControl>

@@ -17,13 +17,14 @@ const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
 /**
  * TODO:
  * Warning hinzufügen, wenn Triple-Umbenennung leer ist
+ * Warning hinzufügen, wenn Node-Umbenennung leer ist
  * Delete Confirmation zu Triple-Delete hinzufügen
  */
 
 export default function Graph3DReact() {
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
-  const [openLinkLeft, setOpenLinkLeft] = React.useState(false);
   const [openNodeRight, setOpenNodeRight] = React.useState(false);
+  const [openLinkLeft, setOpenLinkLeft] = React.useState(false);
   const [openLinkRight, setOpenLinkRight] = React.useState(false);
 
   const [nodeId, setNodeId] = React.useState("");

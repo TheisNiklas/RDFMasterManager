@@ -9,6 +9,7 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import Alert from "@mui/material/Alert";
+import load_data from "./triple2graph";
 
 const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
   ssr: false,
@@ -22,6 +23,7 @@ const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
  */
 
 export default function Graph3DReact() {
+  const [data, setData] = React.useState(load_data());
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
   const [openNodeRight, setOpenNodeRight] = React.useState(false);
   const [openLinkLeft, setOpenLinkLeft] = React.useState(false);
@@ -92,7 +94,7 @@ export default function Graph3DReact() {
   return (
     <div>
       <NoSSRForceGraph
-        graphData={myData}
+        graphData={data}
         nodeAutoColorBy="group"
         onNodeClick={(node) => handleNodeLeftClick(node)}
         onNodeRightClick={(node) => handleNodeRightClick(node)}

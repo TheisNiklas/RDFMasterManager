@@ -1,5 +1,3 @@
-import { QueryTriple } from "../../src/rdf/models/query-triple";
-import { BitvectorTools } from "./bitvector-tools";
 import { Triple } from "./models/triple";
 
 export class RdfOperations {
@@ -28,7 +26,8 @@ export class RdfOperations {
    * @param {string} object 
    */
   addElement(subject, predicate, object) {
-    // export rdfcsa in triple pattern, add pattern at bottom, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
+    // query first whether the object already exists
+    // if not export rdfcsa in triple pattern, add pattern at bottom, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
   }
 
   /**
@@ -36,7 +35,8 @@ export class RdfOperations {
    * @param {int} id 
    */
   deleteElementInDictionary(id) {
-    // remove every triple where id is included at the correct position regex
+    // Check if id exists
+    // if so, export rdfcsa in triple pattern, remove every line where id related string is included at the correct position via regex, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
   }
 
   /**
@@ -58,7 +58,7 @@ export class RdfOperations {
    * @param {string} object 
    */
   changeElement(triple, subject, predicate, object){
-    // change every triple where subject predicate object is included at the correct position regex
+    // export rdfcsa in triple pattern change line where subject predicate object is at the correct position and safe it again
   }
 
   /**

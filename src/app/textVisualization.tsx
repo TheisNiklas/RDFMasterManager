@@ -11,7 +11,8 @@ import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import NativeSelect from '@mui/material/NativeSelect';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 const TextCard = styled(Card)(({ theme }) => ({
     '& .MuiTableCell-stickyHeader': {
@@ -22,12 +23,15 @@ const TextCard = styled(Card)(({ theme }) => ({
 const DropDownBox = styled(Box)(({ theme }) => ({
     position: 'absolute',
     top: 0,
-    right: 0,
+    right: theme.spacing(2),
     display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     height: '100%',
     maxWidth: 120,
+    '& .MuiSvgIcon-root': {
+        color: "white",
+    },
 }));
 
 const DropDownForm = styled(FormControl)(({ theme }) => ({
@@ -156,21 +160,23 @@ export default function TextVisualization() {
     const drownDownMenu = () => {
         return (
             <DropDownBox>
-                <DropDownForm>
-                    <InputLabel variant="standard" htmlFor="uncontrolled-native">
+                <DropDownForm variant="standard">
+                    <InputLabel variant="standard" style={{ color: 'white' }}>
                         Format
                     </InputLabel>
-                    <NativeSelect
+                    <Select
                         defaultValue={format}
                         inputProps={{
                             name: 'format',
-                            id: 'uncontrolled-native',
+                        }}
+                        style={{
+                            color: 'white',
                         }}
                         onChange={e => handleChange(e.target.value)}
                     >
-                        <option value={'nTriple'}>nTriple</option>
-                        <option value={'Turtle'}>Turtle</option>
-                    </NativeSelect>
+                        <MenuItem value={'nTriple'}> nTriple</MenuItem >
+                        <MenuItem value={'Turtle'}>Turtle</MenuItem >
+                    </Select>
                 </DropDownForm>
             </DropDownBox >
         )
@@ -190,6 +196,7 @@ export default function TextVisualization() {
                                         minWidth: column.minWidth,
                                         fontWeight: "bold",
                                         fontSize: "22px",
+                                        color: "white",
                                     }}
                                 >
                                     {column.label}

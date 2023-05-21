@@ -19,7 +19,8 @@ import Export from './export';
 import TextVisualization from './textVisualization'
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
-import NativeSelect from '@mui/material/NativeSelect';
+import Select from '@mui/material/Select';
+import MenuItem from '@mui/material/MenuItem';
 
 const drawerWidth = 500;
 
@@ -79,11 +80,14 @@ const DropDownBox = styled(Box)(({ theme }) => ({
   justifyContent: 'flex-end',
   height: '100%',
   float: 'right',
-  right: 80,
+  right: theme.spacing(8),
+  '& .MuiSvgIcon-root': {
+    color: "white",
+  },
 }));
 
 const DropDownForm = styled(FormControl)(({ theme }) => ({
-  maxWidth: 120,
+  minWidth: 100,
 }));
 
 
@@ -112,23 +116,25 @@ export default function PersistentDrawerRight() {
   const drownDownMenu = () => {
     return (
       <DropDownBox>
-        <DropDownForm>
-          <InputLabel variant="standard" htmlFor="uncontrolled-native">
+        <DropDownForm variant="standard">
+          <InputLabel variant="standard" style={{ color: 'white' }}>
             Visualisierung
           </InputLabel>
-          <NativeSelect
+          <Select
             defaultValue={mainFrame}
+            style={{
+              color: 'white',
+            }}
             inputProps={{
               name: 'mainFrame',
-              id: 'uncontrolled-native',
             }}
             onChange={e => handleDropDownChange(e.target.value)}
           >
-            <option value={'text'}>Text</option>
-            <option value={'2d'}>2D</option>
-            <option value={'3d'}>3D</option>
+            <MenuItem value={'text'}>Text</MenuItem>
+            <MenuItem value={'2d'}>2D</MenuItem>
+            <MenuItem value={'3d'}>3D</MenuItem>
 
-          </NativeSelect>
+          </Select>
         </DropDownForm>
       </DropDownBox >
     )

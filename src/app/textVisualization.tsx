@@ -1,5 +1,5 @@
 import React from 'react';
-import { makeStyles } from '@material-ui/core/styles';
+import { styled } from '@mui/system';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -13,25 +13,25 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import NativeSelect from '@mui/material/NativeSelect';
 
-const useStyles = makeStyles(({
-    root: {
-        '& .MuiTableCell-stickyHeader': {
-            backgroundColor: '#1976d2'
-        },
+const TextCard = styled(Card)(({ theme }) => ({
+    '& .MuiTableCell-stickyHeader': {
+        backgroundColor: '#1976d2'
     },
-    dropdownContainer: {
-        position: 'absolute',
-        top: 0,
-        right: 0,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        height: '100%',
-    },
-    dropdownMenu: {
-        maxWidth: 120,
-    },
+}));
 
+const DropDownBox = styled(Box)(({ theme }) => ({
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+    maxWidth: 120,
+}));
+
+const DropDownForm = styled(FormControl)(({ theme }) => ({
+    maxWidth: 120,
 }));
 
 
@@ -119,7 +119,6 @@ _:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett".
 }
 
 export default function TextVisualization() {
-    const classes = useStyles();
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(15);
     const [format, setFormat] = React.useState('nTriple');
@@ -156,8 +155,8 @@ export default function TextVisualization() {
 
     const drownDownMenu = () => {
         return (
-            <Box sx={{ maxWidth: 120 }} className={classes.dropdownContainer}>
-                <FormControl className={classes.dropdownMenu}>
+            <DropDownBox>
+                <DropDownForm>
                     <InputLabel variant="standard" htmlFor="uncontrolled-native">
                         Format
                     </InputLabel>
@@ -172,13 +171,13 @@ export default function TextVisualization() {
                         <option value={'nTriple'}>nTriple</option>
                         <option value={'Turtle'}>Turtle</option>
                     </NativeSelect>
-                </FormControl>
-            </Box >
+                </DropDownForm>
+            </DropDownBox >
         )
     }
 
     return (
-        <Card elevation={6} className={classes.root}>
+        <TextCard elevation={6}>
             <TableContainer style={{ height: "80vh" }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead style={{ backgroundColor: "#1976d2" }}>
@@ -226,6 +225,6 @@ export default function TextVisualization() {
                 onPageChange={handleChangePage}
                 onRowsPerPageChange={handleChangeRowsPerPage}
             />
-        </Card>
+        </TextCard>
     );
 }

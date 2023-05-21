@@ -20,7 +20,6 @@ import TextVisualization from './textVisualization'
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import NativeSelect from '@mui/material/NativeSelect';
-import { makeStyles } from '@material-ui/core/styles';
 
 const drawerWidth = 500;
 
@@ -73,25 +72,18 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-start',
 }));
 
-const useStyles = makeStyles(({
-  root: {
-    '& .MuiTableCell-stickyHeader': {
-      backgroundColor: '#1976d2'
-    },
-  },
-  dropdownContainer: {
-    position: 'absolute',
-    display: 'flex',
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    height: '100%',
-    float: 'right',
-    right: 80,
-  },
-  dropdownMenu: {
-    maxWidth: 120,
-  },
+const DropDownBox = styled(Box)(({ theme }) => ({
+  position: 'absolute',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'flex-end',
+  height: '100%',
+  float: 'right',
+  right: 80,
+}));
 
+const DropDownForm = styled(FormControl)(({ theme }) => ({
+  maxWidth: 120,
 }));
 
 
@@ -99,7 +91,6 @@ export default function PersistentDrawerRight() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [mainFrame, setMainFrame] = React.useState('text')
-  const classes = useStyles();
 
   const handleMainFrame = () => {
     if (mainFrame === 'text') {
@@ -120,8 +111,8 @@ export default function PersistentDrawerRight() {
   }
   const drownDownMenu = () => {
     return (
-      <Box sx={{ maxWidth: 120 }} className={classes.dropdownContainer}>
-        <FormControl className={classes.dropdownMenu}>
+      <DropDownBox>
+        <DropDownForm>
           <InputLabel variant="standard" htmlFor="uncontrolled-native">
             Visualisierung
           </InputLabel>
@@ -136,9 +127,10 @@ export default function PersistentDrawerRight() {
             <option value={'text'}>Text</option>
             <option value={'2d'}>2D</option>
             <option value={'3d'}>3D</option>
+
           </NativeSelect>
-        </FormControl>
-      </Box >
+        </DropDownForm>
+      </DropDownBox >
     )
   };
 

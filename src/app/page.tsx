@@ -16,7 +16,12 @@ import AddTripleForm from './addtriple';
 import FilterForm from './filter';
 import Import from './import';
 import Export from './export';
-//import { graph3D } from './graph3d';
+import TextVisualization from './textVisualization'
+import Graph3D from './graph3d';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import NativeSelect from '@mui/material/NativeSelect';
+import { makeStyles } from '@material-ui/core/styles';
 //import graph3DReact from './graph3dreact';
 
 const drawerWidth = 500;
@@ -70,10 +75,71 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-start',
 }));
 
+const useStyles = makeStyles(({
+  root: {
+    '& .MuiTableCell-stickyHeader': {
+      backgroundColor: '#1976d2'
+    },
+  },
+  dropdownContainer: {
+    position: 'absolute',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+    height: '100%',
+    float: 'right',
+    right: 80,
+  },
+  dropdownMenu: {
+    maxWidth: 120,
+  },
+
+}));
+
 
 export default function PersistentDrawerRight() {
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
+  const [mainFrame, setMainFrame] = React.useState('text')
+  const classes = useStyles();
+
+  const handleMainFrame = () => {
+    if (mainFrame === 'text') {
+      return (
+        <TextVisualization />
+      )
+    } else if (mainFrame === '3d') {
+      return (
+        <Graph3D />
+      )
+    }
+  }
+  const drownDownMenu = () => {
+    return (
+      <Box sx={{ maxWidth: 120 }} className={classes.dropdownContainer}>
+        <FormControl className={classes.dropdownMenu}>
+          <InputLabel variant="standard" htmlFor="uncontrolled-native">
+            Visualisierung
+          </InputLabel>
+          <NativeSelect
+            defaultValue={mainFrame}
+            inputProps={{
+              name: 'mainFrame',
+              id: 'uncontrolled-native',
+            }}
+            onChange={e => handleDropDownChange(e.target.value)}
+          >
+            <option value={'text'}>Text</option>
+            <option value={'3d'}>3D</option>
+          </NativeSelect>
+        </FormControl>
+      </Box >
+    )
+  };
+
+  const handleDropDownChange = (value: any) => {
+    setMainFrame(value)
+  };
 
   const handleDrawerOpen = () => {
     setOpen(true);
@@ -91,6 +157,7 @@ export default function PersistentDrawerRight() {
           <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
             RDF Master Manager
           </Typography>
+          {drownDownMenu()}
           <IconButton
             color="inherit"
             aria-label="open drawer"
@@ -104,9 +171,7 @@ export default function PersistentDrawerRight() {
       </AppBar>
       <Main open={open}>
         <DrawerHeader />
-        <Typography paragraph>
-
-        </Typography>
+        {handleMainFrame()}
       </Main>
       <Drawer
         sx={{

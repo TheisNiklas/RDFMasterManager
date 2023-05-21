@@ -1,3 +1,4 @@
+import { queries } from "@testing-library/react";
 import { QueryTriple } from "../../src/rdf/models/query-triple";
 import { BitvectorTools } from "./bitvector-tools";
 import { Triple } from "./models/triple";
@@ -232,30 +233,32 @@ export class QueryManager {
    */
   #mergeJoin(queries) {
     //TODO: sortieren nach Join Variablen
-    const resultList = [];
+    const patternResults = [];
     queries.forEach((query) => {
       const countUnboundType = this.#getQueryType(query);
       switch (countUnboundType) {
         case 0:
-          resultList.push(this.getBoundTriple(this.#createNormalQueryFromJoinQuery(query)));
+          patternResults.push(this.getBoundTriple(this.#createNormalQueryFromJoinQuery(query)));
           break;
         case 1:
-          resultList.push(this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
+          patternResults.push(this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
           break;
         case 2:
-          resultList.push(this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
+          patternResults.push(this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
           break;
         default:
-          resultList.push(this.getAllTriples());
+          patternResults.push(this.getAllTriples());
           break;
       }
     });
 
+
+
     var mergedResults = undefined;
-    if (resultList.length > 0) {
-      mergedResults = resultList[0];
+    if (patternResults.length > 0) {
+      mergedResults = patternResults[0];
     }
-    for (var i = 1; i < resultList.length; i++) {
+    for (var i = 1; i < patternResults.length; i++) {
       // get join variable  ((?x, p1, o1)x(?y, p2, o2)x(?x, p3, ?y),
       //                     (?x, p1, ?y)x(?y, p2, o2)x(?x, p3, o1)x(?y, p1, o4))
       const preJoinVar = this.#getJoinVar(queries[i - 1]); // TODO: noch nicht richtig (Überprüfung aller vorherigen Arrays)
@@ -285,9 +288,128 @@ export class QueryManager {
         }
       }
       // get merged results
-      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], joinVar);
+      mergedResults = this.#intersectTwoResultLists(mergedResults, patternResults[i], joinVar);
     }
     return mergedResults;
+  }
+
+  #getMergeType(query1, query2, varId) {
+    if (query1.subject?.id === varId && query2.subject?.id === varId) {
+      return "S"
+    }
+    if (query1.object?.id === varId && query2.object?.id === varId) {
+      return "O"
+    }
+    if (query1.subject?.id === varId && query2.object?.id === varId) {
+      return "SO"
+    }
+    if (query1.object?.id === varId && query2.subject?.id === varId) {
+      return "OS"
+    }
+    // Error, should not be reachable
+  }
+
+  /**
+   * 
+   * @param {QueryTriple[]} queries 
+   * @param {*} patternResults 
+   */
+  #prepairMerge(queries, patternResults) {
+    const varGroups = this.#groupQueries(queries);
+    varGroups.forEach((varGroup) => {
+      for (let index = 0; index < varGroup.length; index++) {
+        const i = varGroup[index]
+        const mergeType = this.#getMergeType(queries[i], queries[i + 1])
+        this.#intersectTwoResultListsInplace(patternResults[i], patternResults[i + 1], mergeType);
+        
+      }
+      varGroup.forEach((patternIndex, index) => {
+        
+      })
+    })
+  }
+
+  /**
+   * Intersects two given lists with triples by the in `joinElement` element.
+   * The resulting list contains the matching triples from both lists
+   * @param {Triple[]} l1
+   * @param {Triple[]} l2
+   * @param {string} joinElement:
+   *    S: Join on subject
+   *    O: Join on Object
+   *    SO: Join Subject of `l1` on Object of `l2`
+   *    OS: Join Object of `l1` on Subject of `l2`
+   */
+  #intersectTwoResultListsInplace(l1, l2, joinElement) {
+    const result1 = [];
+    const result2 = [];
+    switch (joinElement) {
+      case "S":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2) => {
+            if (triple2.subject === triple1.subject) {
+              result1.push(triple1);
+              result2.push(triple2);
+            }
+          });
+        });
+        break;
+      case "O":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2) => {
+            if (triple2.object === triple1.object) {
+              result1.push(triple1);
+              result2.push(triple2);
+            }
+          });
+        });
+        break;
+      case "SO":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2) => {
+            if (triple2.object === triple1.subject) {
+              result1.push(triple1);
+              result2.push(triple2);
+            }
+          });
+        });
+        break;
+      case "OS":
+        l1.forEach((triple1) => {
+          l2.forEach((triple2) => {
+            if (triple2.subject === triple1.object) {
+              result1.push(triple1);
+              result2.push(triple2);
+            }
+          });
+        });
+    }
+    l1 = result1;
+    l2 = result2;
+    return [result1, result2];
+  }
+
+  /**
+   * Group the queries by contained variables
+   * @param {QueryTriple[]} queries 
+   */
+  #groupQueries(queries) {
+    let varMapping = [];
+    queries.forEach((query, index) => {
+      if (query.subject?.isJoinVar) {
+        if (varMapping.length <= query.subject.id) {
+          varMapping.push([]);
+        }
+        varMapping[query.subject.id].push(index);
+      }
+      if (query.object?.isJoinVar) {
+        if (varMapping.length <= query.object.id) {
+          varMapping.push([]);
+        }
+        varMapping[query.object.id].push(index);
+      }
+    })
+    return varMapping;
   }
 
   /**

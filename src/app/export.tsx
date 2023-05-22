@@ -69,7 +69,7 @@ const Export = () => {
                     Eigene Exportfunktion einfügen
                 </SubmitButton>
             </Grid>
-            <Grid item xs={5}>
+            <Grid item xs={5} sx={{ marginBottom: 2 }}>
                 <Tooltip title="Exportfunktion aus einer Javascript Datei muss den Namen externExportFunction tragen, mit einer Triple Liste als Parameter" placement="top">
                     <SortFormControl>
                         <InputLabel id="exportFunction">Exportfunktion</InputLabel>

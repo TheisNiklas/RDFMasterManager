@@ -1,5 +1,5 @@
 import { RdfJsMapper } from "../../src/rdf/rdf-js-mapper";
-import { quads, internalList } from "./.fixtures/rdf-js-mapper.test.json";
+import { quads, internalList } from "./fixtures/rdf-js-mapper.test.json";
 
 describe("RdfJsMapper", () => {
   test("rdfJsToInternal", () => {

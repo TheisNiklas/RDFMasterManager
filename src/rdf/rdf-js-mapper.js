@@ -16,7 +16,6 @@ export class RdfJsMapper {
    * @return {string[][]}
    */
   static rdfJsToInternalList(quads) {
-    const deb = JSON.stringify(quads);
     let tripleList = [];
     quads.forEach((quad) => {
       tripleList.push(RdfJsMapper.rdfJsToInternal(quad));

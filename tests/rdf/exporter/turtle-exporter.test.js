@@ -1,6 +1,6 @@
 import { TurtleExporter } from "../../../src/rdf/exporter/turtle-exporter";
-import { tripleList } from "./.fixtures/tripleList.json";
-import { expectedResult } from "./.fixtures/turtle-exporter.test.json";
+import { tripleList } from "./fixtures/tripleList.json";
+import { expectedResult } from "./fixtures/turtle-exporter.test.json";
 import FileSaver from "file-saver";
 
 describe("NTriplesExporter", () => {

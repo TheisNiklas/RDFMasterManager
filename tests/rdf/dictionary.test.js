@@ -1,5 +1,6 @@
 import { Dictionary } from "../../src/rdf/dictionary";
-import { exampleTripleList } from "./.fixtures/dictionary.test.json";
+import { Triple } from "../../src/rdf/models/triple";
+import { exampleTripleList } from "./fixtures/dictionary.test.json";
 
 describe("Rdfcsa", () => {
   let dictionary;
@@ -101,8 +102,12 @@ describe("Rdfcsa", () => {
     let res = dictionary.getObjectById(4);
     expect(res).toEqual("USA");
   });
-  test("getPredicateById from S", () => {
+  test("getPredicateById from P", () => {
     let res = dictionary.getPredicateById(4);
     expect(res).toEqual("filmed in");
+  });
+  test("decodeTriple(2,7,13)", () => {
+    let res = dictionary.decodeTriple(new Triple(2, 7, 13));
+    expect(res).toEqual(["E. Page", "born in", "Canada"]);
   });
 });

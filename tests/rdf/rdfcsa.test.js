@@ -1,5 +1,5 @@
 import { Rdfcsa } from "../../src/rdf/rdfcsa";
-import { tripleList, resultPsi, resultGaps, resultD } from "./.fixtures/rdfcsa.test.json";
+import { tripleList, resultPsi, resultGaps, resultD } from "./fixtures/rdfcsa.test.json";
 
 describe("Rdfcsa", () => {
   test("init", () => {

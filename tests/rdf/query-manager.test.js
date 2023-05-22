@@ -2,7 +2,7 @@ import { Rdfcsa } from "../../src/rdf/rdfcsa";
 import { QueryManager } from "../../src/rdf/query-manager";
 import { QueryElement } from "../../src/rdf/models/query-element";
 import { QueryTriple } from "../../src/rdf/models/query-triple";
-import { tripleList } from "./.fixtures/rdfcsa.test.json";
+import { tripleList } from "./fixtures/rdfcsa.test.json";
 import { Triple } from "../../src/rdf/models/triple";
 
 describe("QueryManager", () => {
@@ -208,7 +208,7 @@ describe("QueryManager", () => {
       [4, 7, 15],
     ]);
   });
-  // (0,9,x)(3,7,y)(x,8,y)
+  //(0, 9, x)(3, 7, y)(x, 8, y);
   test("getJoin(0,9,x)(x,8,y)(3,7,y)", () => {
     const subject = new QueryElement(0);
     const predicate = new QueryElement(9);
@@ -229,5 +229,57 @@ describe("QueryManager", () => {
       [1, 8, 15],
       [3, 7, 15],
     ]);
+  });
+
+  test("leftChainingJoinTwoQueries(x,5,11)(x,7,15)", () => {
+    const subject = new QueryElement(0, true);
+    const predicate = new QueryElement(5);
+    const object = new QueryElement(11);
+    const firstQueryTriple = new QueryTriple(subject, predicate, object);
+    const subject1 = new QueryElement(0, true);
+    const predicate1 = new QueryElement(7);
+    const object1 = new QueryElement(15);
+    const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
+    const result = queryManager.leftChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
+    expect(result).toEqual([new Triple(3, 7, 15), new Triple(4, 7, 15)]);
+  });
+
+  test("leftChainingJoinTwoQueries(x,7,15)(x,5,11)", () => {
+    const subject1 = new QueryElement(0, true);
+    const predicate1 = new QueryElement(7);
+    const object1 = new QueryElement(15);
+    const firstQueryTriple = new QueryTriple(subject1, predicate1, object1);
+    const subject = new QueryElement(0, true);
+    const predicate = new QueryElement(5);
+    const object = new QueryElement(11);
+    const secondQueryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.leftChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
+    expect(result).toEqual([new Triple(3, 5, 11), new Triple(4, 5, 11)]);
+  });
+
+  test("rightChainingJoinTwoQueries(x,5,11)(x,7,15)", () => {
+    const subject = new QueryElement(0, true);
+    const predicate = new QueryElement(5);
+    const object = new QueryElement(11);
+    const firstQueryTriple = new QueryTriple(subject, predicate, object);
+    const subject1 = new QueryElement(0, true);
+    const predicate1 = new QueryElement(7);
+    const object1 = new QueryElement(15);
+    const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
+    const result = queryManager.rightChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
+    expect(result).toEqual([new Triple(3, 5, 11), new Triple(4, 5, 11)]);
+  });
+
+  test("rightChainingJoinTwoQueries(x,7,15)(x,5,11)", () => {
+    const subject1 = new QueryElement(0, true);
+    const predicate1 = new QueryElement(7);
+    const object1 = new QueryElement(15);
+    const firstQueryTriple = new QueryTriple(subject1, predicate1, object1);
+    const subject = new QueryElement(0, true);
+    const predicate = new QueryElement(5);
+    const object = new QueryElement(11);
+    const secondQueryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.rightChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
+    expect(result).toEqual([new Triple(3, 7, 15), new Triple(4, 7, 15)]);
   });
 });

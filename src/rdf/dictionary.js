@@ -1,3 +1,5 @@
+import { Triple } from "./models/triple";
+
 const exampleTripleList = [
   ["Inception", "filmed in", "L.A."],
   ["L.A.", "city of", "USA"],
@@ -220,5 +222,29 @@ export class Dictionary {
       return this.P[id];
     }
     return undefined;
+  }
+
+  getElementById(id) {
+    if (id < this.SO.length + this.S.length) {
+      return this.getSubjectById(id);
+    }
+    if (id < this.SO.length + this.S.length + this.P.length) {
+      return this.getPredicateById(id - (this.SO.length + this.S.length));
+    }
+    if (id < this.SO.length + this.S.length + this.P.length + this.SO.length + this.O.length) {
+      return this.getObjectById(id - (this.SO.length + this.S.length + this.P.length));
+    }
+    return undefined;
+  }
+
+  /**
+   *
+   * @param {Triple} triple
+   */
+  decodeTriple(triple) {
+    const subject = this.getElementById(triple.subject);
+    const predicate = this.getElementById(triple.predicate);
+    const object = this.getElementById(triple.object);
+    return [subject, predicate, object];
   }
 }

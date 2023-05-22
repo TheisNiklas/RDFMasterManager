@@ -1,6 +1,7 @@
 import { QueryTriple } from "../../src/rdf/models/query-triple";
 import { BitvectorTools } from "./bitvector-tools";
 import { Triple } from "./models/triple";
+import { QueryElement } from "./models/query-element";
 
 export class QueryManager {
   /**
@@ -36,14 +37,16 @@ export class QueryManager {
         case 2:
           resultArray = this.getTwoUnboundTriple(query);
           break;
-        default:
+        case 3:
           resultArray = this.getAllTriples();
           break;
+        default:
+          return [];
       }
       // convert result array to array with triple elements
       resultArray.forEach((triple) => {
         result.push(new Triple(triple[0], triple[1], triple[2]));
-      })
+      });
       return result;
     }
     // Query is join query
@@ -56,7 +59,21 @@ export class QueryManager {
    */
   getAllTriples() {
     // TODO: return all triples
-    return [];
+    const tripleList = [];
+    for (let i = 0; i < this.rdfcsa.D.length / 3; i++) {
+      // find the next referenced element
+      const targetIndex1 = this.rdfcsa.psi[i];
+      // find the next referenced element of the next referenced element
+      const targetIndex2 = this.rdfcsa.psi[targetIndex1];
+      const targetIndex3 = this.rdfcsa.psi[targetIndex2];
+      // get id of elements
+      const target1 = BitvectorTools.rank(this.rdfcsa.D, targetIndex1);
+      const target2 = BitvectorTools.rank(this.rdfcsa.D, targetIndex2);
+      const target3 = BitvectorTools.rank(this.rdfcsa.D, targetIndex3);
+      // find empty triple index and add found triple to triple list
+      tripleList.push([target3, target1, target2]);
+    }
+    return tripleList;
   }
 
   /**
@@ -222,6 +239,92 @@ export class QueryManager {
     });
 
     return range;
+  }
+
+  // <?y,p1,?x> <?y,p2,o1> <s,p3,?x>
+  // step 1 solve: <?y,p,?x>
+  // step 2: search for the first query var in first triple -> ?y
+  // step 3: execute <?y,p,o> with all results of <?y,p,?x> --> <y!,p2,o1> <y!,p1,o>
+  // step 4: search for the second query var in first triple -> ?x
+  // step 5: execute <s,p,?x> with all results of <y!,p,?x> --> <y!,p,!x> ------- <!y,p,!x> <!y,p,o> <s,p,!x>
+
+  // <?y,p1,?x> <?y,p2,?x> is this join valid?
+
+  // <?y,p1,o1> <?y,p2,o2>
+  // step 1 solve: <?y,p1,o1>
+  // step 2: search for the first query var in first triple -> ?y
+  // step 3: execute <?y,p2,o2> with all results of <?y,p1,o1> --> <y!,p2,o2>
+  // step 4: append all solutions for each results of step3
+  leftChainingJoinTwoQueries(queries) {
+    let result1;
+    const countUnboundType = this.#getQueryType(queries[0]);
+    switch (countUnboundType) {
+      case 0:
+        result1 = this.getBoundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
+        break;
+      case 1:
+        result1 = this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
+        break;
+      case 2:
+        result1 = this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
+        break;
+      default:
+        result1 = this.getAllTriples();
+        break;
+    }
+    // find query var in left triple
+
+    let result2 = [];
+    if (queries[0].subject?.isJoinVar && queries[1].subject?.isJoinVar) {
+      // Subject subject join
+      result1.forEach((resultElem) => {
+        const temp = this.getBoundTriple(
+          new QueryTriple(new QueryElement(resultElem[0]), queries[1].predicate, queries[1].object)
+        );
+        if (temp.length === 1) {
+          result2.push(temp[0]);
+        }
+      });
+    } else if (queries[0].object?.isJoinVar && queries[1].subject?.isJoinVar) {
+      // Object subject join
+      result1.forEach((resultElem) => {
+        const temp = this.getBoundTriple(
+          new QueryTriple(new QueryElement(resultElem[2]), queries[1].predicate, queries[1].object)
+        );
+        if (temp.length === 1) {
+          result2.push(temp[0]);
+        }
+      });
+    } else if (queries[0].object?.isJoinVar && queries[1].object?.isJoinVar) {
+      // object object join
+      result1.forEach((resultElem) => {
+        const temp = this.getBoundTriple(
+          new QueryTriple(queries[1].subject, queries[1].predicate, new QueryElement(resultElem[2]))
+        );
+        if (temp.length === 1) {
+          result2.push(temp[0]);
+        }
+      });
+    } else if (queries[0].subject?.isJoinVar && queries[1].object?.isJoinVar) {
+      // subject object join
+      result1.forEach((resultElem) => {
+        const temp = this.getBoundTriple(
+          new QueryTriple(queries[1].subject, queries[1].predicate, new QueryElement(resultElem[0]))
+        );
+        if (temp.length === 1) {
+          result2.push(temp[0]);
+        }
+      });
+    }
+    const result = [];
+    result2.forEach((triple) => {
+      result.push(new Triple(triple[0], triple[1], triple[2]));
+    });
+    return result;
+  }
+
+  rightChainingJoinTwoQueries(queries) {
+    return this.leftChainingJoinTwoQueries([queries[1], queries[0]]);
   }
 
   /**

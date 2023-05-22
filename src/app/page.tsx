@@ -21,6 +21,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import Graph3DReact from './graph3dreact';
 
 const drawerWidth = 500;
 
@@ -103,8 +104,7 @@ export default function PersistentDrawerRight() {
       )
     } else if (mainFrame === '3d') {
       return (
-        //<Graph3D />
-        <div />
+        <Graph3DReact />
       )
     } else if (mainFrame === '2d') {
       return (

@@ -6,7 +6,7 @@ import { TurtleExporter } from "./turtle-exporter";
 import { JsonldExporter } from "./jsonld-exporter";
 import { StreamExporter } from "./stream-exporter";
 
-export class ExportServer {
+export class ExportService {
   /** @type {{[key: string]: Exporter}} */
   #exporters = {};
   // TODO: check as far this could be nessecary and how usable is it?
@@ -25,9 +25,10 @@ export class ExportServer {
   /**
    *
    * @param {Triple[]} tripleList Triples to be exported.
-   * @param {string} format name the exporter is registered with
    * @param {Dictionary} dictionary
+   * @param {string} format name the exporter is registered with
    * @param {boolean} isStreamExporter true if the chosen exporter is a `StreamExporter`. Defaults to false.
+   * @returns {string} serailized `tripleList` to `fromat`
    * @throws {Error} When no matching exporter is available.
    */
   async exportTriples(tripleList, dictionary, format, isStreamExporter = false) {
@@ -46,7 +47,7 @@ export class ExportServer {
     }
 
     const tripleStringList = this.#translateTripleIds(tripleList, dictionary);
-    exporter.exportTriples(tripleStringList);
+    return exporter.exportTriples(tripleStringList);
   }
 
   /**
@@ -54,6 +55,7 @@ export class ExportServer {
    * @returns {string[][]} Tuple containing two list.
    * First list contains the names of the normal exporters.
    * Second list contains the names of the stream exporters.
+   * @example ["N-Triples", "JSON-LD", "Turtle"]
    */
   getAvailableExporters() {
     const normalExporters = Object.getOwnPropertyNames(this.#exporters);

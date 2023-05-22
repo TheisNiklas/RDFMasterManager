@@ -21,12 +21,12 @@ import {
   DialogTitle,
   DialogContent,
   DialogContentText,
-  DialogActions
+  DialogActions,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { queryCallData } from '../interface/QueryCall';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { queryCallData } from "../interface/QueryCall";
+import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -37,9 +37,7 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   width: "100%",
 }));
 
-const DeleteIcon = styled(DeleteForeverIcon)(({ theme }) => ({
-
-}));
+const DeleteIcon = styled(DeleteForeverIcon)(({ theme }) => ({}));
 
 const AddButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
@@ -58,15 +56,14 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const FilterForm = () => {
-
+const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
   //Adds a SPO triple to the previous formField of the filter triple
   //true as default value for the checkboxes
   const addFilterTriple = () => {
     let object = {
       subject: "",
       predicat: "",
-      object: ""
+      object: "",
     };
 
     setFormFields([...formFields, object]);
@@ -75,87 +72,68 @@ const FilterForm = () => {
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    setOpen(!queryCallData(formFields, sortFields));
-
+    setOpen(!queryCallData(formFields, sortFields, queryManager, currentData, setCurrentData));
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements
   //true as default value for the checkboxes
-  const [formFields, setFormFields] = useState([
-    { subject: "", predicat: "", object: "" }]);
+  const [formFields, setFormFields] = useState([{ subject: "", predicat: "", object: "" }]);
 
-  const [sortFields, setSortFields] = useState(
-    { sortElement: "sortSubject", sortOrder: "ascending", visualLimit: 0 }
-  );
+  const [sortFields, setSortFields] = useState({ sortElement: "sortSubject", sortOrder: "ascending", visualLimit: 0 });
 
   //Adaptation of the subject filter
-  const handleFormChangeSubject = (
-    event: ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleFormChangeSubject = (event: ChangeEvent<HTMLInputElement>, index: number) => {
     let data = [...formFields];
-    data[index]['subject'] = event.target.value;
+    data[index]["subject"] = event.target.value;
     setFormFields(data);
 
     console.log(formFields);
   };
 
   //Adaptation of the predicat filter
-  const handleFormChangePredicat = (
-    event: ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleFormChangePredicat = (event: ChangeEvent<HTMLInputElement>, index: number) => {
     let data = [...formFields];
-    data[index]['predicat'] = event.target.value;
+    data[index]["predicat"] = event.target.value;
     setFormFields(data);
 
     console.log(formFields);
   };
 
   //Adaptation of the object filter
-  const handleFormChangeObject = (
-    event: ChangeEvent<HTMLInputElement>,
-    index: number
-  ) => {
+  const handleFormChangeObject = (event: ChangeEvent<HTMLInputElement>, index: number) => {
     let data = [...formFields];
-    data[index]['object'] = event.target.value;
+    data[index]["object"] = event.target.value;
     setFormFields(data);
 
     console.log(formFields);
   };
 
-  //Adaptation of the selected sorting order (ascending, descending) the user picked 
-  const handleFormChangeSortOrderObject = (
-    event: SelectChangeEvent<string>
-  ) => {
+  //Adaptation of the selected sorting order (ascending, descending) the user picked
+  const handleFormChangeSortOrderObject = (event: SelectChangeEvent<string>) => {
     let data = sortFields;
     data.sortOrder = event.target.value;
     setSortFields(data);
 
     console.log(sortFields);
-  }
+  };
 
   //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
-  const handleFormChangeSortElementObject = (
-    event: SelectChangeEvent<string>
-  ) => {
+  const handleFormChangeSortElementObject = (event: SelectChangeEvent<string>) => {
     let data = sortFields;
     data.sortElement = event.target.value;
     setSortFields(data);
 
     console.log(sortFields);
-  }
+  };
 
   //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
-  const handleFormChangeLimit = (
-    event: SelectChangeEvent<number>
-  ) => {
+  const handleFormChangeLimit = (event: SelectChangeEvent<number>) => {
     let data = sortFields;
     data.visualLimit = Number(event.target.value);
     setSortFields(data);
 
     console.log(sortFields);
-  }
+  };
 
   //Removes a triple pair of SPO filter elements with the corresponding join variables
   const deleteFilterTriple = (index: number) => {
@@ -174,12 +152,10 @@ const FilterForm = () => {
   };
   return (
     <Accordion defaultExpanded={true}>
-      <AccordionSummary
-        expandIcon={<ExpandMoreIcon />}
-        aria-controls="panel1a-content"
-        id="panel1a-header"
-      >
-        <Header variant="h6" sx={{ marginBottom: 2 }}>Filter</Header>
+      <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+        <Header variant="h6" sx={{ marginBottom: 2 }}>
+          Filter
+        </Header>
       </AccordionSummary>
       <AccordionDetails>
         <Container maxWidth="md" sx={{ marginBottom: 3 }}>
@@ -193,24 +169,25 @@ const FilterForm = () => {
                         <FormLabel>Join Variablen Namen</FormLabel>
                       </FormControl>
                     </Grid>
-                    <Grid item xs={12} sm={6}>
-                    </Grid>
+                    <Grid item xs={12} sm={6}></Grid>
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                         <StyledTextField
                           label="Subjekt"
                           name="subject"
                           onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeSubject(event, index)}
-                          value={form.subject} />
+                          value={form.subject}
+                        />
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={4}>
-                      <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
+                      <Tooltip title="nur Suchwert, keine Join Variable möglich" placement="top">
                         <StyledTextField
                           label="Prädikat"
                           name="predicat"
                           onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangePredicat(event, index)}
-                          value={form.predicat} />
+                          value={form.predicat}
+                        />
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={4}>
@@ -219,10 +196,11 @@ const FilterForm = () => {
                           label="Objekt"
                           name="object"
                           onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeObject(event, index)}
-                          value={form.object} />
+                          value={form.object}
+                        />
                       </Tooltip>
                     </Grid>
-                    <Grid item xs={13} sm={1} sx={{ display: 'flex', justifyContent: 'center', }}>
+                    <Grid item xs={13} sm={1} sx={{ display: "flex", justifyContent: "center" }}>
                       <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
                         <IconButton aria-label="delete">
                           <DeleteIcon onClick={() => deleteFilterTriple(index)} />
@@ -234,12 +212,7 @@ const FilterForm = () => {
               })}
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12}>
-                  <AddButton
-                    variant="contained"
-                    color="primary"
-                    endIcon={<Add />}
-                    onClick={addFilterTriple}
-                  >
+                  <AddButton variant="contained" color="primary" endIcon={<Add />} onClick={addFilterTriple}>
                     Filter hinzufügen
                   </AddButton>
                 </Grid>
@@ -248,7 +221,10 @@ const FilterForm = () => {
                     <Grid item xs={12}>
                       <SortFormControl>
                         <InputLabel id="sort-label">Sortierreihenfolge</InputLabel>
-                        <Select labelId="sort-label" onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}>
+                        <Select
+                          labelId="sort-label"
+                          onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}
+                        >
                           <MenuItem value="ascending">Aufsteigend</MenuItem>
                           <MenuItem value="descending">Absteigend</MenuItem>
                         </Select>
@@ -261,7 +237,10 @@ const FilterForm = () => {
                     <Grid item xs={12}>
                       <SortFormControl>
                         <InputLabel id="sort-label">Sortierelement</InputLabel>
-                        <Select labelId="sort-label" onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}>
+                        <Select
+                          labelId="sort-label"
+                          onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}
+                        >
                           <MenuItem value="sortSubject">Subjekt</MenuItem>
                           <MenuItem value="sortPredicat">Prädikat</MenuItem>
                           <MenuItem value="sortObject">Objekt</MenuItem>
@@ -272,15 +251,16 @@ const FilterForm = () => {
                 </Grid>
                 <Grid item xs={6}>
                   <Tooltip title="Maximale Anzahl der Triple-Ergebnisse der Querys, > 0" placement="top">
-                    <StyledTextField name="visualLimit" label="Limit" type="number" onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeLimit(event)} />
+                    <StyledTextField
+                      name="visualLimit"
+                      label="Limit"
+                      type="number"
+                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeLimit(event)}
+                    />
                   </Tooltip>
                 </Grid>
                 <Grid item xs={12}>
-                  <SubmitButton
-                    variant="contained"
-                    color="primary"
-                    onClick={handleSubmit}
-                  >
+                  <SubmitButton variant="contained" color="primary" onClick={handleSubmit}>
                     Submit
                   </SubmitButton>
                   <Dialog
@@ -289,9 +269,7 @@ const FilterForm = () => {
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                   >
-                    <DialogTitle id="alert-dialog-title">
-                      {"Query kann nicht ausgeführt werden."}
-                    </DialogTitle>
+                    <DialogTitle id="alert-dialog-title">{"Query kann nicht ausgeführt werden."}</DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
                         Bitte ändern Sie ihre Eingaben, da die Query so nicht ausgeführt werden kann.
@@ -310,7 +288,6 @@ const FilterForm = () => {
         </Container>
       </AccordionDetails>
     </Accordion>
-
   );
 };
 

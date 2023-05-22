@@ -1,0 +1,5 @@
+{
+  "expectedResult": [
+    "<SO:Inception> <P:filmedin> <SO:L.A.> .\n<SO:L.A.> <P:cityof> <O:USA> .\n<S:E.Page> <P:appearsin> <SO:Inception> .\n<S:E.Page> <P:bornin> <O:Canada> .\n<S:L.DiCaprio> <P:appearsin> <SO:Inception> .\n<S:L.DiCaprio> <P:bornin> <O:USA> .\n<S:L.DiCaprio> <P:awarded> <O:Oscar2015> .\n<S:J.Gordon> <P:appearsin> <SO:Inception> .\n<S:J.Gordon> <P:bornin> <O:USA> .\n<S:J.Gordon> <P:livesin> <SO:L.A.> .\n"
+  ]
+}

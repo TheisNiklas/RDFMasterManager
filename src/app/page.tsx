@@ -1,41 +1,45 @@
-'use client'; //use as client
+"use client"; //use as client
 
-import * as React from 'react';
-import { styled, useTheme } from '@mui/material/styles';
-import Box from '@mui/material/Box';
-import Drawer from '@mui/material/Drawer';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import CssBaseline from '@mui/material/CssBaseline';
-import Typography from '@mui/material/Typography';
-import IconButton from '@mui/material/IconButton';
-import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import ChevronRightIcon from '@mui/icons-material/ChevronRight';
-import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
-import AddTripleForm from './addtriple';
-import FilterForm from './filter';
-import Import from './import';
-import Export from './export';
-import TextVisualization from './textVisualization'
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-import Select from '@mui/material/Select';
-import MenuItem from '@mui/material/MenuItem';
+import * as React from "react";
+import { styled, useTheme } from "@mui/material/styles";
+import Box from "@mui/material/Box";
+import Drawer from "@mui/material/Drawer";
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from "@mui/material/AppBar";
+import Toolbar from "@mui/material/Toolbar";
+import CssBaseline from "@mui/material/CssBaseline";
+import Typography from "@mui/material/Typography";
+import IconButton from "@mui/material/IconButton";
+import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
+import ChevronRightIcon from "@mui/icons-material/ChevronRight";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
+import AddTripleForm from "./addtriple";
+import FilterForm from "./filter";
+import Import from "./import";
+import Export from "./export";
+import TextVisualization from "./textVisualization";
+import InputLabel from "@mui/material/InputLabel";
+import FormControl from "@mui/material/FormControl";
+import Select from "@mui/material/Select";
+import MenuItem from "@mui/material/MenuItem";
+import Graph3DReact from "./graph3dreact";
+import { Rdfcsa } from "../rdf/rdfcsa";
+import { ImportService } from "../rdf/importer/import-service";
+import { QueryManager } from "../rdf/query-manager";
 
 const drawerWidth = 500;
 
-const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
+const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
   padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   marginRight: -drawerWidth,
   ...(open && {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create("margin", {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -48,15 +52,15 @@ interface AppBarProps extends MuiAppBarProps {
 }
 
 const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== 'open',
+  shouldForwardProp: (prop) => prop !== "open",
 })<AppBarProps>(({ theme, open }) => ({
-  transition: theme.transitions.create(['margin', 'width'], {
+  transition: theme.transitions.create(["margin", "width"], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
   ...(open && {
     width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(['margin', 'width'], {
+    transition: theme.transitions.create(["margin", "width"], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
@@ -64,24 +68,24 @@ const AppBar = styled(MuiAppBar, {
   }),
 }));
 
-const DrawerHeader = styled('div')(({ theme }) => ({
-  display: 'flex',
-  alignItems: 'center',
+const DrawerHeader = styled("div")(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-start',
+  justifyContent: "flex-start",
 }));
 
 const DropDownBox = styled(Box)(({ theme }) => ({
-  position: 'absolute',
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'flex-end',
-  height: '100%',
-  float: 'right',
+  position: "absolute",
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "flex-end",
+  height: "100%",
+  float: "right",
   right: theme.spacing(8),
-  '& .MuiSvgIcon-root': {
+  "& .MuiSvgIcon-root": {
     color: "white",
   },
 }));
@@ -90,58 +94,65 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
   minWidth: 100,
 }));
 
-
 export default function PersistentDrawerRight() {
+  const [currentData, setCurrentData] = React.useState([]);
+  const [importService, setImportService] = React.useState(new ImportService());
+  const database = React.useRef(new Rdfcsa([]));
+  const queryManager = React.useRef(new QueryManager(new Rdfcsa([])));
+  database.current = importService.loadSample();
+  queryManager.current.setRdfcsa(database.current);
+
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
-  const [mainFrame, setMainFrame] = React.useState('text')
+  const [mainFrame, setMainFrame] = React.useState("text");
 
   const handleMainFrame = () => {
-    if (mainFrame === 'text') {
+    if (mainFrame === "text") {
+      return <TextVisualization />;
+    } else if (mainFrame === "3d") {
       return (
-        <TextVisualization />
-      )
-    } else if (mainFrame === '3d') {
-      return (
-        //<Graph3D />
-        <div />
-      )
-    } else if (mainFrame === '2d') {
+        <Graph3DReact
+          database={database}
+          queryManager={queryManager}
+          currentData={currentData}
+          setCurrentData={setCurrentData}
+        />
+      );
+    } else if (mainFrame === "2d") {
       return (
         //<Graph2D />
         <div />
-      )
+      );
     }
-  }
+  };
   const drownDownMenu = () => {
     return (
       <DropDownBox>
         <DropDownForm variant="standard">
-          <InputLabel variant="standard" style={{ color: 'white' }}>
+          <InputLabel variant="standard" style={{ color: "white" }}>
             Visualisierung
           </InputLabel>
           <Select
             defaultValue={mainFrame}
             style={{
-              color: 'white',
+              color: "white",
             }}
             inputProps={{
-              name: 'mainFrame',
+              name: "mainFrame",
             }}
-            onChange={e => handleDropDownChange(e.target.value)}
+            onChange={(e) => handleDropDownChange(e.target.value)}
           >
-            <MenuItem value={'text'}>Text</MenuItem>
-            <MenuItem value={'2d'}>2D</MenuItem>
-            <MenuItem value={'3d'}>3D</MenuItem>
-
+            <MenuItem value={"text"}>Text</MenuItem>
+            <MenuItem value={"2d"}>2D</MenuItem>
+            <MenuItem value={"3d"}>3D</MenuItem>
           </Select>
         </DropDownForm>
-      </DropDownBox >
-    )
+      </DropDownBox>
+    );
   };
 
   const handleDropDownChange = (value: any) => {
-    setMainFrame(value)
+    setMainFrame(value);
   };
 
   const handleDrawerOpen = () => {
@@ -153,7 +164,7 @@ export default function PersistentDrawerRight() {
   };
 
   return (
-    <Box sx={{ display: 'flex' }}>
+    <Box sx={{ display: "flex" }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -166,7 +177,7 @@ export default function PersistentDrawerRight() {
             aria-label="open drawer"
             edge="end"
             onClick={handleDrawerOpen}
-            sx={{ ...(open && { display: 'none' }) }}
+            sx={{ ...(open && { display: "none" }) }}
           >
             <ArrowForwardIosIcon />
           </IconButton>
@@ -180,7 +191,7 @@ export default function PersistentDrawerRight() {
         sx={{
           width: drawerWidth,
           flexShrink: 0,
-          '& .MuiDrawer-paper': {
+          "& .MuiDrawer-paper": {
             width: drawerWidth,
           },
         }}
@@ -190,14 +201,14 @@ export default function PersistentDrawerRight() {
       >
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? <ChevronLeftIcon /> : <ChevronRightIcon />}
+            {theme.direction === "rtl" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <FilterForm></FilterForm>
-        <AddTripleForm></AddTripleForm>
+        <FilterForm queryManager={queryManager} currentData={currentData} setCurrentData={setCurrentData}></FilterForm>
+        <AddTripleForm queryManager={queryManager} currentData={currentData} setCurrentData={setCurrentData}></AddTripleForm>
         <Import></Import>
         <Export></Export>
       </Drawer>
-    </Box >
+    </Box>
   );
 }

@@ -1,6 +1,6 @@
 import React, { ChangeEvent } from "react";
 import { styled } from '@mui/system';
-import { Typography, Button, Grid, Container, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent } from '@mui/material';
+import { Typography, Button, Grid, Container, FormControl, InputLabel, Select, MenuItem, SelectChangeEvent, Tooltip } from '@mui/material';
 import { exportBinaryTest, exportSubgraphData, exportGraphData, importExportFunction } from '../rdf/export/ExportBinaryWindows';
 
 const Header = styled(Typography)(({ theme }) => ({
@@ -35,7 +35,7 @@ const Export = () => {
     //calls the interface function for the import of the export function from the user
     const userImportRequest = (
     ) => {
-        importExportFunction();
+        setOpen(!importExportFunction());
     };
 
     //calls the interface function for the export of the current selected graph data
@@ -50,6 +50,13 @@ const Export = () => {
         exportGraphData(exportFunction);
     };
 
+    //State for the Dialog to open
+    const [open, setOpen] = React.useState(false);
+
+    const handleClose = () => {
+        setOpen(false);
+    };
+
     return (
         <Container maxWidth="md" sx={{ marginBottom: 2 }}>
             <Header variant="h6">Export</Header>
@@ -59,19 +66,21 @@ const Export = () => {
                     color="primary"
                     onClick={() => userImportRequest()}
                 >
-                    Eigenen Export einfügen
+                    Eigene Exportfunktion einfügen
                 </SubmitButton>
             </Grid>
-            <Grid item xs={5}>
-                <SortFormControl>
-                    <InputLabel id="exportFunction">Exportfunktion</InputLabel>
-                    <Select labelId="exportFunctionSelect" onChange={(event: SelectChangeEvent<string>) => handleFormChangeExportFunction(event)}>
-                        <MenuItem value="binaer">nativ als Binärdatei (Standard)</MenuItem>
-                        <MenuItem value="turtle">Turtle-Datei</MenuItem>
-                        <MenuItem value="nTriple">n-Triple-Datei</MenuItem>
-                        <MenuItem value="json">JSON-Datei</MenuItem>
-                    </Select>
-                </SortFormControl>
+            <Grid item xs={5} sx={{ marginBottom: 2 }}>
+                <Tooltip title="Exportfunktion aus einer Javascript Datei muss den Namen externExportFunction tragen, mit einer Triple Liste als Parameter" placement="top">
+                    <SortFormControl>
+                        <InputLabel id="exportFunction">Exportfunktion</InputLabel>
+                        <Select labelId="exportFunctionSelect" onChange={(event: SelectChangeEvent<string>) => handleFormChangeExportFunction(event)}>
+                            <MenuItem value="binaer">nativ als Binärdatei (Standard)</MenuItem>
+                            <MenuItem value="turtle">Turtle-Datei</MenuItem>
+                            <MenuItem value="nTriple">n-Triple-Datei</MenuItem>
+                            <MenuItem value="json">JSON-Datei</MenuItem>
+                        </Select>
+                    </SortFormControl>
+                </Tooltip>
             </Grid>
             <Grid container spacing={2} alignItems="center" sx={{ marginBottom: 2 }}>
                 <Grid item xs={6}>

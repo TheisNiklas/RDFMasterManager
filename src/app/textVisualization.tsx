@@ -14,6 +14,7 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { ExportService } from '@/rdf/exporter/export-service';
+import { DataArrayTwoTone } from '@mui/icons-material';
 
 const TextCard = styled(Card)(({ theme }) => ({
     '& .MuiTableCell-stickyHeader': {
@@ -40,21 +41,10 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
 }));
 
 
-function load_data(format: string, database: any, currentData: any) {
-    // WIP, exporter doesn't return strings yet
-    const exporter = new ExportService();
-    if (currentData === undefined) {
-        return [];
-    }
-    var data = "" //exporter.exportTriples(currentData, database.current.dictionary, 'N-Triples');
-
-    if (data === "") {
-        return []
-    }
-    return data.split(/\r?\n|\r|\n/g);
-
-}
-
+/**
+ * Load default format. Use ExportService to fetch data. Set first format as default.
+ * @returns Returns default format
+ */
 function loadDefaultFormat() {
     const exporter = new ExportService();
     const export_options = exporter.getAvailableExporters();
@@ -68,7 +58,9 @@ export default function TextVisualization({ database, queryManager, currentData,
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(15);
     const [format, setFormat] = React.useState(loadDefaultFormat());
-    var rows: string[] = load_data(format, database, currentData);
+    const [defaultFormat, setDefaultFormat] = React.useState(loadDefaultFormat());
+    const [rows, setRows] = React.useState([]);
+
     var currentId = -1;
 
     const columns = [
@@ -80,45 +72,91 @@ export default function TextVisualization({ database, queryManager, currentData,
         },
     ];
 
+    /**
+     * Get a unique id. This will be called to give rows a unique id.
+     * @returns Returns a unique id.
+     */
     const getId = () => {
         currentId++;
         return currentId;
     }
+
+    /**
+     * Change page.
+     */
     const handleChangePage = (event: any, newPage: any) => {
         setPage(newPage);
     };
 
+    /**
+     * Update rows per page and reload page.
+     */
     const handleChangeRowsPerPage = (event: any) => {
         setRowsPerPage(+event.target.value);
         setPage(0);
     };
 
+    /**
+     * Change the current format and also update rows to display new format. This will 
+     * be called when the value of the dropdown menu changes.
+     * @param value New format
+     */
     const handleChange = (value: any) => {
         setFormat(value);
-        rows = load_data(value, database, currentData);
         currentId = -1;
+        getRows(value, data);
     };
 
+    /**
+     * Get options for dropdown menu. Use ExportService to fetch available export formats.
+     * @returns Returns a list of MenuItems that will be used in the dropdown menu
+     */
     const getOptions = () => {
         const exporter = new ExportService();
         const export_options = exporter.getAvailableExporters();
-
-        console.log(export_options);
 
         let menuItems = []
         for (let i = 0; i < export_options[0].length; i++) {
             menuItems.push(<MenuItem value={export_options[0][i]}> {export_options[0][i]} </MenuItem >)
         }
-        console.log(menuItems)
 
         return menuItems
     }
 
+    /**
+     * Get rows that will be displayed. Fetch data with an ExportService object.
+     * @param format Format of the data that should be fetched
+     * @param data Triples that should be converted to a text
+     */
+    async function getRows(format: string, data: any) {
+        const exporter = new ExportService();
+        if (currentData === undefined) {
+            return [];
+        }
+        const value = await exporter.serializeTriples(data, database.current.dictionary, format);
+
+        console.log("Fetching new data for format: " + format)
+        if (value === "") {
+            setRows([]);
+            return
+        }
+        var value_splitted = value.split(/\r?\n|\r|\n/g);
+        if (value_splitted[value_splitted.length - 1] === "") {
+            value_splitted.pop();
+        }
+        setRows(value_splitted);
+    }
+
     React.useEffect(() => {
-        console.log("TODO: Refresh GUI");
-        setData(load_data(format, database, currentData));
+        // Update data and rows depending on current query
+        setData(currentData);
+        getRows(format, currentData);
     }, [currentData])
 
+    /**
+     * DropDown Menu for format.
+     * @returns Return a DropDown Menu to select a format.
+     */
     const drownDownMenu = () => {
         return (
             <DropDownBox>
@@ -127,7 +165,7 @@ export default function TextVisualization({ database, queryManager, currentData,
                         Format
                     </InputLabel>
                     <Select
-                        defaultValue={format}
+                        defaultValue={defaultFormat}
                         inputProps={{
                             name: 'format',
                         }}

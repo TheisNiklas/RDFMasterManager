@@ -1,3 +1,5 @@
+// TODO: delete
+
 //Opens an dialog for the file input
 //Returns false if the file type is incorrect.
 function importFile(appendData) {

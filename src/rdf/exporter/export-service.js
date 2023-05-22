@@ -23,7 +23,7 @@ export class ExportService {
   }
 
   /**
-   *
+   * Serializes a tripleList to a given `format` and starts a download
    * @param {Triple[]} tripleList Triples to be exported.
    * @param {Dictionary} dictionary
    * @param {string} format name the exporter is registered with
@@ -32,7 +32,27 @@ export class ExportService {
    * @throws {Error} When no matching exporter is available.
    */
   async exportTriples(tripleList, dictionary, format, isStreamExporter = false) {
-    /** @type {Exporter | StreamExporter} */
+    if (isStreamExporter) {
+      const stream = this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
+      const fileStream = streamSaver.createWriteStream("export.jsonld");
+      stream.pipe(fileStream);
+    } else {
+      const result = this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
+      let blob = new Blob([result], { type: "application/n-triples;charset=utf-8" });
+      FileSaver.saveAs(blob, `export.nt`);
+    }
+  }
+
+  /**
+   * Serializes a tripleList to a string of the given `format`.
+   * @param {Triple[]} tripleList Triples to be exported.
+   * @param {Dictionary} dictionary
+   * @param {string} format name the exporter is registered with
+   * @param {boolean} isStreamExporter true if the chosen exporter is a `StreamExporter`. Defaults to false.
+   * @returns {Promise} serailized `tripleList` to `fromat`
+   * @throws {Error} When no matching exporter is available.
+   */
+  async serializeTriples(tripleList, dictionary, format, isStreamExporter = false) {
     let exporter;
     try {
       if (isStreamExporter) {
@@ -47,7 +67,17 @@ export class ExportService {
     }
 
     const tripleStringList = this.#translateTripleIds(tripleList, dictionary);
-    return exporter.exportTriples(tripleStringList);
+    if (isStreamExporter) {
+      const stream = exporter.exportTriples(tripleStringList);
+      const result = await new Promise((resolve) => {
+        let resultString = "";
+        stream.on("data", (chunk) => (resultString += chunk)).on("end", () => resolve(resultString));
+        stream.end();
+      });
+      return result;
+    } else {
+      return exporter.exportTriples(tripleStringList);
+    }
   }
 
   /**
@@ -90,11 +120,13 @@ export class ExportService {
     let resultList = [];
     tripleList.forEach((triple) => {
       resultList.push([
-        dictionary.getSubjectById(triple.subject),
-        dictionary.getPredicateById(triple.predicate),
-        dictionary.getObjectById(triple.object),
+        dictionary.getElementById(triple.subject),
+        dictionary.getElementById(triple.predicate),
+        dictionary.getElementById(triple.object),
       ]);
     });
     return resultList;
   }
+
+  #streamToString(stream) {}
 }

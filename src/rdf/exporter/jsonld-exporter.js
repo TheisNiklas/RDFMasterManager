@@ -1,10 +1,10 @@
 import { Writer } from "n3";
 import { RdfJsMapper } from "../rdf-js-mapper";
-import { Exporter } from "./exporter";
+import { StreamExporter } from "./stream-exporter";
 import FileSaver from "file-saver";
 import { JsonLdSerializer } from "jsonld-streaming-serializer";
 
-export class JsonldExporter extends Exporter {
+export class JsonldExporter extends StreamExporter {
   /**
    * Export a given triple list to a file
    * @param {string[][]} tripleList

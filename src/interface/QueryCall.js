@@ -1,6 +1,7 @@
 import { QueryElement } from "@/rdf/models/query-element";
 import { QueryTriple } from "@/rdf/models/query-triple";
 import { QueryManager } from "@/rdf/query-manager";
+import { getIdBySubject, getIdByPredicate, getIdByObject } from "@/rdf/dictionary";
 
 //Formats the user query for the rdf backend.
 //The same query variables marked with a "?" are stored in a list.
@@ -87,8 +88,7 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
         if (obj.subject.includes("??")) {
           id = id.replace("?", "");
         }
-
-        const queryEle = new QueryElement(+id, false);
+        const queryEle = new QueryElement(+getIdBySubject(id), false);
         queryTriple.subject = queryEle;
       }
     }
@@ -103,7 +103,7 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
         if (obj.predicat.includes("??")) {
           id = id.replace("?", "");
         }
-        const queryEle = new QueryElement(+id, false);
+        const queryEle = new QueryElement(+getIdByPredicate(id), false);
         queryTriple.predicate = queryEle;
       }
     }
@@ -129,7 +129,7 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
           id = id.replace("?", "");
         }
 
-        const queryEle = new QueryElement(+id, false);
+        const queryEle = new QueryElement(+getIdByObject(id), false);
         queryTriple.object = queryEle;
       }
     }
@@ -154,6 +154,6 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
   return true;
 }
 
-function queryDataFormatting(queryData) {}
+function queryDataFormatting(queryData) { }
 
 export { queryCallData };

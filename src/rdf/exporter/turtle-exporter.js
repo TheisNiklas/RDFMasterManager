@@ -12,12 +12,15 @@ export class TurtleExporter extends Exporter {
     const writer = new Writer({ format: "Turtle" });
     let rdfJsList = RdfJsMapper.internalToRdfJsList(tripleList);
     writer.addQuads(rdfJsList);
+    let resultString;
     writer.end((error, result) => {
       if (error) {
         throw error;
       }
-      let blob = new Blob([result], { type: "application/turtle;charset=utf-8" });
-      FileSaver.saveAs(blob, `export.ttl`);
+      resultString = result;
+      // let blob = new Blob([result], { type: "application/turtle;charset=utf-8" });
+      // FileSaver.saveAs(blob, `export.ttl`);
     });
+    return resultString;
   }
 }

@@ -171,6 +171,25 @@ describe("QueryManager", () => {
     const result = queryManager.getTriples([queryTriple]);
     expect(result).toEqual([new Triple(2, 5, 11), new Triple(3, 5, 11), new Triple(4, 5, 11)]);
   });
+  test("getTriple(,,)", () => {
+    const subject = null;
+    const predicate = null;
+    const object = null;
+    const queryTriple = new QueryTriple(subject, predicate, object);
+    const result = queryManager.getTriples([queryTriple]);
+    expect(result).toEqual([
+      { subject: 0, predicate: 9, object: 12 },
+      { subject: 1, predicate: 8, object: 15 },
+      { subject: 2, predicate: 5, object: 11 },
+      { subject: 2, predicate: 7, object: 13 },
+      { subject: 3, predicate: 5, object: 11 },
+      { subject: 3, predicate: 7, object: 15 },
+      { subject: 3, predicate: 10, object: 12 },
+      { subject: 4, predicate: 5, object: 11 },
+      { subject: 4, predicate: 6, object: 14 },
+      { subject: 4, predicate: 7, object: 15 },
+    ]);
+  });
 
   test("getJoin(3,7,x)(4,7,x)", () => {
     const subject = new QueryElement(3);

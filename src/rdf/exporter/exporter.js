@@ -5,6 +5,7 @@ export class Exporter {
   /**
    * Export a given triple list to a file
    * @param {string[][]} tripleList
+   * @returns {string}
    */
   exportTriples(tripleList) {}
 }

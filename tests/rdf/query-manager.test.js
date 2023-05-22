@@ -235,13 +235,13 @@ describe("QueryManager", () => {
     const subject = new QueryElement(0, true);
     const predicate = new QueryElement(5);
     const object = new QueryElement(11);
-    const firstQueryTriple = new QueryTriple(subject, predicate, object);
+    const firstQueryTriple = new QueryTriple(subject, predicate, object); // (x, "appears in", "Inception")
     const subject1 = new QueryElement(0, true);
     const predicate1 = new QueryElement(7);
     const object1 = new QueryElement(15);
-    const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
+    const secondQueryTriple = new QueryTriple(subject1, predicate1, object1); // (x, "born in", "USA")
     const result = queryManager.leftChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
-    expect(result).toEqual([new Triple(3, 7, 15), new Triple(4, 7, 15)]);
+    expect(result).toEqual([new Triple(3, 7, 15), new Triple(4, 7, 15)]); // ("L. DiCarpio", "born in", "USA"), (J. Gordon, "born in", "USA")
   });
 
   test("leftChainingJoinTwoQueries(x,7,15)(x,5,11)", () => {
@@ -254,7 +254,7 @@ describe("QueryManager", () => {
     const object = new QueryElement(11);
     const secondQueryTriple = new QueryTriple(subject, predicate, object);
     const result = queryManager.leftChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
-    expect(result).toEqual([new Triple(3, 5, 11), new Triple(4, 5, 11)]);
+    expect(result).toEqual([new Triple(3, 5, 11), new Triple(4, 5, 11)]); // ("L. DiCarpio", "appears in", "Inception"), (J. Gordon, "appears in", "Inception")
   });
 
   test("rightChainingJoinTwoQueries(x,5,11)(x,7,15)", () => {

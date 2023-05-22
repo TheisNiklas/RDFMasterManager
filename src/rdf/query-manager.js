@@ -242,7 +242,12 @@ export class QueryManager {
   }
 
   // <?y,p1,?x> <?y,p2,o1> <s,p3,?x>
-  // step 1 solve: <?y,p,?x>
+  // <s1,p1,?x> <s2,p2,?x> <?x,p3,o1>
+
+  // <s1,p1,?y> <?x,p2,o2> <?y,p3,?x>
+  // <s1,p1,?y> <?y,p3,?x> <?x,p2,o2>
+
+  // step 1 solve: <?s,p,?o>
   // step 2: search for the first query var in first triple -> ?y
   // step 3: execute <?y,p,o> with all results of <?y,p,?x> --> <y!,p2,o1> <y!,p1,o>
   // step 4: search for the second query var in first triple -> ?x
@@ -321,6 +326,7 @@ export class QueryManager {
       result.push(new Triple(triple[0], triple[1], triple[2]));
     });
     return result;
+    // TODO: abschließend merge beider results
   }
 
   rightChainingJoinTwoQueries(queries) {

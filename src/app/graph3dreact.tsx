@@ -1,5 +1,4 @@
 import dynamic from "next/dynamic";
-import myData from "./testDataGraph3D";
 import * as React from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
@@ -8,33 +7,29 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import Alert from "@mui/material/Alert";
 import load_data from "./triple2graph";
 
+//No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
   ssr: false,
 });
 
 /**
- * TODO:
- * Warning hinzufügen, wenn Triple-Umbenennung leer ist
- * Warning hinzufügen, wenn Node-Umbenennung leer ist
- * Delete Confirmation zu Triple-Delete hinzufügen
+ * Visualization of the 3D graph and handling of all interaction with the 3D graph.
+ * @returns React Component Graph3DReact
  */
-
 export default function Graph3DReact() {
+  //load data into the 3D Graph
   const [data, setData] = React.useState(load_data());
+
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
   const [openNodeRight, setOpenNodeRight] = React.useState(false);
   const [openLinkLeft, setOpenLinkLeft] = React.useState(false);
   const [openLinkRight, setOpenLinkRight] = React.useState(false);
-
   const [nodeId, setNodeId] = React.useState("");
   const [linkSource, setLinkSource] = React.useState("");
   const [linkTarget, setLinkTarget] = React.useState("");
-
   const [formField, setFormField] = React.useState("");
-
   const [source, setSource] = React.useState("");
   const [target, setTarget] = React.useState("");
   const [pred, setPred] = React.useState("");
@@ -55,11 +50,13 @@ export default function Graph3DReact() {
     setOpenLinkRight(false);
   };
 
+  //display information about the node
   const handleNodeLeftClick = (node: any) => {
     setNodeId(node.id);
     setOpenNodeLeft(true);
   };
 
+  //display information about the link
   const handleLinkLeftClick = (link: any) => {
     setLinkSource(link.source.id);
     setLinkTarget(link.target.id);
@@ -75,11 +72,13 @@ export default function Graph3DReact() {
     setOpenLinkRight(true);
   };
 
+  //handle Submit when Node Data is changed
   const handleSubmitNodeRight = () => {
     console.log(formField);
     setOpenNodeRight(false);
   };
 
+  //handle Submit when Triple Data is changed
   const handleSubmitLinkRight = () => {
     console.log(source);
     console.log(target);
@@ -87,6 +86,7 @@ export default function Graph3DReact() {
     setOpenLinkRight(false);
   };
 
+  //handle Delete of Triple
   const handleDeleteTriple = () => {
     console.log("delete triple");
   };

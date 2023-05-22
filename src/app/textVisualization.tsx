@@ -14,7 +14,6 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { ExportService } from '@/rdf/exporter/export-service';
-import { DataArrayTwoTone } from '@mui/icons-material';
 
 const TextCard = styled(Card)(({ theme }) => ({
     '& .MuiTableCell-stickyHeader': {

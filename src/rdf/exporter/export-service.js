@@ -49,7 +49,7 @@ export class ExportService {
    * @param {Dictionary} dictionary
    * @param {string} format name the exporter is registered with
    * @param {boolean} isStreamExporter true if the chosen exporter is a `StreamExporter`. Defaults to false.
-   * @returns {string} serailized `tripleList` to `fromat`
+   * @returns {Promise} serailized `tripleList` to `fromat`
    * @throws {Error} When no matching exporter is available.
    */
   async serializeTriples(tripleList, dictionary, format, isStreamExporter = false) {

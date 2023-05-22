@@ -108,7 +108,12 @@ export default function PersistentDrawerRight() {
 
   const handleMainFrame = () => {
     if (mainFrame === "text") {
-      return <TextVisualization />;
+      return <TextVisualization
+        database={database}
+        queryManager={queryManager}
+        currentData={currentData}
+        setCurrentData={setCurrentData}
+      />;
     } else if (mainFrame === "3d") {
       return (
         <Graph3DReact

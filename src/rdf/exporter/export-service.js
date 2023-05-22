@@ -32,9 +32,15 @@ export class ExportService {
    * @throws {Error} When no matching exporter is available.
    */
   async exportTriples(tripleList, dictionary, format, isStreamExporter = false) {
-    const result = this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
-    let blob = new Blob([result], { type: "application/n-triples;charset=utf-8" });
-    FileSaver.saveAs(blob, `export.nt`);
+    if (isStreamExporter) {
+      const stream = this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
+      const fileStream = streamSaver.createWriteStream("export.jsonld");
+      stream.pipe(fileStream);
+    } else {
+      const result = this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
+      let blob = new Blob([result], { type: "application/n-triples;charset=utf-8" });
+      FileSaver.saveAs(blob, `export.nt`);
+    }
   }
 
   /**
@@ -61,7 +67,17 @@ export class ExportService {
     }
 
     const tripleStringList = this.#translateTripleIds(tripleList, dictionary);
-    return exporter.exportTriples(tripleStringList);
+    if (isStreamExporter) {
+      const stream = exporter.exportTriples(tripleStringList);
+      const result = await new Promise((resolve) => {
+        let resultString = "";
+        stream.on("data", (chunk) => (resultString += chunk)).on("end", () => resolve(resultString));
+        stream.end();
+      });
+      return result;
+    } else {
+      return exporter.exportTriples(tripleStringList);
+    }
   }
 
   /**
@@ -111,4 +127,6 @@ export class ExportService {
     });
     return resultList;
   }
+
+  #streamToString(stream) {}
 }

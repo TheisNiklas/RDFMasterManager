@@ -1,3 +1,4 @@
+import { WriteStream } from "fs";
 import { Dictionary } from "../dictionary";
 
 export class Exporter {
@@ -5,7 +6,7 @@ export class Exporter {
   /**
    * Export a given triple list to a file
    * @param {string[][]} tripleList
-   * @returns {string}
+   * @returns {_Readable._Writable}
    */
   exportTriples(tripleList) {}
 }

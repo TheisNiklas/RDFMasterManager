@@ -8,18 +8,15 @@ export class JsonldExporter extends StreamExporter {
   /**
    * Export a given triple list to a file
    * @param {string[][]} tripleList
+   * @returns {}
    */
   exportTriples(tripleList) {
     const serializer = new JsonLdSerializer({ space: "  " });
     let rdfJsList = RdfJsMapper.internalToRdfJsList(tripleList);
 
-    const fileStream = streamSaver.createWriteStream("export.jsonld");
-
-    serializer.pipe(fileStream);
-
     rdfJsList.forEach((rdfJsQuad) => {
       serializer.write(rdfJsQuad);
     });
-    serializer.end();
+    return serializer;
   }
 }

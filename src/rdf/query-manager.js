@@ -2,6 +2,7 @@ import { QueryTriple } from "../../src/rdf/models/query-triple";
 import { BitvectorTools } from "./bitvector-tools";
 import { Triple } from "./models/triple";
 import { QueryElement } from "./models/query-element";
+import { Rdfcsa } from "./rdfcsa";
 
 export class QueryManager {
   /**
@@ -11,6 +12,14 @@ export class QueryManager {
 
   chosenJoinType = "Merge";
   constructor(rdfcsa) {
+    this.rdfcsa = rdfcsa;
+  }
+
+  /**
+   *
+   * @param {Rdfcsa} rdfcsa
+   */
+  setRdfcsa(rdfcsa) {
     this.rdfcsa = rdfcsa;
   }
 

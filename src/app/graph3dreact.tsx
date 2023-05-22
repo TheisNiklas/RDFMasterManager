@@ -8,6 +8,8 @@ import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import load_data from "./triple2graph";
+import { Rdfcsa } from "@/rdf/rdfcsa";
+import { QueryManager } from "@/rdf/query-manager";
 
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
@@ -18,15 +20,16 @@ const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
  * Visualization of the 3D graph and handling of all interaction with the 3D graph.
  * @returns React Component Graph3DReact
  */
-export default function Graph3DReact() {
+export default function Graph3DReact({ database, queryManager, currentData, setCurrentData }) {
   //load data into the 3D Graph
-  const [data, setData] = React.useState(load_data());
+  const [data, setData] = React.useState(load_data(database, currentData));
 
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
   const [openNodeRight, setOpenNodeRight] = React.useState(false);
   const [openLinkLeft, setOpenLinkLeft] = React.useState(false);
   const [openLinkRight, setOpenLinkRight] = React.useState(false);
   const [nodeId, setNodeId] = React.useState("");
+  const [nodeContent, setNodeContent] = React.useState("");
   const [linkSource, setLinkSource] = React.useState("");
   const [linkTarget, setLinkTarget] = React.useState("");
   const [formField, setFormField] = React.useState("");
@@ -53,6 +56,7 @@ export default function Graph3DReact() {
   //display information about the node
   const handleNodeLeftClick = (node: any) => {
     setNodeId(node.id);
+    setNodeContent(node.content);
     setOpenNodeLeft(true);
   };
 
@@ -103,9 +107,7 @@ export default function Graph3DReact() {
       ></NoSSRForceGraph>
       <Dialog open={openNodeLeft} onClose={handleNodeLeftClose}>
         <DialogTitle id="node-left-title">{"Informationen"}</DialogTitle>
-        <DialogContentText id="node-left-text">
-          Die NodeId ist: {nodeId}
-        </DialogContentText>
+        <DialogContentText id="node-left-text">Die NodeId ist: {nodeContent}</DialogContentText>
       </Dialog>
       <Dialog open={openLinkLeft} onClose={handleLinkLeftClose}>
         <DialogTitle id="link-left-title">{"Informationen"}</DialogTitle>
@@ -118,11 +120,7 @@ export default function Graph3DReact() {
         <DialogTitle id="node-right-title">Änderungen: {nodeId}</DialogTitle>
         <DialogContent>
           <DialogContentText id="node-right-text">
-            <TextField
-              label="Name"
-              variant="outlined"
-              onChange={(event) => setFormField(event.target.value)}
-            />
+            <TextField label="Name" variant="outlined" onChange={(event) => setFormField(event.target.value)} />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -131,30 +129,15 @@ export default function Graph3DReact() {
         </DialogActions>
       </Dialog>
       <Dialog open={openLinkRight} onClose={handleLinkRightClose}>
-        <DialogTitle id="link-right-title">
-          {" "}
-          Triple Löschen oder umbenennen
-        </DialogTitle>
+        <DialogTitle id="link-right-title"> Triple Löschen oder umbenennen</DialogTitle>
         <DialogActions>
           <Button onClick={handleDeleteTriple}>Delete Triple</Button>
         </DialogActions>
         <DialogContent>
           <DialogContentText id="link-right-text">
-            <TextField
-              label="source"
-              variant="outlined"
-              onChange={(event) => setSource(event.target.value)}
-            />
-            <TextField
-              label="target"
-              variant="outlined"
-              onChange={(event) => setTarget(event.target.value)}
-            />
-            <TextField
-              label="pred"
-              variant="outlined"
-              onChange={(event) => setPred(event.target.value)}
-            />
+            <TextField label="source" variant="outlined" onChange={(event) => setSource(event.target.value)} />
+            <TextField label="target" variant="outlined" onChange={(event) => setTarget(event.target.value)} />
+            <TextField label="pred" variant="outlined" onChange={(event) => setPred(event.target.value)} />
           </DialogContentText>
         </DialogContent>
         <DialogActions>

@@ -1,36 +1,16 @@
+import { QueryManager } from "@/rdf/query-manager";
+import { Rdfcsa } from "@/rdf/rdfcsa";
+import { QueryTriple } from "@/rdf/models/query-triple";
+
 /**
  * Transform the RDF-Dictionary into an input format for the
  * 3D and 2D graph visualization (react-force-graph)
  * @returns input for the force-graph in JSON syntax
  */
-export default function load_data() {
-  var data = [
-    {
-      subject: "Tom",
-      predicate: "wohnt",
-      object: "Berlin",
-    },
-    {
-      subject: "Jessica",
-      predicate: "geboren",
-      object: "Berlin",
-    },
-    {
-      subject: "Tom",
-      predicate: "arbeitet",
-      object: "Stuttgart",
-    },
-    {
-      subject: "Jessica",
-      predicate: "arbeitet",
-      object: "Stuttgart",
-    },
-    {
-      subject: "Gustav",
-      predicate: "fährt",
-      object: "Stuttgart",
-    },
-  ];
+export default function load_data(database, data) {
+  if (data === undefined) {
+    return { nodes: [], links: [] };
+  }
 
   const nodes: any = [];
   const links: any = [];
@@ -59,9 +39,11 @@ export default function load_data() {
 
   for (var i = 0; i < resultNodes.length; i = +i + 1) {
     //generate nodes array
+    const content = database.current.dictionary.getElementById(resultNodes[i]);
     nodes.push({
       id: resultNodes[i],
       group: i,
+      content: content,
     });
   }
 

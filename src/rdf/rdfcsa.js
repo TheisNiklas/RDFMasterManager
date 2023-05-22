@@ -6,7 +6,7 @@ export class Rdfcsa {
    * @param {string[][]} tripleList
    */
   constructor(tripleList) {
-    this.dictionary = new Dictionary();
+    this.dictionary = new Dictionary(tripleList);
     const tArray = this.#constructTArrays(tripleList);
     const aArray = this.#constructA(tArray);
     this.D = this.#constructD(tArray, aArray);
@@ -43,9 +43,7 @@ export class Rdfcsa {
     const gaps = [
       0,
       this.dictionary.SO.length + this.dictionary.S.length,
-      this.dictionary.SO.length +
-        this.dictionary.S.length +
-        this.dictionary.P.length,
+      this.dictionary.SO.length + this.dictionary.S.length + this.dictionary.P.length,
     ];
     // add gaps to triples
     tripleList.forEach((triple) => {

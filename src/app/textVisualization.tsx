@@ -13,6 +13,7 @@ import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import { ExportService } from '@/rdf/exporter/export-service';
 
 const TextCard = styled(Card)(({ theme }) => ({
     '& .MuiTableCell-stickyHeader': {
@@ -39,94 +40,35 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
 }));
 
 
-function load_data(format: string) {
-    var data = "";
-    if (format === 'nTriple') {
-        data =
-            `<http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
-<http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://purl.org/dc/terms/title> "N-Triples"@en-US .
-<http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:art .
-<http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:dave .
-_:art <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-_:art <http://xmlns.com/foaf/0.1/name> "Art Barstow".
-_:dave <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
-_:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett".
-<http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://purl.org/dc/terms/title> "N-Triples"@en-US .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:art .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:dave .
- _:art <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:art <http://xmlns.com/foaf/0.1/name> "Art Barstow".
- _:dave <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett".
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://purl.org/dc/terms/title> "N-Triples"@en-US .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:art .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:dave .
- _:art <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:art <http://xmlns.com/foaf/0.1/name> "Art Barstow".
- _:dave <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett".
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://purl.org/dc/terms/title> "N-Triples"@en-US .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:art .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:dave .
- _:art <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:art <http://xmlns.com/foaf/0.1/name> "Art Barstow".
- _:dave <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett".
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://purl.org/dc/terms/title> "N-Triples"@en-US .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:art .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:dave .
- _:art <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:art <http://xmlns.com/foaf/0.1/name> "Art Barstow".
- _:dave <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett".
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Document> .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://purl.org/dc/terms/title> "N-Triples"@en-US .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:art .
- <http://www.w3.org/2001/sw/RDFCore/ntriples/> <http://xmlns.com/foaf/0.1/maker> _:dave .
- _:art <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:art <http://xmlns.com/foaf/0.1/name> "Art Barstow".
- _:dave <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://xmlns.com/foaf/0.1/Person> .
- _:dave <http://xmlns.com/foaf/0.1/name> "Dave Beckett". `
-    } else if (format === 'Turtle') {
-        data =
-            `@prefix dbr: <http://dbpedia.org/resource/> .
-@prefix dbo: <http://dbpedia.org/ontology/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-  dbr:Barack_Obama dbo:birthDate "2013-05-14"^^xsd:date .
-  dbr:Barack_Obama dbo:birthPlace dbr:Hawaii .
-  @prefix dbr: <http://dbpedia.org/resource/> .
-@prefix dbo: <http://dbpedia.org/ontology/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-  dbr:Barack_Obama dbo:birthDate "2013-05-14"^^xsd:date .
-  dbr:Barack_Obama dbo:birthPlace dbr:Hawaii .
-  @prefix dbr: <http://dbpedia.org/resource/> .
-@prefix dbo: <http://dbpedia.org/ontology/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-  dbr:Barack_Obama dbo:birthDate "2013-05-14"^^xsd:date .
-  dbr:Barack_Obama dbo:birthPlace dbr:Hawaii .
-  @prefix dbr: <http://dbpedia.org/resource/> .
-@prefix dbo: <http://dbpedia.org/ontology/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-  dbr:Barack_Obama dbo:birthDate "2013-05-14"^^xsd:date .
-  dbr:Barack_Obama dbo:birthPlace dbr:Hawaii .
-  @prefix dbr: <http://dbpedia.org/resource/> .
-@prefix dbo: <http://dbpedia.org/ontology/> .
-@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
-  dbr:Barack_Obama dbo:birthDate "2013-05-14"^^xsd:date .
-  dbr:Barack_Obama dbo:birthPlace dbr:Hawaii .`
+function load_data(format: string, database: any, currentData: any) {
+    // WIP, exporter doesn't return strings yet
+    const exporter = new ExportService();
+    if (currentData === undefined) {
+        return [];
+    }
+    var data = "" //exporter.exportTriples(currentData, database.current.dictionary, 'N-Triples');
+
+    if (data === "") {
+        return []
     }
     return data.split(/\r?\n|\r|\n/g);
+
 }
 
-export default function TextVisualization() {
+function loadDefaultFormat() {
+    const exporter = new ExportService();
+    const export_options = exporter.getAvailableExporters();
+
+    return export_options[0][0]
+}
+
+export default function TextVisualization({ database, queryManager, currentData, setCurrentData }: { database: any, queryManager: any, currentData: any, setCurrentData: any }) {
+    const [data, setData] = React.useState(currentData);
+
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(15);
-    const [format, setFormat] = React.useState('nTriple');
-    var rows: string[] = load_data(format);
+    const [format, setFormat] = React.useState(loadDefaultFormat());
+    var rows: string[] = load_data(format, database, currentData);
     var currentId = -1;
 
     const columns = [
@@ -153,9 +95,29 @@ export default function TextVisualization() {
 
     const handleChange = (value: any) => {
         setFormat(value);
-        rows = load_data(value);
+        rows = load_data(value, database, currentData);
         currentId = -1;
     };
+
+    const getOptions = () => {
+        const exporter = new ExportService();
+        const export_options = exporter.getAvailableExporters();
+
+        console.log(export_options);
+
+        let menuItems = []
+        for (let i = 0; i < export_options[0].length; i++) {
+            menuItems.push(<MenuItem value={export_options[0][i]}> {export_options[0][i]} </MenuItem >)
+        }
+        console.log(menuItems)
+
+        return menuItems
+    }
+
+    React.useEffect(() => {
+        console.log("TODO: Refresh GUI");
+        setData(load_data(format, database, currentData));
+    }, [currentData])
 
     const drownDownMenu = () => {
         return (
@@ -174,8 +136,7 @@ export default function TextVisualization() {
                         }}
                         onChange={e => handleChange(e.target.value)}
                     >
-                        <MenuItem value={'nTriple'}> nTriple</MenuItem >
-                        <MenuItem value={'Turtle'}>Turtle</MenuItem >
+                        {getOptions()}
                     </Select>
                 </DropDownForm>
             </DropDownBox >

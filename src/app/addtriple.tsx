@@ -21,10 +21,10 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: '100%',
 }));
 
-const AddTripleForm = () => {
+const AddTripleForm = ({ queryManager, currentData, setCurrentData }) => {
 
   const [formFields, setFormFields] = useState(
-    { subject: "", predicat: "", object: "" });
+    { subject: "", predicate: "", object: "" });
 
   //user input for the additional triple subject
   const handleFormChangeAddSubject = (
@@ -42,7 +42,7 @@ const AddTripleForm = () => {
     event: ChangeEvent<HTMLInputElement>
   ) => {
     let data = formFields;
-    data.predicat = event.target.value;
+    data.predicate = event.target.value;
     setFormFields(data);
 
     console.log(formFields);
@@ -62,7 +62,7 @@ const AddTripleForm = () => {
   //call of the interface function for the additional triple
   const addTriple = (
   ) => {
-    setOpen(!addTripleInterface(formFields));
+    setOpen(!addTripleInterface(formFields, queryManager, currentData, setCurrentData));
 
   };
 

@@ -205,7 +205,7 @@ export default function PersistentDrawerRight() {
           </IconButton>
         </DrawerHeader>
         <FilterForm queryManager={queryManager} currentData={currentData} setCurrentData={setCurrentData}></FilterForm>
-        <AddTripleForm></AddTripleForm>
+        <AddTripleForm queryManager={queryManager} currentData={currentData} setCurrentData={setCurrentData}></AddTripleForm>
         <Import></Import>
         <Export></Export>
       </Drawer>

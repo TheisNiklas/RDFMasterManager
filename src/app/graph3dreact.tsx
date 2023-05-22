@@ -95,6 +95,11 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
     console.log("delete triple");
   };
 
+  React.useEffect(() => {
+    console.log("TODO: Refresh GUI");
+    setData(load_data(database, currentData));
+  }, [currentData])
+
   return (
     <div>
       <NoSSRForceGraph

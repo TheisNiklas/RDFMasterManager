@@ -27,8 +27,8 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     }
 
     //collect all nodes
-    arrayNodes.push(subject);
-    arrayNodes.push(object);
+    arrayNodes.push([subject,triple.subject]);
+    arrayNodes.push([object, triple.object]);
 
     //generate links array
     links.push({
@@ -44,9 +44,10 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
 
   for (var i = 0; i < resultNodes.length; i = +i + 1) {
     //generate nodes array
-    const content = database.dictionary.getElementById(resultNodes[i]);
+    const content = database.dictionary.getElementById(resultNodes[i][1]);
     nodes.push({
-      id: resultNodes[i],
+      id: resultNodes[i][0],
+      originalId: resultNodes[i][1],
       group: i,
       content: content,
     });

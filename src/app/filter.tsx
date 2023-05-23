@@ -178,9 +178,8 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                         <Autocomplete
                           freeSolo
                           disableClearable
-                          //load all subjects!!!!!!!
+                          //load all subject strings
                           options={database.dictionary.SO.concat(database.dictionary.S)}
-                          //
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
@@ -192,7 +191,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                             />
                           )}
                           value={form.subject}
-                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
                         />
                       </Tooltip>
                     </Grid>
@@ -201,9 +200,8 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                         <Autocomplete
                           freeSolo
                           disableClearable
-                          //load all predicates!!!!!!!
+                          //load all predicate strings
                           options={database.dictionary.P}
-                          //
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
@@ -215,7 +213,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                             />
                           )}
                           value={form.predicate}
-                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangePredicate(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangePredicate(event, index)}
                         />
                       </Tooltip>
                     </Grid>
@@ -224,9 +222,8 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                         <Autocomplete
                           freeSolo
                           disableClearable
-                          //load all objects!!!!!!!
+                          //load all object strings
                           options={database.dictionary.SO.concat(database.dictionary.O)}
-                          //
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
@@ -238,7 +235,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                             />
                           )}
                           value={form.object}
-                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeObject(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeObject(event, index)}
                         />
                       </Tooltip>
                     </Grid>

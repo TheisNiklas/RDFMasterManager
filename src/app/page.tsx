@@ -117,7 +117,7 @@ export default function PersistentDrawerRight() {
     if (mainFrame === "text") {
       return <TextVisualization database={database} currentData={currentData} setCurrentData={setCurrentData} />;
     } else if (mainFrame === "3d") {
-      return <Graph3DReact database={database} currentData={currentData} setCurrentData={setCurrentData} />;
+      return <Graph3DReact database={database} setDatabase={setDatabase} currentData={currentData} setCurrentData={setCurrentData} />;
     } else if (mainFrame === "2d") {
       return (
         //<Graph2D />

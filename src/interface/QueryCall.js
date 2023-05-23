@@ -48,7 +48,7 @@ $x is in USA
 
 /**
  * 
- * @param {{subject, predicate, object}} queryData 
+ * @param {{ subject: string; predicate: string; object: string; }[]} queryData 
  * @param {*} sortData 
  * @param {Rdfcsa} database 
  * @param {Triple[]} currentData 
@@ -92,7 +92,7 @@ function queryCallData(queryData, sortData, database, currentData, setCurrentDat
         if (obj.subject.includes("??")) {
           name = name.replace("?", "");
         }
-        const id = database.dictionary.getSubjectById(name);
+        const id = database.dictionary.getIdBySubject(name);
         const queryEle = new QueryElement(id, false);
         queryTriple.subject = queryEle;
       }
@@ -108,7 +108,7 @@ function queryCallData(queryData, sortData, database, currentData, setCurrentDat
         if (obj.predicate.includes("??")) {
           name = name.replace("?", "");
         }
-        const id = database.dictionary.getPredicateById(name)
+        const id = database.dictionary.getIdByPredicate(name)
         const queryEle = new QueryElement(id, false);
         queryTriple.predicate = queryEle;
       }
@@ -134,7 +134,7 @@ function queryCallData(queryData, sortData, database, currentData, setCurrentDat
         if (obj.object.includes("??")) {
           name = name.replace("?", "");
         }
-        const id = database.dictionary.getObjectById(name)
+        const id = database.dictionary.getIdByObject(name)
         const queryEle = new QueryElement(id, false);
         queryTriple.object = queryEle;
       }

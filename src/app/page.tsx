@@ -14,6 +14,7 @@ import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 import AddTripleForm from "./addtriple";
 import FilterForm from "./filter";
+import SortFormData from "./sort";
 import Import from "./import";
 import Export from "./export";
 import TextVisualization from "./textVisualization";
@@ -27,7 +28,6 @@ import { ImportService } from "../rdf/importer/import-service";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "@/rdf/models/query-triple";
 import { Dialog, DialogTitle, Button, DialogContent } from "@mui/material";
-import { importFile } from '../rdf/import/ImportBinaryWindows';
 import { Triple } from "@/rdf/models/triple";
 
 const drawerWidth = 500;
@@ -244,6 +244,7 @@ export default function PersistentDrawerRight() {
           </IconButton>
         </DrawerHeader>
         <FilterForm database={database} currentData={currentData} setCurrentData={setCurrentData}></FilterForm>
+        <SortFormData  database={database} currentData={currentData} setCurrentData={setCurrentData}></SortFormData>
         <AddTripleForm
           database={database}
           setDatabase = {setDatabase}

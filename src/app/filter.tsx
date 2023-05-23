@@ -7,13 +7,9 @@ import {
   Button,
   Grid,
   FormControl,
-  InputLabel,
-  Select,
-  MenuItem,
   Container,
   FormLabel,
   Tooltip,
-  SelectChangeEvent,
   IconButton,
   Accordion,
   AccordionSummary,
@@ -111,33 +107,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     console.log(formFields);
   };
 
-  //Adaptation of the selected sorting order (ascending, descending) the user picked
-  const handleFormChangeSortOrderObject = (event: SelectChangeEvent<string>) => {
-    let data = sortFields;
-    data.sortOrder = event.target.value;
-    setSortFields(data);
-
-    console.log(sortFields);
-  };
-
-  //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
-  const handleFormChangeSortElementObject = (event: SelectChangeEvent<string>) => {
-    let data = sortFields;
-    data.sortElement = event.target.value;
-    setSortFields(data);
-
-    console.log(sortFields);
-  };
-
-  //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
-  const handleFormChangeLimit = (event: SelectChangeEvent<number>) => {
-    let data = sortFields;
-    data.visualLimit = Number(event.target.value);
-    setSortFields(data);
-
-    console.log(sortFields);
-  };
-
   //Removes a triple pair of SPO filter elements with the corresponding join variables
   const deleteFilterTriple = (index: number) => {
     let data = [...formFields];
@@ -156,21 +125,22 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
   return (
     <Accordion defaultExpanded={true}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
-        <Header variant="h6" sx={{ marginBottom: 2 }}>
+        <Header variant="h6" sx={{ marginBottom: -1 }}>
           Filter
         </Header>
       </AccordionSummary>
       <AccordionDetails>
         <Container maxWidth="md" sx={{ marginBottom: 3 }}>
           <div>
-            <Grid container spacing={2}>
+            <Grid container spacing={0}>
+              <FormControl sx={{ marginBottom: -3 }}>
+                <FormLabel>Join Variablen Namen</FormLabel>
+              </FormControl>
               {formFields.map((form, index) => {
                 return (
                   <Grid container spacing={2} key={index} columns={13}>
                     <Grid item xs={12} sm={7} sx={{ marginTop: 2 }}>
-                      <FormControl>
-                        <FormLabel>Join Variablen Namen</FormLabel>
-                      </FormControl>
+
                     </Grid>
                     <Grid item xs={12} sm={6}></Grid>
                     <Grid item xs={13} sm={4}>
@@ -254,49 +224,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                   <AddButton variant="contained" color="primary" endIcon={<Add />} onClick={addFilterTriple}>
                     Filter hinzufügen
                   </AddButton>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <SortFormControl>
-                        <InputLabel id="sort-label">Sortierreihenfolge</InputLabel>
-                        <Select
-                          labelId="sort-label"
-                          onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}
-                        >
-                          <MenuItem value="ascending">Aufsteigend</MenuItem>
-                          <MenuItem value="descending">Absteigend</MenuItem>
-                        </Select>
-                      </SortFormControl>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={12} sm={6}>
-                  <Grid container spacing={2}>
-                    <Grid item xs={12}>
-                      <SortFormControl>
-                        <InputLabel id="sort-label">Sortierelement</InputLabel>
-                        <Select
-                          labelId="sort-label"
-                          onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}
-                        >
-                          <MenuItem value="sortSubject">Subjekt</MenuItem>
-                          <MenuItem value="sortPredicate">Prädikat</MenuItem>
-                          <MenuItem value="sortObject">Objekt</MenuItem>
-                        </Select>
-                      </SortFormControl>
-                    </Grid>
-                  </Grid>
-                </Grid>
-                <Grid item xs={6}>
-                  <Tooltip title="Maximale Anzahl der Triple-Ergebnisse der Querys, > 0" placement="top">
-                    <StyledTextField
-                      name="visualLimit"
-                      label="Limit"
-                      type="number"
-                      onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeLimit(event)}
-                    />
-                  </Tooltip>
                 </Grid>
                 <Grid item xs={12}>
                   <SubmitButton variant="contained" color="primary" onClick={handleSubmit}>

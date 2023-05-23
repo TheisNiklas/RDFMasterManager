@@ -146,7 +146,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                         <Autocomplete
-                          freeSolo
                           disableClearable
                           //load all subject strings
                           options={database.dictionary.SO.concat(database.dictionary.S)}
@@ -161,6 +160,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                             />
                           )}
                           value={form.subject}
+                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
                           onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
                         />
                       </Tooltip>
@@ -168,7 +168,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="nur Suchwert, keine Join Variable möglich" placement="top">
                         <Autocomplete
-                          freeSolo
                           disableClearable
                           //load all predicate strings
                           options={database.dictionary.P}
@@ -190,7 +189,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                         <Autocomplete
-                          freeSolo
                           disableClearable
                           //load all object strings
                           options={database.dictionary.SO.concat(database.dictionary.O)}

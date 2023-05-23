@@ -16,35 +16,19 @@ export class RdfOperations {
   }
 
   /**
-   *
-   * @param {Triple} oldTriple
-   * @param {string} newSubject
-   * @param {string} newPredicate
-   * @param {string} newObject
-   * @returns
-   */
-  modifyTriples(oldTriple, newSubject, newPredicate, newObject) {
-    this.deleteTriple(oldTriple);
-    this.addTriple(newSubject, newPredicate, newObject);
-    return this.rdfcsa;
-  }
-
-  /**
-   * Adds a new element (triple) to rdfcsa - what happens if element already exists?
+   * Adds a new triple
    * @param {string} subject
    * @param {string} predicate
    * @param {string} object
    */
   addTriple(subject, predicate, object) {
-    // query first whether the object already exists
-    // if not export rdfcsa in triple pattern, add pattern at bottom, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
     const queryManager = new QueryManager(this.rdfcsa);
     const subjectId = this.rdfcsa.dictionary.getIdBySubject(subject);
     const predicateId = this.rdfcsa.dictionary.getIdByPredicate(predicate);
     const objectId = this.rdfcsa.dictionary.getIdByObject(object);
 
+    // if triple already exists, abort.
     if (subjectId !== -1 && objectId !== -1 && predicateId !== -1) {
-      // check if triple exists
       const result = queryManager.getTriples([
         new QueryTriple(new QueryElement(subjectId), new QueryElement(predicateId), new QueryElement(objectId)),
       ]);
@@ -53,6 +37,7 @@ export class RdfOperations {
       }
     }
 
+    // conver triples to string, add new triple at the bottom and create new RDFCSA
     const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
     const stringTriples = [];
     oldTriples.forEach((oldTriple) => {
@@ -64,14 +49,14 @@ export class RdfOperations {
   }
 
   /**
-   *
+   * Deletes Triple triple
    * @param {Triple} triple
    */
   deleteTriple(triple) {
-    // query first whether the object already exists
-    // if not export rdfcsa in triple pattern, add pattern at bottom, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
     const queryManager = new QueryManager(this.rdfcsa);
 
+    /* TODO: This might be unnecessary if we check foundIndex<0: return later
+    // if triple exists
     const result = queryManager.getTriples([
       new QueryTriple(
         new QueryElement(triple.subject),
@@ -82,7 +67,9 @@ export class RdfOperations {
     if (result.length !== 1) {
       return;
     }
+    */
 
+    // check where triple is stored
     const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
     let foundIndex = -1;
     oldTriples.forEach((oldTriple, index) => {
@@ -95,7 +82,15 @@ export class RdfOperations {
         return;
       }
     });
+
+    if (foundIndex < 0) { // if triple found
+      return;
+    }
+
+    // remove triple
     oldTriples.splice(foundIndex, 1);
+
+    // create new rdfcsa from oldTriples without found triple
     const stringTriples = [];
     oldTriples.forEach((oldTriple) => {
       stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
@@ -105,26 +100,27 @@ export class RdfOperations {
   }
 
   /**
-   *
+   * Remove every triple that includes id
    * @param {int} id with gaps
    */
   deleteElementInDictionary(id) {
-    // Check if id exists
-    // if so, export rdfcsa in triple pattern, remove every line where id related string is included at the correct position via regex, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
     const queryManager = new QueryManager(this.rdfcsa);
 
-    if (!this.rdfcsa.dictionary.getElementById(id)) {
+    // if id doesn't exist, abort
+    if (!this.rdfcsa.dictionary.getElementById(id)) { 
       return;
     }
 
+    // if id not in triple, keep it by adding to newTriples
     const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
     const newTriples = [];
-    oldTriples.forEach((oldTriple) => {
+    oldTriples.forEach((oldTriple) => { 
       if (!(oldTriple.subject === id || oldTriple.predicate === id || oldTriple.object === id)) {
         newTriples.push(oldTriple);
       }
     });
 
+    // create new rdfcsa from kept Triples newTriples
     const stringTriples = [];
     newTriples.forEach((newTriple) => {
       stringTriples.push(this.rdfcsa.dictionary.decodeTriple(newTriple));
@@ -145,43 +141,39 @@ export class RdfOperations {
   }
 
   /**
-   *
+   * Changes triple elements with id id to a string text for all triples
    * @param {int} id
    * @param {string} text
    */
   changeInDictionary(id, text) {
-    // change every text where at id position. Maybe you can just change it directly in the dictionary (maybe with export and import).
     const queryManager = new QueryManager(this.rdfcsa);
 
+    // if id not in dictionary, abort.
     if (!this.rdfcsa.dictionary.getElementById(id)) {
       return;
     }
 
+    // decode all triples
     const oldString = this.rdfcsa.dictionary.getElementById(id);
-
     const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
-
     const stringTriples = [];
     oldTriples.forEach((oldTriple) => {
       stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
     });
 
+    // change all occurences of 
     const newStringList = [];
-    stringTriples.forEach((stringTriple) => {
+    stringTriples.forEach((stringTriple) => { // for every triple
       const temp = stringTriple;
-      if (stringTriple[0] === oldString) {
-        temp[0] = text;
-      }
-      if (stringTriple[1] === oldString) {
-        temp[1] = text;
-      }
-      if (stringTriple[2] === oldString) {
-        temp[2] = text;
-      }
-      newStringList.push(temp);
+      stringTriple.forEach((element, index) => { // for every element in triple
+        if (element === oldString) {
+          temp[index] = text; // replace element if it matches corresponding string of given id
+        }
+      });
+      newStringList.push(temp); // add triple to string list
     });
 
-    this.rdfcsa = new Rdfcsa(newStringList);
+    this.rdfcsa = new Rdfcsa(newStringList); // create new rdfcsa from stringlist
     return this.rdfcsa;
   }
 }

@@ -69,9 +69,9 @@ export default function Graph3DReact({ database, setDatabase, currentData, setCu
 
   //display information about the link
   const handleLinkLeftClick = (link: any) => {
-    setLinkSourceName(database.dictionary.getElementById(link.source.id));
-    setLinkName(database.dictionary.getElementById(link.id));
-    setLinkTargetName(database.dictionary.getElementById(link.target.id));
+    setLinkSourceName(database.dictionary.getElementById(link.source.id) as string);
+    setLinkName(database.dictionary.getElementById(link.id) as string);
+    setLinkTargetName(database.dictionary.getElementById(link.target.id) as string);
     setOpenLinkLeft(true);
   };
 
@@ -106,7 +106,7 @@ export default function Graph3DReact({ database, setDatabase, currentData, setCu
     const rdfOperations = new RdfOperations(database);
     const tripleToDelete = new Triple(linkSource,linkId,linkTarget);
     const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
-    setDatabase(newDatabase);
+    setDatabase(newDatabase as Rdfcsa);
     const queryManager = new QueryManager(newDatabase);
     setCurrentData(queryManager.getTriples([new QueryTriple(null,null,null)]));
     console.log("delete triple");
@@ -123,7 +123,7 @@ export default function Graph3DReact({ database, setDatabase, currentData, setCu
         graphData={data}
         nodeAutoColorBy="group"
         linkDirectionalArrowLength={5}
-        linkDirectionalArrowRelPos={1}
+        linkDirectionalArrowRelPos={1.05}
         linkWidth={1}
         linkOpacity={1}
         nodeOpacity={1}
@@ -134,15 +134,19 @@ export default function Graph3DReact({ database, setDatabase, currentData, setCu
       ></NoSSRForceGraph>
       <Dialog open={openNodeLeft} onClose={handleNodeLeftClose}>
         <DialogTitle id="node-left-title">{"Informationen"}</DialogTitle>
-        <DialogContentText id="node-left-text">Die NodeId ist: {nodeContent}</DialogContentText>
+        <DialogContent>
+            <DialogContentText id="node-left-text">Name: {nodeContent}</DialogContentText>
+        </DialogContent>
       </Dialog>
       <Dialog open={openLinkLeft} onClose={handleLinkLeftClose}>
         <DialogTitle id="link-left-title">{"Informationen"}</DialogTitle>
+        <DialogContent>
         <DialogContentText id="link-left-text">
           <p> Subject: {linkSourceName} </p>
           <p> Predicate: {linkName} </p>
           <p> Object: {linkTargetName} </p>
         </DialogContentText>
+        </DialogContent>
       </Dialog>
       <Dialog open={openNodeRight} onClose={handleNodeRightClose}>
         <DialogTitle id="node-right-title">Änderungen: {nodeId}</DialogTitle>

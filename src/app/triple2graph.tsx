@@ -27,8 +27,8 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     }
 
     //collect all nodes
-    arrayNodes.push([subject,triple.subject]);
-    arrayNodes.push([object, triple.object]);
+    arrayNodes.push({id: subject, origId: triple.subject});
+    arrayNodes.push({id: object, origId: triple.object});
 
     //generate links array
     links.push({
@@ -39,19 +39,30 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
   });
 
   //make a set out of all collected nodes
-  const uniqueArray = new Set(arrayNodes);
-  const resultNodes = Array.from(uniqueArray);
+  const resultNodes = [...new Map(arrayNodes.map(item => [item["id"], item])).values()]
+//   const uniqueArray = new Set(arrayNodes);
+//   const resultNodes = Array.from(uniqueArray);
 
-  for (var i = 0; i < resultNodes.length; i = +i + 1) {
-    //generate nodes array
-    const content = database.dictionary.getElementById(resultNodes[i][1]);
+  resultNodes.forEach((node, index) => {
+    const content = database.dictionary.getElementById(node.origId);
     nodes.push({
-      id: resultNodes[i][0],
-      originalId: resultNodes[i][1],
-      group: i,
+      id: node.id,
+      originalId: node.origId,
+      group: index,
       content: content,
     });
-  }
+  })
+
+//   for (var i = 0; i < resultNodes.length; i = +i + 1) {
+//     //generate nodes array
+//     const content = database.dictionary.getElementById(resultNodes[i][1]);
+//     nodes.push({
+//       id: resultNodes[i][0],
+//       originalId: resultNodes[i][1],
+//       group: i,
+//       content: content,
+//     });
+//   }
 
   //concatenate nodes and links array
   const result = { nodes: nodes, links: links };

@@ -39,16 +39,36 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : { database: Rdfcsa, setDatabase:React.Dispatch<React.SetStateAction<Rdfcsa>>,  currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) => {
   const [formFields, setFormFields] = useState({ subject: "", predicate: "", object: "" });
 
-  //Funktion zum prüfen, ob Eingabe
-  const isIRIValid = (inputValue: string) => {
-    const iriRegex = /((([A-Za-z]{1,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
-    return iriRegex.test(inputValue);
-  };
+  const [subjectValid, setSubjectValid] = useState(false);
+  const [predicateValid, setPredicateValid] = useState(false);
+  const [objectValid, setObjectValid] = useState(false);
   
+
+  const handleIRIValidation = (input: string, type: string) => {
+    const iriRegex = /((([A-Za-z]{1,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
+    switch(type){
+      case "s":
+        // Code für den Fall "s"
+        setSubjectValid(iriRegex.test(input));
+        break;
+      case "p":
+        // Code für den Fall "p"
+        setPredicateValid(iriRegex.test(input));
+        break;
+      case "o":
+        // Code für den Fall "o"
+        setObjectValid(iriRegex.test(input));
+        break;
+      default:
+        // Code für den Fall, dass keiner der oben genannten Fälle zutrifft
+        console.log("Ungültige Eingabe.");
+    }
+  };
   //user input for the additional triple subject
   const handleFormChangeAddSubject = (event: ChangeEvent<HTMLInputElement>) => {
     let data = formFields;
     data.subject = event.target.value;
+    handleIRIValidation(data.subject, "s");
     setFormFields(data);
 
     console.log(formFields);
@@ -58,6 +78,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
   const handleFormChangeAddPredicat = (event: ChangeEvent<HTMLInputElement>) => {
     let data = formFields;
     data.predicate = event.target.value;
+    handleIRIValidation(data.predicate, "p");
     setFormFields(data);
 
     console.log(formFields);
@@ -67,6 +88,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
   const handleFormChangeAddObject = (event: ChangeEvent<HTMLInputElement>) => {
     let data = formFields;
     data.object = event.target.value;
+    handleIRIValidation(data.object, "o");
     setFormFields(data);
 
     console.log(formFields);
@@ -75,9 +97,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
   //call of the interface function for the additional triple
   const addTriple = () => {
     const rdfOperations = new RdfOperations(database);
-    if(!isIRIValid(formFields.subject)){
-      console.log("INVALID SUBJECT");
-    }
+
     const newDatabase = rdfOperations.addTriple(formFields.subject, formFields.predicate, formFields.object);
     if (newDatabase !== undefined) {
       setDatabase(newDatabase);
@@ -105,22 +125,25 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
             <StyledTextField
               label="Subjekt"
               onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddSubject(event)}
+              error={!subjectValid}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <StyledTextField
               label="Prädikat"
               onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddPredicat(event)}
+              error={!predicateValid}
             />
           </Grid>
           <Grid item xs={12} sm={4}>
             <StyledTextField
               label="Objekt"
               onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddObject(event)}
+              error={!objectValid}
             />
           </Grid>
           <Grid item xs={12}>
-            <SubmitButton variant="contained" color="primary" onClick={() => addTriple()}>
+            <SubmitButton variant="contained" color="primary" onClick={() => addTriple()} disabled={!subjectValid || !predicateValid ||!objectValid}>
               Submit
             </SubmitButton>
           </Grid>

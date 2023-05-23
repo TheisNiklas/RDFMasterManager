@@ -14,6 +14,8 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { ExportService } from '@/rdf/exporter/export-service';
+import { Triple } from '@/rdf/models/triple';
+import { Rdfcsa } from '@/rdf/rdfcsa';
 
 const TextCard = styled(Card)(({ theme }) => ({
     '& .MuiTableCell-stickyHeader': {
@@ -51,7 +53,7 @@ function loadDefaultFormat() {
     return export_options[0][0]
 }
 
-export default function TextVisualization({ database, currentData, setCurrentData }: { database: any, queryManager: any, currentData: any, setCurrentData: any }) {
+export default function TextVisualization({ database, currentData, setCurrentData }: { database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) {
     const [data, setData] = React.useState(currentData);
 
     const [page, setPage] = React.useState(0);

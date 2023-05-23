@@ -1,6 +1,8 @@
 import { QueryElement } from "@/rdf/models/query-element";
 import { QueryTriple } from "@/rdf/models/query-triple";
+import { Triple } from "@/rdf/models/triple";
 import { QueryManager } from "@/rdf/query-manager";
+import { Rdfcsa } from "@/rdf/rdfcsa";
 
 //Formats the user query for the rdf backend.
 //The same query variables marked with a "?" are stored in a list.
@@ -45,10 +47,13 @@ $x is in USA
 */
 
 /**
- *
- * @param {*} queryData
- * @param {*} sortData
- * @returns
+ * 
+ * @param {{subject, predicate, object}} queryData 
+ * @param {*} sortData 
+ * @param {Rdfcsa} database 
+ * @param {Triple[]} currentData 
+ * @param {React.Dispatch<React.SetStateAction<Triple[]>>} setCurrentData 
+ * @returns 
  */
 function queryCallData(queryData, sortData, database, currentData, setCurrentData) {
   const queryManager = new QueryManager(database);
@@ -83,11 +88,12 @@ function queryCallData(queryData, sortData, database, currentData, setCurrentDat
         }
         queryTriple.subject = queryEleVar;
       } else {
-        let id = obj.subject;
+        let name = obj.subject;
         if (obj.subject.includes("??")) {
-          id = id.replace("?", "");
+          name = name.replace("?", "");
         }
-        const queryEle = new QueryElement(+id, false);
+        const id = database.dictionary.getSubjectById(name);
+        const queryEle = new QueryElement(id, false);
         queryTriple.subject = queryEle;
       }
     }
@@ -98,11 +104,12 @@ function queryCallData(queryData, sortData, database, currentData, setCurrentDat
       if (obj.predicate.includes("?") && !obj.predicate.includes("??")) {
         return false;
       } else {
-        let id = obj.predicate;
+        let name = obj.predicate;
         if (obj.predicate.includes("??")) {
-          id = id.replace("?", "");
+          name = name.replace("?", "");
         }
-        const queryEle = new QueryElement(+id, false);
+        const id = database.dictionary.getPredicateById(name)
+        const queryEle = new QueryElement(id, false);
         queryTriple.predicate = queryEle;
       }
     }
@@ -123,12 +130,12 @@ function queryCallData(queryData, sortData, database, currentData, setCurrentDat
         }
         queryTriple.object = queryEleVar;
       } else {
-        let id = obj.object;
+        let name = obj.object;
         if (obj.object.includes("??")) {
-          id = id.replace("?", "");
+          name = name.replace("?", "");
         }
-
-        const queryEle = new QueryElement(+id, false);
+        const id = database.dictionary.getObjectById(name)
+        const queryEle = new QueryElement(id, false);
         queryTriple.object = queryEle;
       }
     }

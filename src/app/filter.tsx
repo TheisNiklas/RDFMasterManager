@@ -28,6 +28,8 @@ import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { queryCallData } from "../interface/QueryCall";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Rdfcsa } from "@/rdf/rdfcsa";
+import { Triple } from "@/rdf/models/triple";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -57,7 +59,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const FilterForm = ({ database, currentData, setCurrentData }) => {
+const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) => {
   //Adds a SPO triple to the previous formField of the filter triple
   //true as default value for the checkboxes
   const addFilterTriple = () => {
@@ -177,7 +179,7 @@ const FilterForm = ({ database, currentData, setCurrentData }) => {
                           freeSolo
                           disableClearable
                           //load all subjects!!!!!!!
-                          options={["ab", "ba", "c"]}
+                          options={database.dictionary.SO.concat(database.dictionary.S)}
                           //
                           renderInput={(params) => (
                             <StyledTextField
@@ -199,8 +201,8 @@ const FilterForm = ({ database, currentData, setCurrentData }) => {
                         <Autocomplete
                           freeSolo
                           disableClearable
-                          //load all subjects!!!!!!!
-                          options={["ab", "ba", "c"]}
+                          //load all predicates!!!!!!!
+                          options={database.dictionary.P}
                           //
                           renderInput={(params) => (
                             <StyledTextField
@@ -222,8 +224,8 @@ const FilterForm = ({ database, currentData, setCurrentData }) => {
                         <Autocomplete
                           freeSolo
                           disableClearable
-                          //load all subjects!!!!!!!
-                          options={["ab", "ba", "c"]}
+                          //load all objects!!!!!!!
+                          options={database.dictionary.SO.concat(database.dictionary.O)}
                           //
                           renderInput={(params) => (
                             <StyledTextField

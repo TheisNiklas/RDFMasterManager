@@ -9,7 +9,7 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import load_data from "./triple2graph";
 import { Rdfcsa } from "@/rdf/rdfcsa";
-import { QueryManager } from "@/rdf/query-manager";
+import { Triple } from "@/rdf/models/triple";
 
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
@@ -20,7 +20,7 @@ const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
  * Visualization of the 3D graph and handling of all interaction with the 3D graph.
  * @returns React Component Graph3DReact
  */
-export default function Graph3DReact({ database, currentData, setCurrentData }) {
+export default function Graph3DReact({ database, currentData, setCurrentData } :{ database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) {
   //load data into the 3D Graph
   const [data, setData] = React.useState(load_data(database, currentData));
 

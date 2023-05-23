@@ -28,6 +28,7 @@ import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "@/rdf/models/query-triple";
 import { Dialog, DialogTitle, Button, DialogContent } from "@mui/material";
 import { importFile } from '../rdf/import/ImportBinaryWindows';
+import { Triple } from "@/rdf/models/triple";
 
 const drawerWidth = 500;
 
@@ -102,25 +103,17 @@ const DialogButton = styled(Button)(( {theme} ) => ({
 }))
 export default function PersistentDrawerRight() {
   // load example Database
-  const rdfcsa = new ImportService().loadSample();
-  const [currentData, setCurrentData] = React.useState([]);
+  const rdfcsa = new Rdfcsa([]);
+  const [currentData, setCurrentData] = React.useState([] as Triple[]);
   const [database,setDatabase] = React.useState(rdfcsa);
   //const database = React.useRef(new Rdfcsa([]));
-  React.useEffect(() => {
-    console.log("set database");
-    const rdfcsa = new ImportService().loadSample()
-    const queryManager = new QueryManager(rdfcsa);
-    const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-    setCurrentData(data);
-    setDatabase(rdfcsa);
-  },[]);
 
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
   const [mainFrame, setMainFrame] = React.useState("text");
 
-  const handleMainFrame = () => {
+  const handleMainFrame = React.useCallback(event => {
     if (mainFrame === "text") {
       return <TextVisualization database={database} currentData={currentData} setCurrentData={setCurrentData} />;
     } else if (mainFrame === "3d") {
@@ -131,7 +124,7 @@ export default function PersistentDrawerRight() {
         <div />
       );
     }
-  };
+  },[database,currentData,mainFrame]);
   const drownDownMenu = () => {
     return (
       <DropDownBox>
@@ -174,17 +167,40 @@ export default function PersistentDrawerRight() {
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
 
   const handleFromFromExample = () => {
+    console.log("set database");
+    const rdfcsa = new ImportService().loadSample()
+    const queryManager = new QueryManager(rdfcsa);
+    const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+    setCurrentData(data);
+    setDatabase(rdfcsa);
     setStartDialogOpen(false);
   };
 
   const handleFromScratch = () => {
-    //TODO: Beispieldatenmenge leeren
     setStartDialogOpen(false);
   }
 
-  const handleImportRequest = (
-    ) => {
-        setStartDialogOpen(!importFile(false));
+  const handleImportRequest = () => {
+      const fileInput = document.createElement('input');
+      fileInput.type = 'file';
+      const importService = new ImportService();
+
+      // Add an event handler to get the selected file path.
+      fileInput.addEventListener('change', async event => {
+          const file = event.target.files[0];
+          const rdfcsa = await importService.importFile(file, true);
+          if (rdfcsa === undefined) {
+            setStartDialogOpen(true);
+          } else {
+            setDatabase(rdfcsa);
+            const queryManager = new QueryManager(rdfcsa);
+            const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+            setCurrentData(data);
+            setStartDialogOpen(false);
+          }
+      });
+  
+      fileInput.click();
     };
   return (
     <Box sx={{ display: "flex" }}>

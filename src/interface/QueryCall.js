@@ -92,14 +92,14 @@ function queryCallData(queryData, sortData, database, currentData, setCurrentDat
       }
     }
 
-    if (obj.predicat == "") {
+    if (obj.predicate == "") {
       queryTriple.predicate = null;
     } else {
-      if (obj.predicat.includes("?") && !obj.predicat.includes("??")) {
+      if (obj.predicate.includes("?") && !obj.predicate.includes("??")) {
         return false;
       } else {
-        let id = obj.predicat;
-        if (obj.predicat.includes("??")) {
+        let id = obj.predicate;
+        if (obj.predicate.includes("??")) {
           id = id.replace("?", "");
         }
         const queryEle = new QueryElement(+id, false);

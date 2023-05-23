@@ -25,6 +25,7 @@ import Graph3DReact from "./graph3dreact";
 import { Rdfcsa } from "../rdf/rdfcsa";
 import { ImportService } from "../rdf/importer/import-service";
 import { QueryManager } from "../rdf/query-manager";
+import { QueryTriple } from "@/rdf/models/query-triple";
 
 const drawerWidth = 500;
 
@@ -95,12 +96,20 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
 }));
 
 export default function PersistentDrawerRight() {
+  // load example Database
+  const rdfcsa = new ImportService().loadSample();
   const [currentData, setCurrentData] = React.useState([]);
-  const [importService, setImportService] = React.useState(new ImportService());
-  const database = React.useRef(new Rdfcsa([]));
-  const queryManager = React.useRef(new QueryManager(new Rdfcsa([])));
-  database.current = importService.loadSample();
-  queryManager.current.setRdfcsa(database.current);
+  const [database,setDatabase] = React.useState(rdfcsa);
+  //const database = React.useRef(new Rdfcsa([]));
+  React.useEffect(() => {
+    console.log("set database");
+    const rdfcsa = new ImportService().loadSample()
+    const queryManager = new QueryManager(rdfcsa);
+    const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+    setCurrentData(data);
+    setDatabase(rdfcsa);
+  },[]);
+
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -108,21 +117,9 @@ export default function PersistentDrawerRight() {
 
   const handleMainFrame = () => {
     if (mainFrame === "text") {
-      return <TextVisualization
-        database={database}
-        queryManager={queryManager}
-        currentData={currentData}
-        setCurrentData={setCurrentData}
-      />;
+      return <TextVisualization database={database} currentData={currentData} setCurrentData={setCurrentData} />;
     } else if (mainFrame === "3d") {
-      return (
-        <Graph3DReact
-          database={database}
-          queryManager={queryManager}
-          currentData={currentData}
-          setCurrentData={setCurrentData}
-        />
-      );
+      return <Graph3DReact database={database} currentData={currentData} setCurrentData={setCurrentData} />;
     } else if (mainFrame === "2d") {
       return (
         //<Graph2D />
@@ -209,8 +206,13 @@ export default function PersistentDrawerRight() {
             {theme.direction === "rtl" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
           </IconButton>
         </DrawerHeader>
-        <FilterForm queryManager={queryManager} currentData={currentData} setCurrentData={setCurrentData}></FilterForm>
-        <AddTripleForm queryManager={queryManager} currentData={currentData} setCurrentData={setCurrentData}></AddTripleForm>
+        <FilterForm database={database} currentData={currentData} setCurrentData={setCurrentData}></FilterForm>
+        <AddTripleForm
+          database={database}
+          setDatabase = {setDatabase}
+          currentData={currentData}
+          setCurrentData={setCurrentData}
+        ></AddTripleForm>
         <Import></Import>
         <Export></Export>
       </Drawer>

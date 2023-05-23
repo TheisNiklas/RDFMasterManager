@@ -1,7 +1,6 @@
 import { QueryElement } from "@/rdf/models/query-element";
 import { QueryTriple } from "@/rdf/models/query-triple";
 import { QueryManager } from "@/rdf/query-manager";
-import { getIdBySubject, getIdByPredicate, getIdByObject } from "@/rdf/dictionary";
 
 //Formats the user query for the rdf backend.
 //The same query variables marked with a "?" are stored in a list.
@@ -49,10 +48,10 @@ $x is in USA
  *
  * @param {*} queryData
  * @param {*} sortData
- * @param {React.MutableRefObject<QueryManager>} queryManager
  * @returns
  */
-function queryCallData(queryData, sortData, queryManager, currentData, setCurrentData) {
+function queryCallData(queryData, sortData, database, currentData, setCurrentData) {
+  const queryManager = new QueryManager(database);
   console.log("queryDataCall start: ");
   console.log(queryData);
   console.log(sortData);
@@ -88,7 +87,7 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
         if (obj.subject.includes("??")) {
           id = id.replace("?", "");
         }
-        const queryEle = new QueryElement(+getIdBySubject(id), false);
+        const queryEle = new QueryElement(+id, false);
         queryTriple.subject = queryEle;
       }
     }
@@ -103,7 +102,7 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
         if (obj.predicat.includes("??")) {
           id = id.replace("?", "");
         }
-        const queryEle = new QueryElement(+getIdByPredicate(id), false);
+        const queryEle = new QueryElement(+id, false);
         queryTriple.predicate = queryEle;
       }
     }
@@ -129,7 +128,7 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
           id = id.replace("?", "");
         }
 
-        const queryEle = new QueryElement(+getIdByObject(id), false);
+        const queryEle = new QueryElement(+id, false);
         queryTriple.object = queryEle;
       }
     }
@@ -147,7 +146,7 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
   }
   console.log("queryDataCall end");
 
-  const result = queryManager.current.getTriples(query);
+  const result = queryManager.getTriples(query);
 
   setCurrentData(result);
 

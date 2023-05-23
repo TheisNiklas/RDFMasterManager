@@ -56,7 +56,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
+const FilterForm = ({ database, currentData, setCurrentData }) => {
   //Adds a SPO triple to the previous formField of the filter triple
   //true as default value for the checkboxes
   const addFilterTriple = () => {
@@ -72,7 +72,7 @@ const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    setOpen(!queryCallData(formFields, sortFields, queryManager, currentData, setCurrentData));
+    setOpen(!queryCallData(formFields, sortFields, database, currentData, setCurrentData));
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements

@@ -237,6 +237,13 @@ export class Dictionary {
     return undefined;
   }
 
+  isSubjectObjectByObjectId(id) {
+    if (id < this.SO.length + this.S.length + this.P.length + this.SO.length) {
+      return true;
+    }
+    return false;
+  }
+
   /**
    *
    * @param {Triple} triple

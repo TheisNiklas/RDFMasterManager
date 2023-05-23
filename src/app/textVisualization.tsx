@@ -51,7 +51,7 @@ function loadDefaultFormat() {
     return export_options[0][0]
 }
 
-export default function TextVisualization({ database, queryManager, currentData, setCurrentData }: { database: any, queryManager: any, currentData: any, setCurrentData: any }) {
+export default function TextVisualization({ database, currentData, setCurrentData }: { database: any, queryManager: any, currentData: any, setCurrentData: any }) {
     const [data, setData] = React.useState(currentData);
 
     const [page, setPage] = React.useState(0);
@@ -132,7 +132,7 @@ export default function TextVisualization({ database, queryManager, currentData,
         if (currentData === undefined) {
             return [];
         }
-        const value = await exporter.serializeTriples(data, database.current.dictionary, format);
+        const value = await exporter.serializeTriples(data, database.dictionary, format);
 
         console.log("Fetching new data for format: " + format)
         if (value === "") {

@@ -1,35 +1,44 @@
 import React, { ChangeEvent, useState } from "react";
-import { styled } from '@mui/system';
-import { Typography, TextField, Button, Grid, Container, Dialog, DialogTitle, DialogContent, DialogContentText, DialogActions } from '@mui/material';
-import { addTripleInterface } from '../interface/AddTriple';
+import { styled } from "@mui/system";
+import {
+  Typography,
+  TextField,
+  Button,
+  Grid,
+  Container,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
+} from "@mui/material";
+import { RdfOperations } from "@/rdf/rdf-operations";
+import { QueryManager } from "@/rdf/query-manager";
+import { QueryTriple } from "@/rdf/models/query-triple";
 
 const Header = styled(Typography)(({ theme }) => ({
-  fontWeight: 'bold',
+  fontWeight: "bold",
   marginBottom: theme.spacing(2),
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
-  width: '100%',
+  width: "100%",
 }));
 
 const AddButton = styled(Button)(({ theme }) => ({
   marginTop: theme.spacing(2),
-  width: '100%',
+  width: "100%",
 }));
 
 const SubmitButton = styled(Button)(({ theme }) => ({
-  width: '100%',
+  width: "100%",
 }));
 
-const AddTripleForm = ({ queryManager, currentData, setCurrentData }) => {
-
-  const [formFields, setFormFields] = useState(
-    { subject: "", predicate: "", object: "" });
+const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }) => {
+  const [formFields, setFormFields] = useState({ subject: "", predicate: "", object: "" });
 
   //user input for the additional triple subject
-  const handleFormChangeAddSubject = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFormChangeAddSubject = (event: ChangeEvent<HTMLInputElement>) => {
     let data = formFields;
     data.subject = event.target.value;
     setFormFields(data);
@@ -38,9 +47,7 @@ const AddTripleForm = ({ queryManager, currentData, setCurrentData }) => {
   };
 
   //user input for the additional triple predicat
-  const handleFormChangeAddPredicat = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFormChangeAddPredicat = (event: ChangeEvent<HTMLInputElement>) => {
     let data = formFields;
     data.predicate = event.target.value;
     setFormFields(data);
@@ -49,9 +56,7 @@ const AddTripleForm = ({ queryManager, currentData, setCurrentData }) => {
   };
 
   //user input for the additional triple object
-  const handleFormChangeAddObject = (
-    event: ChangeEvent<HTMLInputElement>
-  ) => {
+  const handleFormChangeAddObject = (event: ChangeEvent<HTMLInputElement>) => {
     let data = formFields;
     data.object = event.target.value;
     setFormFields(data);
@@ -60,10 +65,17 @@ const AddTripleForm = ({ queryManager, currentData, setCurrentData }) => {
   };
 
   //call of the interface function for the additional triple
-  const addTriple = (
-  ) => {
-    setOpen(!addTripleInterface(formFields, queryManager, currentData, setCurrentData));
-
+  const addTriple = () => {
+    const rdfOperations = new RdfOperations(database);
+    const newDatabase = rdfOperations.addTriple(formFields.subject, formFields.predicate, formFields.object);
+    if (newDatabase !== undefined) {
+      setDatabase(newDatabase);
+      const queryManager = new QueryManager(newDatabase);
+      setCurrentData(queryManager.getTriples([new QueryTriple(null,null,null)]));
+      setOpen(false);
+    } else {
+      setOpen(true);
+    }
   };
 
   //State for the Dialog to open/close
@@ -79,13 +91,22 @@ const AddTripleForm = ({ queryManager, currentData, setCurrentData }) => {
         <Header variant="h6">Add Triple</Header>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
-            <StyledTextField label="Subjekt" onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddSubject(event)} />
+            <StyledTextField
+              label="Subjekt"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddSubject(event)}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <StyledTextField label="Prädikat" onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddPredicat(event)} />
+            <StyledTextField
+              label="Prädikat"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddPredicat(event)}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <StyledTextField label="Objekt" onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddObject(event)} />
+            <StyledTextField
+              label="Objekt"
+              onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddObject(event)}
+            />
           </Grid>
           <Grid item xs={12}>
             <SubmitButton variant="contained" color="primary" onClick={() => addTriple()}>
@@ -99,9 +120,7 @@ const AddTripleForm = ({ queryManager, currentData, setCurrentData }) => {
           aria-labelledby="alert-dialog-title"
           aria-describedby="alert-dialog-description"
         >
-          <DialogTitle id="alert-dialog-title">
-            {"Triple kann nicht hinzugefügt werden."}
-          </DialogTitle>
+          <DialogTitle id="alert-dialog-title">{"Triple kann nicht hinzugefügt werden."}</DialogTitle>
           <DialogContent>
             <DialogContentText id="alert-dialog-description">
               Bitte ändern Sie ihre Eingaben, da das Triple so nicht hinzugefügt werden kann.

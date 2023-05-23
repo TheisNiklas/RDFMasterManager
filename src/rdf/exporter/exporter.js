@@ -1,6 +1,3 @@
-import { WriteStream } from "fs";
-import { Dictionary } from "../dictionary";
-
 export class Exporter {
   constructor() {}
   /**

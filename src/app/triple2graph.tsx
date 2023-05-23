@@ -1,25 +1,30 @@
 import { QueryManager } from "@/rdf/query-manager";
 import { Rdfcsa } from "@/rdf/rdfcsa";
 import { QueryTriple } from "@/rdf/models/query-triple";
+import { Triple } from "@/rdf/models/triple";
 
 /**
  * Transform the RDF-Dictionary into an input format for the
  * 3D and 2D graph visualization (react-force-graph)
  * @returns input for the force-graph in JSON syntax
  */
-export default function load_data(database, data) {
+export default function load_data(database: Rdfcsa, data: Triple[]) {
   if (data === undefined) {
     return { nodes: [], links: [] };
   }
 
   const nodes: any = [];
   const links: any = [];
-  const arrayNodes = [];
+  const arrayNodes: any = [];
 
-  for (var i = 0; i < data.length; i = +i + 1) {
-    var subject = data[i].subject;
-    var object = data[i].object;
-    var predicate = data[i].predicate;
+  data.forEach((triple) => {
+    var subject = triple.subject;
+    var predicate = triple.predicate;
+    var object = triple.object;
+
+    if (database.dictionary.isSubjectObjectByObjectId(object)) {
+      object = object - database.gaps[2];
+    }
 
     //collect all nodes
     arrayNodes.push(subject);
@@ -29,9 +34,9 @@ export default function load_data(database, data) {
     links.push({
       source: subject,
       target: object,
-      name: predicate,
+      id: predicate
     });
-  }
+  });
 
   //make a set out of all collected nodes
   const uniqueArray = new Set(arrayNodes);
@@ -39,7 +44,7 @@ export default function load_data(database, data) {
 
   for (var i = 0; i < resultNodes.length; i = +i + 1) {
     //generate nodes array
-    const content = database.current.dictionary.getElementById(resultNodes[i]);
+    const content = database.dictionary.getElementById(resultNodes[i]);
     nodes.push({
       id: resultNodes[i],
       group: i,

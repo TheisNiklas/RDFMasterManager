@@ -20,7 +20,7 @@ const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
  * Visualization of the 3D graph and handling of all interaction with the 3D graph.
  * @returns React Component Graph3DReact
  */
-export default function Graph3DReact({ database, queryManager, currentData, setCurrentData }) {
+export default function Graph3DReact({ database, currentData, setCurrentData }) {
   //load data into the 3D Graph
   const [data, setData] = React.useState(load_data(database, currentData));
 
@@ -32,6 +32,7 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
   const [nodeContent, setNodeContent] = React.useState("");
   const [linkSource, setLinkSource] = React.useState("");
   const [linkTarget, setLinkTarget] = React.useState("");
+  const [linkName, setLinkName] = React.useState("");
   const [formField, setFormField] = React.useState("");
   const [source, setSource] = React.useState("");
   const [target, setTarget] = React.useState("");
@@ -63,6 +64,7 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
   //display information about the link
   const handleLinkLeftClick = (link: any) => {
     setLinkSource(link.source.id);
+    setLinkName(database.dictionary.getElementById(link.id));
     setLinkTarget(link.target.id);
     setOpenLinkLeft(true);
   };
@@ -105,6 +107,11 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
       <NoSSRForceGraph
         graphData={data}
         nodeAutoColorBy="group"
+        linkDirectionalArrowLength={5}
+        linkDirectionalArrowRelPos={1}
+        linkWidth={1}
+        linkOpacity={1}
+        nodeOpacity={1}
         onNodeClick={(node) => handleNodeLeftClick(node)}
         onNodeRightClick={(node) => handleNodeRightClick(node)}
         onLinkClick={(link) => handleLinkLeftClick(link)}
@@ -117,6 +124,7 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
       <Dialog open={openLinkLeft} onClose={handleLinkLeftClose}>
         <DialogTitle id="link-left-title">{"Informationen"}</DialogTitle>
         <DialogContentText id="link-left-text">
+          <p> Name: {linkName} </p>
           Source: {linkSource}
           Target: {linkTarget}
         </DialogContentText>

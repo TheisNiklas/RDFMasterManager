@@ -113,7 +113,7 @@ export default function PersistentDrawerRight() {
   const [open, setOpen] = React.useState(false);
   const [mainFrame, setMainFrame] = React.useState("text");
 
-  const handleMainFrame = React.useCallback(event => {
+  const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
       return <TextVisualization database={database} currentData={currentData} setCurrentData={setCurrentData} />;
     } else if (mainFrame === "3d") {
@@ -222,7 +222,7 @@ export default function PersistentDrawerRight() {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Main open={open}>
+      <Main open={open} style={{padding: 0}}>
         <DrawerHeader />
         {handleMainFrame()}
       </Main>

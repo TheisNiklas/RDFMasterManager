@@ -25,6 +25,8 @@ import Graph3DReact from "./graph3dreact";
 import { Rdfcsa } from "../rdf/rdfcsa";
 import { ImportService } from "../rdf/importer/import-service";
 import { QueryManager } from "../rdf/query-manager";
+import { Dialog, DialogTitle, Button, DialogContent } from "@mui/material";
+import { importFile } from '../rdf/import/ImportBinaryWindows';
 
 const drawerWidth = 500;
 
@@ -94,6 +96,9 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
   minWidth: 100,
 }));
 
+const DialogButton = styled(Button)(( {theme} ) => ({
+  marginTop: "16px"
+}))
 export default function PersistentDrawerRight() {
   const [currentData, setCurrentData] = React.useState([]);
   const [importService, setImportService] = React.useState(new ImportService());
@@ -163,6 +168,22 @@ export default function PersistentDrawerRight() {
     setOpen(false);
   };
 
+  //State for the Dialog to open
+  const [startDialogOpen, setStartDialogOpen] = React.useState(true);
+
+  const handleFromFromExample = () => {
+    setStartDialogOpen(false);
+  };
+
+  const handleFromScratch = () => {
+    //TODO: Beispieldatenmenge leeren
+    setStartDialogOpen(false);
+  }
+
+  const handleImportRequest = (
+    ) => {
+        setStartDialogOpen(!importFile(false));
+    };
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -209,6 +230,16 @@ export default function PersistentDrawerRight() {
         <Import></Import>
         <Export></Export>
       </Drawer>
+      <Dialog open={startDialogOpen}>
+        <DialogTitle>Open Database / Import</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <DialogButton variant="contained" color="primary" onClick={handleImportRequest} fullWidth>Import</DialogButton>
+            <DialogButton variant="contained" color="primary" onClick={handleFromScratch} fullWidth>Start from Scratch</DialogButton>
+            <DialogButton variant="contained" color="primary" onClick={handleFromFromExample} fullWidth>Start from Example</DialogButton>
+          </Box>
+        </DialogContent>
+      </Dialog>
     </Box>
   );
 }

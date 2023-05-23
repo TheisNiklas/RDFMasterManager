@@ -15,6 +15,8 @@ import {
 import { RdfOperations } from "@/rdf/rdf-operations";
 import { QueryManager } from "@/rdf/query-manager";
 import { QueryTriple } from "@/rdf/models/query-triple";
+import { Rdfcsa } from "@/rdf/rdfcsa";
+import { Triple } from "@/rdf/models/triple";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -34,9 +36,15 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }) => {
+const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : { database: Rdfcsa, setDatabase:React.Dispatch<React.SetStateAction<Rdfcsa>>,  currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) => {
   const [formFields, setFormFields] = useState({ subject: "", predicate: "", object: "" });
 
+  //Funktion zum prüfen, ob Eingabe
+  const isIRIValid = (inputValue: string) => {
+    const iriRegex = /((([A-Za-z]{1,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
+    return iriRegex.test(inputValue);
+  };
+  
   //user input for the additional triple subject
   const handleFormChangeAddSubject = (event: ChangeEvent<HTMLInputElement>) => {
     let data = formFields;
@@ -67,6 +75,9 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }) =
   //call of the interface function for the additional triple
   const addTriple = () => {
     const rdfOperations = new RdfOperations(database);
+    if(!isIRIValid(formFields.subject)){
+      console.log("INVALID SUBJECT");
+    }
     const newDatabase = rdfOperations.addTriple(formFields.subject, formFields.predicate, formFields.object);
     if (newDatabase !== undefined) {
       setDatabase(newDatabase);

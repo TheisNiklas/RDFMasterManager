@@ -1,6 +1,7 @@
-import React, { ChangeEvent, useState } from "react";
+import React, { ChangeEvent, useState, SyntheticEvent } from "react";
 import { styled } from "@mui/system";
 import {
+  Autocomplete,
   Typography,
   TextField,
   Button,
@@ -62,7 +63,7 @@ const FilterForm = ({ database, currentData, setCurrentData }) => {
   const addFilterTriple = () => {
     let object = {
       subject: "",
-      predicat: "",
+      predicate: "",
       object: "",
     };
 
@@ -77,32 +78,32 @@ const FilterForm = ({ database, currentData, setCurrentData }) => {
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements
   //true as default value for the checkboxes
-  const [formFields, setFormFields] = useState([{ subject: "", predicat: "", object: "" }]);
+  const [formFields, setFormFields] = useState([{ subject: "", predicate: "", object: "" }]);
 
   const [sortFields, setSortFields] = useState({ sortElement: "sortSubject", sortOrder: "ascending", visualLimit: 0 });
 
   //Adaptation of the subject filter
-  const handleFormChangeSubject = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleFormChangeSubject = (event: SyntheticEvent<Element, Event>, index: number) => {
     let data = [...formFields];
-    data[index]["subject"] = event.target.value;
+    data[index]["subject"] = event.currentTarget.textContent + "";
     setFormFields(data);
 
     console.log(formFields);
   };
 
   //Adaptation of the predicat filter
-  const handleFormChangePredicat = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleFormChangePredicate = (event: SyntheticEvent<Element, Event>, index: number) => {
     let data = [...formFields];
-    data[index]["predicat"] = event.target.value;
+    data[index]["predicate"] = event.currentTarget.textContent + "";
     setFormFields(data);
 
     console.log(formFields);
   };
 
   //Adaptation of the object filter
-  const handleFormChangeObject = (event: ChangeEvent<HTMLInputElement>, index: number) => {
+  const handleFormChangeObject = (event: SyntheticEvent<Element, Event>, index: number) => {
     let data = [...formFields];
-    data[index]["object"] = event.target.value;
+    data[index]["object"] = event.currentTarget.textContent + "";
     setFormFields(data);
 
     console.log(formFields);
@@ -172,31 +173,70 @@ const FilterForm = ({ database, currentData, setCurrentData }) => {
                     <Grid item xs={12} sm={6}></Grid>
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
-                        <StyledTextField
-                          label="Subjekt"
-                          name="subject"
-                          onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeSubject(event, index)}
+                        <Autocomplete
+                          freeSolo
+                          disableClearable
+                          //load all subjects!!!!!!!
+                          options={["ab", "ba", "c"]}
+                          //
+                          renderInput={(params) => (
+                            <StyledTextField
+                              {...params}
+                              label="Subjekt"
+                              InputProps={{
+                                ...params.InputProps,
+                                type: 'search',
+                              }}
+                            />
+                          )}
                           value={form.subject}
+                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
                         />
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="nur Suchwert, keine Join Variable möglich" placement="top">
-                        <StyledTextField
-                          label="Prädikat"
-                          name="predicat"
-                          onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangePredicat(event, index)}
-                          value={form.predicat}
+                        <Autocomplete
+                          freeSolo
+                          disableClearable
+                          //load all subjects!!!!!!!
+                          options={["ab", "ba", "c"]}
+                          //
+                          renderInput={(params) => (
+                            <StyledTextField
+                              {...params}
+                              label="Prädikat"
+                              InputProps={{
+                                ...params.InputProps,
+                                type: 'search',
+                              }}
+                            />
+                          )}
+                          value={form.predicate}
+                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangePredicate(event, index)}
                         />
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
-                        <StyledTextField
-                          label="Objekt"
-                          name="object"
-                          onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeObject(event, index)}
+                        <Autocomplete
+                          freeSolo
+                          disableClearable
+                          //load all subjects!!!!!!!
+                          options={["ab", "ba", "c"]}
+                          //
+                          renderInput={(params) => (
+                            <StyledTextField
+                              {...params}
+                              label="Objekt"
+                              InputProps={{
+                                ...params.InputProps,
+                                type: 'search',
+                              }}
+                            />
+                          )}
                           value={form.object}
+                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeObject(event, index)}
                         />
                       </Tooltip>
                     </Grid>
@@ -242,7 +282,7 @@ const FilterForm = ({ database, currentData, setCurrentData }) => {
                           onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}
                         >
                           <MenuItem value="sortSubject">Subjekt</MenuItem>
-                          <MenuItem value="sortPredicat">Prädikat</MenuItem>
+                          <MenuItem value="sortPredicate">Prädikat</MenuItem>
                           <MenuItem value="sortObject">Objekt</MenuItem>
                         </Select>
                       </SortFormControl>

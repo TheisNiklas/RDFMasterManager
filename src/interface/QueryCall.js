@@ -1,7 +1,8 @@
 import { QueryElement } from "@/rdf/models/query-element";
 import { QueryTriple } from "@/rdf/models/query-triple";
+import { Triple } from "@/rdf/models/triple";
 import { QueryManager } from "@/rdf/query-manager";
-import { getIdBySubject, getIdByPredicate, getIdByObject } from "@/rdf/dictionary";
+import { Rdfcsa } from "@/rdf/rdfcsa";
 
 //Formats the user query for the rdf backend.
 //The same query variables marked with a "?" are stored in a list.
@@ -46,13 +47,16 @@ $x is in USA
 */
 
 /**
- *
- * @param {*} queryData
- * @param {*} sortData
- * @param {React.MutableRefObject<QueryManager>} queryManager
- * @returns
+ * 
+ * @param {{ subject: string; predicate: string; object: string; }[]} queryData 
+ * @param {*} sortData 
+ * @param {Rdfcsa} database 
+ * @param {Triple[]} currentData 
+ * @param {React.Dispatch<React.SetStateAction<Triple[]>>} setCurrentData 
+ * @returns 
  */
-function queryCallData(queryData, sortData, queryManager, currentData, setCurrentData) {
+function queryCallData(queryData, sortData, database, currentData, setCurrentData) {
+  const queryManager = new QueryManager(database);
   console.log("queryDataCall start: ");
   console.log(queryData);
   console.log(sortData);
@@ -84,26 +88,28 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
         }
         queryTriple.subject = queryEleVar;
       } else {
-        let id = obj.subject;
+        let name = obj.subject;
         if (obj.subject.includes("??")) {
-          id = id.replace("?", "");
+          name = name.replace("?", "");
         }
-        const queryEle = new QueryElement(+getIdBySubject(id), false);
+        const id = database.dictionary.getIdBySubject(name);
+        const queryEle = new QueryElement(id, false);
         queryTriple.subject = queryEle;
       }
     }
 
-    if (obj.predicat == "") {
+    if (obj.predicate == "") {
       queryTriple.predicate = null;
     } else {
-      if (obj.predicat.includes("?") && !obj.predicat.includes("??")) {
+      if (obj.predicate.includes("?") && !obj.predicate.includes("??")) {
         return false;
       } else {
-        let id = obj.predicat;
-        if (obj.predicat.includes("??")) {
-          id = id.replace("?", "");
+        let name = obj.predicate;
+        if (obj.predicate.includes("??")) {
+          name = name.replace("?", "");
         }
-        const queryEle = new QueryElement(+getIdByPredicate(id), false);
+        const id = database.dictionary.getIdByPredicate(name)
+        const queryEle = new QueryElement(id, false);
         queryTriple.predicate = queryEle;
       }
     }
@@ -124,12 +130,12 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
         }
         queryTriple.object = queryEleVar;
       } else {
-        let id = obj.object;
+        let name = obj.object;
         if (obj.object.includes("??")) {
-          id = id.replace("?", "");
+          name = name.replace("?", "");
         }
-
-        const queryEle = new QueryElement(+getIdByObject(id), false);
+        const id = database.dictionary.getIdByObject(name)
+        const queryEle = new QueryElement(id, false);
         queryTriple.object = queryEle;
       }
     }
@@ -147,7 +153,7 @@ function queryCallData(queryData, sortData, queryManager, currentData, setCurren
   }
   console.log("queryDataCall end");
 
-  const result = queryManager.current.getTriples(query);
+  const result = queryManager.getTriples(query);
 
   setCurrentData(result);
 

@@ -28,6 +28,8 @@ import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { queryCallData } from "../interface/QueryCall";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
+import { Rdfcsa } from "@/rdf/rdfcsa";
+import { Triple } from "@/rdf/models/triple";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -57,7 +59,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
+const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) => {
   //Adds a SPO triple to the previous formField of the filter triple
   //true as default value for the checkboxes
   const addFilterTriple = () => {
@@ -73,7 +75,7 @@ const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    setOpen(!queryCallData(formFields, sortFields, queryManager, currentData, setCurrentData));
+    setOpen(!queryCallData(formFields, sortFields, database, currentData, setCurrentData));
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements
@@ -176,9 +178,8 @@ const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
                         <Autocomplete
                           freeSolo
                           disableClearable
-                          //load all subjects!!!!!!!
-                          options={["ab", "ba", "c"]}
-                          //
+                          //load all subject strings
+                          options={database.dictionary.SO.concat(database.dictionary.S)}
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
@@ -190,7 +191,7 @@ const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
                             />
                           )}
                           value={form.subject}
-                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
                         />
                       </Tooltip>
                     </Grid>
@@ -199,9 +200,8 @@ const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
                         <Autocomplete
                           freeSolo
                           disableClearable
-                          //load all subjects!!!!!!!
-                          options={["ab", "ba", "c"]}
-                          //
+                          //load all predicate strings
+                          options={database.dictionary.P}
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
@@ -213,7 +213,7 @@ const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
                             />
                           )}
                           value={form.predicate}
-                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangePredicate(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangePredicate(event, index)}
                         />
                       </Tooltip>
                     </Grid>
@@ -222,9 +222,8 @@ const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
                         <Autocomplete
                           freeSolo
                           disableClearable
-                          //load all subjects!!!!!!!
-                          options={["ab", "ba", "c"]}
-                          //
+                          //load all object strings
+                          options={database.dictionary.SO.concat(database.dictionary.O)}
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
@@ -236,7 +235,7 @@ const FilterForm = ({ queryManager, currentData, setCurrentData }) => {
                             />
                           )}
                           value={form.object}
-                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeObject(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeObject(event, index)}
                         />
                       </Tooltip>
                     </Grid>

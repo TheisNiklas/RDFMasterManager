@@ -9,7 +9,10 @@ import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
 import load_data from "./triple2graph";
 import { Rdfcsa } from "@/rdf/rdfcsa";
+import { Triple } from "@/rdf/models/triple";
+import { RdfOperations } from "@/rdf/rdf-operations";
 import { QueryManager } from "@/rdf/query-manager";
+import { QueryTriple } from "@/rdf/models/query-triple";
 
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
@@ -20,7 +23,7 @@ const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
  * Visualization of the 3D graph and handling of all interaction with the 3D graph.
  * @returns React Component Graph3DReact
  */
-export default function Graph3DReact({ database, queryManager, currentData, setCurrentData }) {
+export default function Graph3DReact({ database, setDatabase, currentData, setCurrentData } :{ database: Rdfcsa, setDatabase: React.Dispatch<React.SetStateAction<Rdfcsa>> ,currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) {
   //load data into the 3D Graph
   const [data, setData] = React.useState(load_data(database, currentData));
 
@@ -31,7 +34,11 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
   const [nodeId, setNodeId] = React.useState("");
   const [nodeContent, setNodeContent] = React.useState("");
   const [linkSource, setLinkSource] = React.useState("");
+  const [linkId, setLinkId] = React.useState("");
   const [linkTarget, setLinkTarget] = React.useState("");
+  const [linkName, setLinkName] = React.useState("");
+  const [linkSourceName, setLinkSourceName] = React.useState("");
+  const [linkTargetName, setLinkTargetName] = React.useState("");
   const [formField, setFormField] = React.useState("");
   const [source, setSource] = React.useState("");
   const [target, setTarget] = React.useState("");
@@ -62,8 +69,9 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
 
   //display information about the link
   const handleLinkLeftClick = (link: any) => {
-    setLinkSource(link.source.id);
-    setLinkTarget(link.target.id);
+    setLinkSourceName(database.dictionary.getElementById(link.source.id));
+    setLinkName(database.dictionary.getElementById(link.id));
+    setLinkTargetName(database.dictionary.getElementById(link.target.id));
     setOpenLinkLeft(true);
   };
 
@@ -73,6 +81,9 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
   };
 
   const handleLinkRightClick = (link: any) => {
+    setLinkSource(link.source.originalId);
+    setLinkTarget(link.target.originalId);
+    setLinkId(link.id);
     setOpenLinkRight(true);
   };
 
@@ -92,6 +103,12 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
 
   //handle Delete of Triple
   const handleDeleteTriple = () => {
+    const rdfOperations = new RdfOperations(database);
+    const tripleToDelete = new Triple(linkSource,linkId,linkTarget);
+    const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
+    setDatabase(newDatabase);
+    const queryManager = new QueryManager(newDatabase);
+    setCurrentData(queryManager.getTriples([new QueryTriple(null,null,null)]));
     console.log("delete triple");
   };
 
@@ -105,6 +122,11 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
       <NoSSRForceGraph
         graphData={data}
         nodeAutoColorBy="group"
+        linkDirectionalArrowLength={5}
+        linkDirectionalArrowRelPos={1}
+        linkWidth={1}
+        linkOpacity={1}
+        nodeOpacity={1}
         onNodeClick={(node) => handleNodeLeftClick(node)}
         onNodeRightClick={(node) => handleNodeRightClick(node)}
         onLinkClick={(link) => handleLinkLeftClick(link)}
@@ -117,8 +139,9 @@ export default function Graph3DReact({ database, queryManager, currentData, setC
       <Dialog open={openLinkLeft} onClose={handleLinkLeftClose}>
         <DialogTitle id="link-left-title">{"Informationen"}</DialogTitle>
         <DialogContentText id="link-left-text">
-          Source: {linkSource}
-          Target: {linkTarget}
+          <p> Subject: {linkSourceName} </p>
+          <p> Predicate: {linkName} </p>
+          <p> Object: {linkTargetName} </p>
         </DialogContentText>
       </Dialog>
       <Dialog open={openNodeRight} onClose={handleNodeRightClose}>

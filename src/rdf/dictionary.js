@@ -153,7 +153,8 @@ export class Dictionary {
    * @returns {int}
    */
   getIdByObject(object) {
-    return this.getIdByElement(object, this.O);
+    const temp = this.getIdByElement(object, this.O);
+    return temp + this.SO.length + this.S.length + this.P.length;
   }
 
   /**
@@ -180,7 +181,7 @@ export class Dictionary {
    * @returns {int}
    */
   getIdByPredicate(predicate) {
-    return this.P.findIndex((el) => el === predicate);
+    return this.P.findIndex((el) => el === predicate) + this.SO.length + this.S.length;
   }
 
   /**
@@ -235,6 +236,13 @@ export class Dictionary {
       return this.getObjectById(id - (this.SO.length + this.S.length + this.P.length));
     }
     return undefined;
+  }
+
+  isSubjectObjectByObjectId(id) {
+    if (id < this.SO.length + this.S.length + this.P.length + this.SO.length) {
+      return true;
+    }
+    return false;
   }
 
   /**

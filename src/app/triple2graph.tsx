@@ -23,7 +23,7 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     var object = triple.object;
 
     if (database.dictionary.isSubjectObjectByObjectId(object)) {
-      object = object - database.gaps[2];
+      object = object - database.gaps![2];
     }
 
     //collect all nodes
@@ -39,30 +39,17 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
   });
 
   //make a set out of all collected nodes
-  const resultNodes = [...new Map(arrayNodes.map(item => [item["id"], item])).values()]
-//   const uniqueArray = new Set(arrayNodes);
-//   const resultNodes = Array.from(uniqueArray);
+  const resultNodes = [...new Map(arrayNodes.map((item: { id: string, origId: string }) => [item.id, item])).values()]
 
   resultNodes.forEach((node, index) => {
-    const content = database.dictionary.getElementById(node.origId);
+    const content = database.dictionary.getElementById((node as any).origId);
     nodes.push({
-      id: node.id,
-      originalId: node.origId,
+      id: (node as any).id,
+      originalId: (node as any).origId,
       group: index,
       content: content,
     });
   })
-
-//   for (var i = 0; i < resultNodes.length; i = +i + 1) {
-//     //generate nodes array
-//     const content = database.dictionary.getElementById(resultNodes[i][1]);
-//     nodes.push({
-//       id: resultNodes[i][0],
-//       originalId: resultNodes[i][1],
-//       group: i,
-//       content: content,
-//     });
-//   }
 
   //concatenate nodes and links array
   const result = { nodes: nodes, links: links };

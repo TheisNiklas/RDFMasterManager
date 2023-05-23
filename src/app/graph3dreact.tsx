@@ -13,6 +13,8 @@ import { Triple } from "@/rdf/models/triple";
 import { RdfOperations } from "@/rdf/rdf-operations";
 import { QueryManager } from "@/rdf/query-manager";
 import { QueryTriple } from "@/rdf/models/query-triple";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("./lib/NoSSRForceGraph"), {
@@ -43,6 +45,8 @@ export default function Graph3DReact({ database, setDatabase, currentData, setCu
   const [source, setSource] = React.useState("");
   const [target, setTarget] = React.useState("");
   const [pred, setPred] = React.useState("");
+  const [toastOpen, setToastOpen] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState("");
 
   const handleNodeLeftClose = () => {
     setOpenNodeLeft(false);
@@ -110,6 +114,17 @@ export default function Graph3DReact({ database, setDatabase, currentData, setCu
     const queryManager = new QueryManager(newDatabase);
     setCurrentData(queryManager.getTriples([new QueryTriple(null,null,null)]));
     console.log("delete triple");
+    setToastMessage("Successfully deleted triple");
+    setToastOpen(true);
+    setOpenLinkRight(false);
+  };
+
+  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    setToastOpen(false);
   };
 
   React.useEffect(() => {
@@ -177,6 +192,11 @@ export default function Graph3DReact({ database, setDatabase, currentData, setCu
           <Button onClick={handleSubmitLinkRight}>Submit</Button>
         </DialogActions>
       </Dialog>
+      <Snackbar open={toastOpen} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="success" sx={{ width: '100%' }}>
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </div>
   );
 }

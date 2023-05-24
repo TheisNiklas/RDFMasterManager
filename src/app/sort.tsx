@@ -51,8 +51,6 @@ const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: a
     data.sortElement = sortElement;
     data.visualLimit = visualLimit;
     setSortData(data);
-    console.log("submit");
-    console.log(sortData);
   };
 
   //Adaptation of the selected sorting order (ascending, descending) the user picked

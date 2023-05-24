@@ -136,7 +136,6 @@ export default function TextVisualization({ database, currentData, setCurrentDat
         }
         const value = await exporter.serializeTriples(data, database.dictionary, format);
 
-        console.log("Fetching new data for format: " + format)
         if (value === "") {
             setRows([]);
             return
@@ -156,9 +155,6 @@ export default function TextVisualization({ database, currentData, setCurrentDat
     }, [currentData])
 
     React.useEffect(() => {
-        // Update data and rows depending on current query
-        console.log("sortData:")
-        console.log(sortData)
     }, [sortData])
 
     /**

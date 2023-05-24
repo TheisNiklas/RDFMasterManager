@@ -151,6 +151,7 @@ export default function TextVisualization({ database, currentData, setCurrentDat
         // Update data and rows depending on current query
         setData(currentData);
         getRows(format, currentData);
+        setPage(0);
     }, [currentData])
 
     React.useEffect(() => {

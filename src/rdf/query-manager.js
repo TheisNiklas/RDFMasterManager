@@ -30,12 +30,12 @@ export class QueryManager {
    */
   getTriples(queries) {
     // check if join query
+    var resultArray;
+    let result = [];
     if (queries.length === 1) {
       const query = queries[0];
       // get number of unbound elements
       const countUnboundType = this.#getQueryType(query);
-      var resultArray;
-      let result = [];
       switch (countUnboundType) {
         case 0:
           resultArray = this.getBoundTriple(query);
@@ -59,7 +59,12 @@ export class QueryManager {
       return result;
     }
     // Query is join query
-    return this.#mergeJoin(queries);
+    resultArray = this.#mergeJoin(queries);
+
+    resultArray.forEach((triple) => {
+      result.push(new Triple(triple[0], triple[1], triple[2]));
+    });
+    return result;
   }
 
   /**

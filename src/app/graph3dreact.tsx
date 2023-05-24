@@ -120,9 +120,6 @@ export default function Graph3DReact({
 
   //handle Submit when Triple Data is changed
   const handleSubmitLinkRight = () => {
-    console.log(source);
-    console.log(target);
-    console.log(pred);
     setOpenLinkRight(false);
   };
 
@@ -148,7 +145,6 @@ export default function Graph3DReact({
   };
 
   React.useEffect(() => {
-    console.log("TODO: Refresh GUI");
     setData(load_data(database, currentData));
   }, [currentData]);
 

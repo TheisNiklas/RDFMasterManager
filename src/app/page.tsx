@@ -103,7 +103,6 @@ const DialogButton = styled(Button)(({ theme }) => ({
 }))
 
 export default function PersistentDrawerRight() {
-  // load example Database
   const rdfcsa = new Rdfcsa([]);
   const [currentData, setCurrentData] = React.useState([] as Triple[]);
   const [database, setDatabase] = React.useState(rdfcsa);
@@ -112,8 +111,6 @@ export default function PersistentDrawerRight() {
     sortOrder: 'ascending',
     visualLimit: 100
   });
-
-  //const database = React.useRef(new Rdfcsa([]));
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -173,7 +170,6 @@ export default function PersistentDrawerRight() {
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
 
   const handleFromFromExample = () => {
-    console.log("set database");
     const rdfcsa = new ImportService().loadSample()
     const queryManager = new QueryManager(rdfcsa);
     const data = queryManager.getTriples([new QueryTriple(null, null, null)]);

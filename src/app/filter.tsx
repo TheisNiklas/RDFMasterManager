@@ -83,7 +83,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     let data = [...formFields];
     data[index]["subject"] = ("" + newValue);
     setFormFields(data);
-    console.log(formFields);
   };
 
   //Adaptation of the predicat filter
@@ -91,8 +90,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     let data = [...formFields];
     data[index]["predicate"] = ("" + newValue);
     setFormFields(data);
-
-    console.log(formFields);
   };
 
   //Adaptation of the object filter
@@ -100,8 +97,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     let data = [...formFields];
     data[index]["object"] = ("" + newValue);
     setFormFields(data);
-
-    console.log(formFields);
   };
 
   //Removes a triple pair of SPO filter elements with the corresponding join variables
@@ -112,8 +107,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     let data = [...formFields];
     data.splice(index, 1);
     setFormFields(data);
-
-    console.log(formFields);
   };
 
   //State for the Dialog to open

@@ -29,7 +29,6 @@ const Export = () => {
         event: SelectChangeEvent<string>,
     ) => {
         exportFunction = event.target.value;
-        console.log(exportFunction);
     };
 
     //calls the interface function for the import of the export function from the user

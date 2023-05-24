@@ -54,6 +54,5 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
   //concatenate nodes and links array
   const result = { nodes: nodes, links: links };
 
-  console.log(result);
   return result;
 }

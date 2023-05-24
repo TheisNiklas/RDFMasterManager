@@ -53,7 +53,7 @@ function loadDefaultFormat() {
     return export_options[0][0]
 }
 
-export default function TextVisualization({ database, currentData, setCurrentData }: { database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) {
+export default function TextVisualization({ database, currentData, setCurrentData, sortData }: { database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>>, sortData: any }) {
     const [data, setData] = React.useState(currentData);
 
     const [page, setPage] = React.useState(0);
@@ -153,6 +153,12 @@ export default function TextVisualization({ database, currentData, setCurrentDat
         setData(currentData);
         getRows(format, currentData);
     }, [currentData])
+
+    React.useEffect(() => {
+        // Update data and rows depending on current query
+        console.log("sortData:")
+        console.log(sortData)
+    }, [sortData])
 
     /**
      * DropDown Menu for format.

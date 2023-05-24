@@ -118,7 +118,7 @@ export default function TextVisualization({ database, currentData, setCurrentDat
 
         let menuItems = []
         for (let i = 0; i < export_options[0].length; i++) {
-            menuItems.push(<MenuItem value={export_options[0][i]}> {export_options[0][i]} </MenuItem >)
+            menuItems.push(<MenuItem value={export_options[0][i]} key={export_options[0][i]}> {export_options[0][i]} </MenuItem >)
         }
 
         return menuItems

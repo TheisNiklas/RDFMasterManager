@@ -73,7 +73,11 @@ const Export = () => {
                 <Tooltip title="Exportfunktion aus einer Javascript Datei muss den Namen externExportFunction tragen, mit einer Triple Liste als Parameter" placement="top">
                     <SortFormControl>
                         <InputLabel id="exportFunction">Exportfunktion</InputLabel>
-                        <Select labelId="exportFunctionSelect" onChange={(event: SelectChangeEvent<string>) => handleFormChangeExportFunction(event)}>
+                        <Select 
+                            labelId="exportFunctionSelect"
+                            defaultValue="binaer"
+                            onChange={(event: SelectChangeEvent<string>) => handleFormChangeExportFunction(event)}
+                        >
                             <MenuItem value="binaer">nativ als Binärdatei (Standard)</MenuItem>
                             <MenuItem value="turtle">Turtle-Datei</MenuItem>
                             <MenuItem value="nTriple">n-Triple-Datei</MenuItem>

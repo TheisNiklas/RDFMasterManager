@@ -93,8 +93,10 @@ const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: a
                     <InputLabel id="sort-label">Sortierreihenfolge</InputLabel>
                     <Select
                       labelId="sort-label"
+                      defaultValue=""
                       onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}
                     >
+                      <MenuItem value="">-----</MenuItem>
                       <MenuItem value="ascending">Aufsteigend</MenuItem>
                       <MenuItem value="descending">Absteigend</MenuItem>
                     </Select>
@@ -109,8 +111,10 @@ const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: a
                     <InputLabel id="sort-label">Sortierelement</InputLabel>
                     <Select
                       labelId="sort-label"
+                      defaultValue=""
                       onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}
                     >
+                      <MenuItem value="">-----</MenuItem>
                       <MenuItem value="sortSubject">Subjekt</MenuItem>
                       <MenuItem value="sortPredicate">Prädikat</MenuItem>
                       <MenuItem value="sortObject">Objekt</MenuItem>

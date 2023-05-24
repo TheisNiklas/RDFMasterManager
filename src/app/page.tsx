@@ -139,7 +139,7 @@ export default function PersistentDrawerRight() {
             Visualisierung
           </InputLabel>
           <Select
-            defaultValue={mainFrame}
+            defaultValue={"text"}
             style={{
               color: "white",
             }}

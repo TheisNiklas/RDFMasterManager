@@ -106,6 +106,9 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
 
   //Removes a triple pair of SPO filter elements with the corresponding join variables
   const deleteFilterTriple = (index: number) => {
+    if (index === 0) {
+        return;
+    }
     let data = [...formFields];
     data.splice(index, 1);
     setFormFields(data);
@@ -152,7 +155,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               label="Subjekt"
                               InputProps={{
                                 ...params.InputProps,
-                                type: 'search',
                               }}
                             />
                           )}
@@ -173,7 +175,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               label="Prädikat"
                               InputProps={{
                                 ...params.InputProps,
-                                type: 'search',
                               }}
                             />
                           )}
@@ -194,7 +195,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               label="Objekt"
                               InputProps={{
                                 ...params.InputProps,
-                                type: 'search',
                               }}
                             />
                           )}

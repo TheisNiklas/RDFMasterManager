@@ -50,7 +50,6 @@ export class QueryCall {
   /**
    * 
    * @param {{ subject: string; predicate: string; object: string; }[]} queryData 
-   * @param {*} sortData 
    * @param {Rdfcsa} database 
    * @param {Triple[]} currentData 
    * @param {React.Dispatch<React.SetStateAction<Triple[]>>} setCurrentData 
@@ -58,18 +57,11 @@ export class QueryCall {
    */
   static queryCallData(queryData, database, currentData, setCurrentData) {
     const queryManager = new QueryManager(database);
-    console.log("queryDataCall start: ");
-    console.log(queryData);
-    console.log(sortData);
 
     const query = [];
     const idString = [];
 
     queryData.forEach(function (obj, index) {
-      console.log(`Object ${index}:`);
-      console.log(obj.subject);
-      console.log(obj.predicat);
-      console.log(obj.object);
 
       const queryTriple = new QueryTriple();
 
@@ -152,7 +144,6 @@ export class QueryCall {
         console.log(`isJoinVar: ${query[i].queryElement.isJoinVar}`);
       }
     }
-    console.log("queryDataCall end");
 
     const result = queryManager.getTriples(query);
 

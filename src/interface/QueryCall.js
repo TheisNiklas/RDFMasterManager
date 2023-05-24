@@ -160,6 +160,4 @@ function queryCallData(queryData, database, currentData, setCurrentData) {
   return true;
 }
 
-function queryDataFormatting(queryData) { }
-
 export { queryCallData };

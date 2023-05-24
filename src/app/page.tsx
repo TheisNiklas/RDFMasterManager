@@ -98,16 +98,22 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
   minWidth: 100,
 }));
 
-const DialogButton = styled(Button)(( {theme} ) => ({
+const DialogButton = styled(Button)(({ theme }) => ({
   marginTop: "16px"
 }))
+
 export default function PersistentDrawerRight() {
   // load example Database
   const rdfcsa = new Rdfcsa([]);
   const [currentData, setCurrentData] = React.useState([] as Triple[]);
-  const [database,setDatabase] = React.useState(rdfcsa);
-  //const database = React.useRef(new Rdfcsa([]));
+  const [database, setDatabase] = React.useState(rdfcsa);
+  const [sortData, setSortData] = React.useState({
+    sortElement: 'sortSubject',
+    sortOrder: 'ascending',
+    visualLimit: 100
+  });
 
+  //const database = React.useRef(new Rdfcsa([]));
 
   const theme = useTheme();
   const [open, setOpen] = React.useState(false);
@@ -115,7 +121,7 @@ export default function PersistentDrawerRight() {
 
   const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
-      return <TextVisualization database={database} currentData={currentData} setCurrentData={setCurrentData} />;
+      return <TextVisualization database={database} currentData={currentData} setCurrentData={setCurrentData} sortData={sortData} />;
     } else if (mainFrame === "3d") {
       return <Graph3DReact database={database} setDatabase={setDatabase} currentData={currentData} setCurrentData={setCurrentData} />;
     } else if (mainFrame === "2d") {
@@ -124,7 +130,7 @@ export default function PersistentDrawerRight() {
         <div />
       );
     }
-  },[database,currentData,mainFrame]);
+  }, [database, currentData, mainFrame]);
   const drownDownMenu = () => {
     return (
       <DropDownBox>
@@ -181,9 +187,9 @@ export default function PersistentDrawerRight() {
   }
 
   const handleImportRequest = () => {
-      const fileInput = document.createElement('input');
-      fileInput.type = 'file';
-      const importService = new ImportService();
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    const importService = new ImportService();
 
       // Add an event handler to get the selected file path.
       fileInput.addEventListener('change', async event => {
@@ -202,6 +208,7 @@ export default function PersistentDrawerRight() {
   
       fileInput.click();
     };
+
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -244,10 +251,10 @@ export default function PersistentDrawerRight() {
           </IconButton>
         </DrawerHeader>
         <FilterForm database={database} currentData={currentData} setCurrentData={setCurrentData}></FilterForm>
-        <SortFormData  database={database} currentData={currentData} setCurrentData={setCurrentData}></SortFormData>
+        <SortFormData sortData={sortData} setSortData={setSortData}></SortFormData>
         <AddTripleForm
           database={database}
-          setDatabase = {setDatabase}
+          setDatabase={setDatabase}
           currentData={currentData}
           setCurrentData={setCurrentData}
         ></AddTripleForm>

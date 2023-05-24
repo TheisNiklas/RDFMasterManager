@@ -13,7 +13,6 @@ import {
   Typography,
   SelectChangeEvent
 } from "@mui/material";
-import { Rdfcsa } from "@/rdf/rdfcsa";
 import { Triple } from "@/rdf/models/triple";
 
 const Header = styled(Typography)(({ theme }) => ({
@@ -37,55 +36,38 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const SortFormData = ({ database, currentData, setCurrentData }: { database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) => {
-  //Adds a SPO triple to the previous formField of the filter triple
-  //true as default value for the checkboxes
+const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: any }) => {
 
-  const sortData= () => {
-    const object = {
-      sortElement: 'sortSubject',
-      sortOrder: 'ascending',
-      visualLimit: 100
-    };
-  
-    setSortFields(object);
-  }
+    let sortElement = 'sortSubject';
+    let sortOrder = 'ascending';
+    let visualLimit = 0;
 
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    //setOpen(!queryCallData(sortFields, database, currentData, setCurrentData));
-  };
 
-  //Definition of the datastructure for the data tranfer to the interface of the filter elements
-  //true as default value for the checkboxes
-  const [sortFields, setSortFields] = useState({ sortElement: "sortObject", sortOrder: "ascending", visualLimit: 0 });
+    let data = JSON.parse(JSON.stringify(sortData));
+    data.sortOrder = sortOrder;
+    data.sortElement = sortElement;
+    data.visualLimit = visualLimit;
+    setSortData(data);
+    console.log("submit");
+    console.log(sortData);
+  };
 
   //Adaptation of the selected sorting order (ascending, descending) the user picked
   const handleFormChangeSortOrderObject = (event: SelectChangeEvent<string>) => {
-    let data = sortFields;
-    data.sortOrder = event.target.value;
-    setSortFields(data);
-
-    console.log(sortFields);
+    sortOrder = event.target.value;
   };
 
   //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
   const handleFormChangeSortElementObject = (event: SelectChangeEvent<string>) => {
-    let data = sortFields;
-    data.sortElement = event.target.value;
-    setSortFields(data);
-
-    console.log(sortFields);
+    sortElement = event.target.value;
   };
 
   //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
   const handleFormChangeLimit = (event: SelectChangeEvent<number>) => {
-    let data = sortFields;
-    data.visualLimit = Number(event.target.value);
-    setSortFields(data);
-
-    console.log(sortFields);
+    visualLimit = Number(event.target.value);
   };
 
   //State for the Dialog to open

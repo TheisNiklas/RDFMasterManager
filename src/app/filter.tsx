@@ -205,8 +205,8 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                     </Grid>
                     <Grid item xs={13} sm={1} sx={{ display: "flex", justifyContent: "center" }}>
                       <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
-                        <IconButton aria-label="delete">
-                          <DeleteIcon onClick={() => deleteFilterTriple(index)} />
+                        <IconButton aria-label="delete" onClick={() => deleteFilterTriple(index)}>
+                          <DeleteIcon />
                         </IconButton>
                       </Tooltip>
                     </Grid>

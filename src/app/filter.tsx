@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { QueryCall } from "@/interface/queryCall";
+import { QueryCall } from "@/interface/query-call";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Rdfcsa } from "@/rdf/rdfcsa";
 import { Triple } from "@/rdf/models/triple";

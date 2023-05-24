@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { queryCallData } from "../interface/QueryCall";
+import { QueryCall } from "@/interface/query-call";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Rdfcsa } from "@/rdf/rdfcsa";
 import { Triple } from "@/rdf/models/triple";
@@ -71,14 +71,12 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    setOpen(!queryCallData(formFields, sortFields, database, currentData, setCurrentData));
+    setOpen(!QueryCall.queryCallData(formFields, database, currentData, setCurrentData));
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements
   //true as default value for the checkboxes
   const [formFields, setFormFields] = useState([{ subject: "", predicate: "", object: "" }]);
-
-  const [sortFields, setSortFields] = useState({ sortElement: "sortSubject", sortOrder: "ascending", visualLimit: 0 });
 
   //Adaptation of the subject filter
   const handleFormChangeSubject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
@@ -108,6 +106,9 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
 
   //Removes a triple pair of SPO filter elements with the corresponding join variables
   const deleteFilterTriple = (index: number) => {
+    if (index === 0) {
+        return;
+    }
     let data = [...formFields];
     data.splice(index, 1);
     setFormFields(data);
@@ -154,7 +155,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               label="Subjekt"
                               InputProps={{
                                 ...params.InputProps,
-                                type: 'search',
                               }}
                             />
                           )}
@@ -175,7 +175,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               label="Prädikat"
                               InputProps={{
                                 ...params.InputProps,
-                                type: 'search',
                               }}
                             />
                           )}
@@ -196,7 +195,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               label="Objekt"
                               InputProps={{
                                 ...params.InputProps,
-                                type: 'search',
                               }}
                             />
                           )}

@@ -119,7 +119,7 @@ export default function PersistentDrawerRight() {
   const [open, setOpen] = React.useState(false);
   const [mainFrame, setMainFrame] = React.useState("text");
 
-  const handleMainFrame = React.useCallback(event => {
+  const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
       return <TextVisualization database={database} currentData={currentData} setCurrentData={setCurrentData} sortData={sortData} />;
     } else if (mainFrame === "3d") {
@@ -191,23 +191,24 @@ export default function PersistentDrawerRight() {
     fileInput.type = 'file';
     const importService = new ImportService();
 
-    // Add an event handler to get the selected file path.
-    fileInput.addEventListener('change', async event => {
-      const file = event.target.files[0];
-      const rdfcsa = await importService.importFile(file, true);
-      if (rdfcsa === undefined) {
-        setStartDialogOpen(true);
-      } else {
-        setDatabase(rdfcsa);
-        const queryManager = new QueryManager(rdfcsa);
-        const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-        setCurrentData(data);
-        setStartDialogOpen(false);
-      }
-    });
+      // Add an event handler to get the selected file path.
+      fileInput.addEventListener('change', async event => {
+          const file = (event as any).target.files[0];
+          const rdfcsa = await importService.importFile(file, true);
+          if (rdfcsa === undefined) {
+            setStartDialogOpen(true);
+          } else {
+            setDatabase(rdfcsa);
+            const queryManager = new QueryManager(rdfcsa);
+            const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+            setCurrentData(data);
+            setStartDialogOpen(false);
+          }
+      });
+  
+      fileInput.click();
+    };
 
-    fileInput.click();
-  };
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
@@ -228,7 +229,7 @@ export default function PersistentDrawerRight() {
           </IconButton>
         </Toolbar>
       </AppBar>
-      <Main open={open}>
+      <Main open={open} style={{padding: 0}}>
         <DrawerHeader />
         {handleMainFrame()}
       </Main>

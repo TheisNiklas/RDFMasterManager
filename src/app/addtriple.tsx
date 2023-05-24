@@ -66,7 +66,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
   };
   //user input for the additional triple subject
   const handleFormChangeAddSubject = (event: ChangeEvent<HTMLInputElement>) => {
-    let data = formFields;
+    let data = JSON.parse(JSON.stringify(formFields));
     data.subject = event.target.value;
     handleIRIValidation(data.subject, "s");
     setFormFields(data);
@@ -76,7 +76,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
 
   //user input for the additional triple predicat
   const handleFormChangeAddPredicat = (event: ChangeEvent<HTMLInputElement>) => {
-    let data = formFields;
+    let data = JSON.parse(JSON.stringify(formFields));
     data.predicate = event.target.value;
     handleIRIValidation(data.predicate, "p");
     setFormFields(data);
@@ -86,7 +86,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
 
   //user input for the additional triple object
   const handleFormChangeAddObject = (event: ChangeEvent<HTMLInputElement>) => {
-    let data = formFields;
+    let data = JSON.parse(JSON.stringify(formFields));
     data.object = event.target.value;
     handleIRIValidation(data.object, "o");
     setFormFields(data);
@@ -103,6 +103,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
       setDatabase(newDatabase);
       const queryManager = new QueryManager(newDatabase);
       setCurrentData(queryManager.getTriples([new QueryTriple(null,null,null)]));
+      setFormFields({ subject: "", predicate: "", object: "" });
       setOpen(false);
     } else {
       setOpen(true);
@@ -124,6 +125,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
           <Grid item xs={12} sm={4}>
             <StyledTextField
               label="Subjekt"
+              value={formFields.subject}
               onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddSubject(event)}
               error={!subjectValid}
             />
@@ -131,6 +133,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
           <Grid item xs={12} sm={4}>
             <StyledTextField
               label="Prädikat"
+              value={formFields.predicate}
               onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddPredicat(event)}
               error={!predicateValid}
             />
@@ -138,6 +141,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData } : 
           <Grid item xs={12} sm={4}>
             <StyledTextField
               label="Objekt"
+              value={formFields.object}
               onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddObject(event)}
               error={!objectValid}
             />

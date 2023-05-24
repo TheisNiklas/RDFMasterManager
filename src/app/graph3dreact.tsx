@@ -100,7 +100,7 @@ export default function Graph3DReact({
     setLinkSourceName(database.dictionary.getElementById(link.source.id) as string);
     setLinkName(database.dictionary.getElementById(link.id) as string);
     setLinkTargetName(database.dictionary.getElementById(link.target.id) as string);
-    setLinkSource(link.source.originalId);
+    setLinkSource(link.source.id);
     setLinkTarget(link.target.originalId);
     setLinkId(link.id);
     setOpenLinkRight(true);

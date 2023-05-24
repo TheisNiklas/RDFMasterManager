@@ -22,7 +22,7 @@ import {
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { queryCallData } from "@/interface/queryCall";
+import { QueryCall } from "@/interface/queryCall";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Rdfcsa } from "@/rdf/rdfcsa";
 import { Triple } from "@/rdf/models/triple";
@@ -71,7 +71,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    setOpen(!queryCallData(formFields, database, currentData, setCurrentData));
+    setOpen(!QueryCall.queryCallData(formFields, database, currentData, setCurrentData));
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements

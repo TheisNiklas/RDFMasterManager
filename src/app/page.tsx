@@ -187,7 +187,7 @@ export default function PersistentDrawerRight() {
 
       // Add an event handler to get the selected file path.
       fileInput.addEventListener('change', async event => {
-          const file = event.target.files[0];
+          const file = (event as any).target.files[0];
           const rdfcsa = await importService.importFile(file, true);
           if (rdfcsa === undefined) {
             setStartDialogOpen(true);

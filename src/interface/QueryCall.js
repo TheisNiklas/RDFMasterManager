@@ -55,7 +55,7 @@ $x is in USA
  * @param {React.Dispatch<React.SetStateAction<Triple[]>>} setCurrentData 
  * @returns 
  */
-function queryCallData(queryData, sortData, database, currentData, setCurrentData) {
+function queryCallData(queryData, database, currentData, setCurrentData) {
   const queryManager = new QueryManager(database);
   console.log("queryDataCall start: ");
   console.log(queryData);

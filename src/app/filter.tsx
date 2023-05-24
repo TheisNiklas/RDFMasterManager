@@ -71,14 +71,12 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    setOpen(!queryCallData(formFields, sortFields, database, currentData, setCurrentData));
+    setOpen(!queryCallData(formFields, database, currentData, setCurrentData));
   };
 
   //Definition of the datastructure for the data tranfer to the interface of the filter elements
   //true as default value for the checkboxes
   const [formFields, setFormFields] = useState([{ subject: "", predicate: "", object: "" }]);
-
-  const [sortFields, setSortFields] = useState({ sortElement: "sortSubject", sortOrder: "ascending", visualLimit: 0 });
 
   //Adaptation of the subject filter
   const handleFormChangeSubject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {

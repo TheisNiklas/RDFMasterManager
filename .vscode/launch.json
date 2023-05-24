@@ -9,7 +9,7 @@
       "request": "launch",
       "name": "Launch Edge against localhost",
       "url": "http://localhost:3000",
-      "preLaunchTask": "npm: dev",
+      "preLaunchTask": "npm: start",
       "webRoot": "${workspaceFolder}"
     },
     {
@@ -17,7 +17,7 @@
       "request": "launch",
       "name": "Launch Chrome against localhost",
       "url": "http://localhost:3000",
-      "preLaunchTask": "npm: dev",
+      "preLaunchTask": "npm: start",
       "webRoot": "${workspaceFolder}"
     },
     // {

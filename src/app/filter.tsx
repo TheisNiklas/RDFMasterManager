@@ -81,27 +81,26 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
   const [sortFields, setSortFields] = useState({ sortElement: "sortSubject", sortOrder: "ascending", visualLimit: 0 });
 
   //Adaptation of the subject filter
-  const handleFormChangeSubject = (event: SyntheticEvent<Element, Event>, index: number) => {
+  const handleFormChangeSubject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
     let data = [...formFields];
-    data[index]["subject"] = event.currentTarget.textContent + "";
+    data[index]["subject"] = ("" + newValue);
     setFormFields(data);
-
     console.log(formFields);
   };
 
   //Adaptation of the predicat filter
-  const handleFormChangePredicate = (event: SyntheticEvent<Element, Event>, index: number) => {
+  const handleFormChangePredicate = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
     let data = [...formFields];
-    data[index]["predicate"] = event.currentTarget.textContent + "";
+    data[index]["predicate"] = ("" + newValue);
     setFormFields(data);
 
     console.log(formFields);
   };
 
   //Adaptation of the object filter
-  const handleFormChangeObject = (event: SyntheticEvent<Element, Event>, index: number) => {
+  const handleFormChangeObject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
     let data = [...formFields];
-    data[index]["object"] = event.currentTarget.textContent + "";
+    data[index]["object"] = ("" + newValue);
     setFormFields(data);
 
     console.log(formFields);
@@ -146,7 +145,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                         <Autocomplete
-                          disableClearable
+                          freeSolo
                           //load all subject strings
                           options={database.dictionary.SO.concat(database.dictionary.S)}
                           renderInput={(params) => (
@@ -160,15 +159,14 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                             />
                           )}
                           value={form.subject}
-                          onChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
-                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeSubject(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeSubject(event, index, newValue)}
                         />
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="nur Suchwert, keine Join Variable möglich" placement="top">
                         <Autocomplete
-                          disableClearable
+                          freeSolo
                           //load all predicate strings
                           options={database.dictionary.P}
                           renderInput={(params) => (
@@ -182,14 +180,14 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                             />
                           )}
                           value={form.predicate}
-                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangePredicate(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangePredicate(event, index, newValue)}
                         />
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
                         <Autocomplete
-                          disableClearable
+                          freeSolo
                           //load all object strings
                           options={database.dictionary.SO.concat(database.dictionary.O)}
                           renderInput={(params) => (
@@ -203,7 +201,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                             />
                           )}
                           value={form.object}
-                          onInputChange={(event: SyntheticEvent<Element, Event>) => handleFormChangeObject(event, index)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeObject(event, index, newValue)}
                         />
                       </Tooltip>
                     </Grid>

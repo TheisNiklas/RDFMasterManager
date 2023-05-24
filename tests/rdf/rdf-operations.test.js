@@ -21,6 +21,14 @@ describe("RdfOperations", () => {
     expect(res.gaps).toEqual(resultGaps);
     expect(res.D).toEqual(resultD);
   });
+  test("modifyTriple", () => {
+    let rdfcsa = new Rdfcsa(tripleListModified);
+    let ops = new RdfOperations(rdfcsa);
+    const res = ops.modifyTriples(new Triple(3, 10, 12), "J. Gordon", "appears in", "Inception");
+    expect(res.psi).toEqual(resultPsi);
+    expect(res.gaps).toEqual(resultGaps);
+    expect(res.D).toEqual(resultD);
+  });
   test("deleteTriple", () => {
     let rdfcsa = new Rdfcsa(tripleListExtended);
     let ops = new RdfOperations(rdfcsa);

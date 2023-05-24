@@ -16,6 +16,20 @@ export class RdfOperations {
   }
 
   /**
+   * Modify a given triple
+   * @param {Triple} oldTriple
+   * @param {string} newSubject
+   * @param {string} newPredicate
+   * @param {string} newObject
+   * @returns
+   */
+  modifyTriples(oldTriple, newSubject, newPredicate, newObject) {
+    this.deleteTriple(oldTriple);
+    this.addTriple(newSubject, newPredicate, newObject);
+    return this.rdfcsa;
+  }
+
+  /**
    * Adds a new triple
    * @param {string} subject
    * @param {string} predicate
@@ -49,14 +63,12 @@ export class RdfOperations {
   }
 
   /**
-   * Deletes Triple triple
+   * Deletes triple
    * @param {Triple} triple
    */
   deleteTriple(triple) {
     const queryManager = new QueryManager(this.rdfcsa);
 
-    /* TODO: This might be unnecessary if we check foundIndex<0: return later
-    // if triple exists
     const result = queryManager.getTriples([
       new QueryTriple(
         new QueryElement(triple.subject),
@@ -67,7 +79,6 @@ export class RdfOperations {
     if (result.length !== 1) {
       return;
     }
-    */
 
     // check where triple is stored
     const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
@@ -82,10 +93,6 @@ export class RdfOperations {
         return;
       }
     });
-
-    if (foundIndex < 0) { // if triple found
-      return;
-    }
 
     // remove triple
     oldTriples.splice(foundIndex, 1);
@@ -107,14 +114,14 @@ export class RdfOperations {
     const queryManager = new QueryManager(this.rdfcsa);
 
     // if id doesn't exist, abort
-    if (!this.rdfcsa.dictionary.getElementById(id)) { 
+    if (!this.rdfcsa.dictionary.getElementById(id)) {
       return;
     }
 
     // if id not in triple, keep it by adding to newTriples
     const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
     const newTriples = [];
-    oldTriples.forEach((oldTriple) => { 
+    oldTriples.forEach((oldTriple) => {
       if (!(oldTriple.subject === id || oldTriple.predicate === id || oldTriple.object === id)) {
         newTriples.push(oldTriple);
       }
@@ -161,11 +168,13 @@ export class RdfOperations {
       stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
     });
 
-    // change all occurences of 
+    // change all occurences of
     const newStringList = [];
-    stringTriples.forEach((stringTriple) => { // for every triple
+    stringTriples.forEach((stringTriple) => {
+      // for every triple
       const temp = stringTriple;
-      stringTriple.forEach((element, index) => { // for every element in triple
+      stringTriple.forEach((element, index) => {
+        // for every element in triple
         if (element === oldString) {
           temp[index] = text; // replace element if it matches corresponding string of given id
         }

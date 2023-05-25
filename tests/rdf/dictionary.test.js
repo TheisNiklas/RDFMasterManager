@@ -6,7 +6,7 @@ describe("Rdfcsa", () => {
   let dictionary;
   beforeEach(() => {
     dictionary = new Dictionary();
-    dictionary.createDictionaries(exampleTripleList);
+    dictionary.createDictionariesNew(exampleTripleList);
   });
   test("constructTArrays", () => {
     expect(dictionary.SO).toEqual(["Inception", "L.A."]);

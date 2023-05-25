@@ -8,7 +8,7 @@ import { Triple } from "../../src/rdf/models/triple";
 describe("QueryManager", () => {
   let queryManager;
   beforeEach(() => {
-    let rdfcsa = new Rdfcsa(tripleList);
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     queryManager = new QueryManager(rdfcsa);
   });
   test("getBoundTriple(0,9,12)", () => {
@@ -202,8 +202,8 @@ describe("QueryManager", () => {
     const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
     expect(result).toEqual([
-      [3, 7, 15],
-      [4, 7, 15],
+      new Triple(3, 7, 15),
+      new Triple(4, 7, 15),
     ]);
   });
   test("getJoin(3,7,x)(y,7,x)(y,7,15)", () => {
@@ -221,10 +221,10 @@ describe("QueryManager", () => {
     const thirdQueryTriple = new QueryTriple(subject2, predicate2, object2);
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple, thirdQueryTriple]);
     expect(result).toEqual([
-      [3, 7, 15],
-      [4, 7, 15],
-      [4, 7, 15],
-      [4, 7, 15],
+      new Triple(3, 7, 15),
+      new Triple(4, 7, 15),
+      new Triple(4, 7, 15),
+      new Triple(4, 7, 15),
     ]);
   });
   //(0, 9, x)(3, 7, y)(x, 8, y);
@@ -243,10 +243,10 @@ describe("QueryManager", () => {
     const thirdQueryTriple = new QueryTriple(subject2, predicate2, object2);
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple, thirdQueryTriple]);
     expect(result).toEqual([
-      [0, 9, 12],
-      [3, 7, 15],
-      [1, 8, 15],
-      [3, 7, 15],
+      new Triple(0, 9, 12),
+      new Triple(3, 7, 15),
+      new Triple(1, 8, 15),
+      new Triple(3, 7, 15),
     ]);
   });
 

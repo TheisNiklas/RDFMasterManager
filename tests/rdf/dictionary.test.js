@@ -74,17 +74,15 @@ describe("Rdfcsa", () => {
   });
   test("getIdByObject from SO", () => {
     let res = dictionary.getIdByObject("L.A.");
-    expect(res).toEqual(1);
+    expect(res).toEqual(12);
   });
-  // QUESTION: Should we return here the index with the gap, or do we want to do the calculations when compiling the query results
   test("getIdByObject from O", () => {
     let res = dictionary.getIdByObject("Oscar 2015");
-    expect(res).toEqual(3);
+    expect(res).toEqual(14);
   });
-  // QUESTION: Should we return here the index with the gap, or do we want to do the calculations when compiling the query results
   test("getIdByPredicate from O", () => {
     let res = dictionary.getIdByPredicate("awarded");
-    expect(res).toEqual(1);
+    expect(res).toEqual(6);
   });
   test("getSubjectById from SO", () => {
     let res = dictionary.getSubjectById(1);

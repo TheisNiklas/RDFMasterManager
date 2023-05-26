@@ -68,7 +68,7 @@ export default function TextVisualization({ database, currentData, setCurrentDat
         {
             id: 'data',
             minWidth: 170,
-            label: 'RDF im %TITLE%-Format'.replace('%TITLE%', format),
+            label: 'RDF in %TITLE%-Format'.replace('%TITLE%', format),
             format: (value: any) => value.toLocaleString(),
         },
     ];

@@ -180,7 +180,7 @@ export default function Graph3DReact({
         </DialogContent>
       </Dialog>
       <Dialog open={openNodeRight} onClose={handleNodeRightClose}>
-        <DialogTitle id="node-right-title">Umbenennen</DialogTitle>
+        <DialogTitle id="node-right-title">Rename</DialogTitle>
         <DialogContent style={{paddingTop: 4}}>
           <DialogContentText id="node-right-text">
             <TextField label="Name" variant="outlined" defaultValue={nodeName} onChange={(event) => setFormField(event.target.value)} />
@@ -192,7 +192,7 @@ export default function Graph3DReact({
         </DialogActions>
       </Dialog>
       <Dialog open={openLinkRight} onClose={handleLinkRightClose}>
-        <DialogTitle id="link-right-title"> Triple löschen oder umbenennen</DialogTitle>
+        <DialogTitle id="link-right-title"> Delete or rename triple</DialogTitle>
         <DialogActions>
           <Button onClick={handleDeleteTriple}>Delete Triple</Button>
         </DialogActions>

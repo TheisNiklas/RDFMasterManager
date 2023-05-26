@@ -128,7 +128,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
           <div>
             <Grid container spacing={0}>
               <FormControl sx={{ marginBottom: -3 }}>
-                <FormLabel>Join Variablen Namen</FormLabel>
+                <FormLabel>Join variables names</FormLabel>
               </FormControl>
               {formFields.map((form, index) => {
                 return (
@@ -138,7 +138,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                     </Grid>
                     <Grid item xs={12} sm={6}></Grid>
                     <Grid item xs={13} sm={4}>
-                      <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
+                      <Tooltip title="? means join variable, ?? for ? as string" placement="top">
                         <Autocomplete
                           freeSolo
                           //load all subject strings
@@ -146,7 +146,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
-                              label="Subjekt"
+                              label="subject"
                               InputProps={{
                                 ...params.InputProps,
                               }}
@@ -159,7 +159,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={4}>
-                      <Tooltip title="nur Suchwert, keine Join Variable möglich" placement="top">
+                      <Tooltip title="only search value, no join variable possible" placement="top">
                         <Autocomplete
                           freeSolo
                           //load all predicate strings
@@ -167,7 +167,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
-                              label="Prädikat"
+                              label="predicate"
                               InputProps={{
                                 ...params.InputProps,
                               }}
@@ -180,7 +180,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={4}>
-                      <Tooltip title="? bedeutet Join Variable, ?? für ? als String" placement="top">
+                      <Tooltip title="? means join variable, ?? for ? as string" placement="top">
                         <Autocomplete
                           freeSolo
                           //load all object strings
@@ -188,7 +188,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                           renderInput={(params) => (
                             <StyledTextField
                               {...params}
-                              label="Objekt"
+                              label="object"
                               InputProps={{
                                 ...params.InputProps,
                               }}
@@ -201,7 +201,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                       </Tooltip>
                     </Grid>
                     <Grid item xs={13} sm={1} sx={{ display: "flex", justifyContent: "center" }}>
-                      <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
+                      <Tooltip title="Delete this filter SPO triples" placement="top">
                         <IconButton aria-label="delete" onClick={() => deleteFilterTriple(index)}>
                           <DeleteIcon />
                         </IconButton>
@@ -213,7 +213,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12}>
                   <AddButton variant="contained" color="primary" endIcon={<Add />} onClick={addFilterTriple}>
-                    Filter hinzufügen
+                  Add filter
                   </AddButton>
                 </Grid>
                 <Grid item xs={12}>
@@ -226,10 +226,10 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
                   >
-                    <DialogTitle id="alert-dialog-title">{"Query kann nicht ausgeführt werden."}</DialogTitle>
+                    <DialogTitle id="alert-dialog-title">{"Query cannot be executed"}</DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
-                        Bitte ändern Sie ihre Eingaben, da die Query so nicht ausgeführt werden kann.
+                      Please change your entries, because the query cannot be executed like this.
                       </DialogContentText>
                     </DialogContent>
                     <DialogActions>

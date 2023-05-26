@@ -82,21 +82,21 @@ const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: a
             <Grid item xs={12} sm={12}>
               <Grid container spacing={2}>
                 <Header variant="h6" sx={{ marginTop: 5, marginLeft: 3, marginBottom: -2 }}>
-                  Sortierung
+                Sorting
                 </Header>
                 <Grid item xs={12}>
                 </Grid>
                 <Grid item xs={12}>
                   <SortFormControl>
-                    <InputLabel id="sort-label">Sortierreihenfolge</InputLabel>
+                    <InputLabel id="sort-label">Sort order</InputLabel>
                     <Select
                       labelId="sort-label"
                       defaultValue=""
                       onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}
                     >
                       <MenuItem value="">-----</MenuItem>
-                      <MenuItem value="ascending">Aufsteigend</MenuItem>
-                      <MenuItem value="descending">Absteigend</MenuItem>
+                      <MenuItem value="ascending">Ascending</MenuItem>
+                      <MenuItem value="descending">Descending</MenuItem>
                     </Select>
                   </SortFormControl>
                 </Grid>
@@ -106,23 +106,23 @@ const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: a
               <Grid container spacing={2}>
                 <Grid item xs={12}>
                   <SortFormControl>
-                    <InputLabel id="sort-label">Sortierelement</InputLabel>
+                    <InputLabel id="sort-label">Sorting element</InputLabel>
                     <Select
                       labelId="sort-label"
                       defaultValue=""
                       onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}
                     >
                       <MenuItem value="">-----</MenuItem>
-                      <MenuItem value="sortSubject">Subjekt</MenuItem>
-                      <MenuItem value="sortPredicate">Prädikat</MenuItem>
-                      <MenuItem value="sortObject">Objekt</MenuItem>
+                      <MenuItem value="sortSubject">Subject</MenuItem>
+                      <MenuItem value="sortPredicate">Predicate</MenuItem>
+                      <MenuItem value="sortObject">Object</MenuItem>
                     </Select>
                   </SortFormControl>
                 </Grid>
               </Grid>
             </Grid>
             <Grid item xs={6}>
-              <Tooltip title="Maximale Anzahl der Triple-Ergebnisse der Querys, > 0" placement="top">
+              <Tooltip title="Maximum number of triple results of queries, > 0" placement="top">
                 <StyledTextField
                   name="visualLimit"
                   label="Limit"

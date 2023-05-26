@@ -49,15 +49,15 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }: {
     const iriRegex = /((([A-Za-z]{1,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     switch (type) {
       case "s":
-        // Code für den Fall "s"
+        // Code for the case "s"
         setSubjectValid(iriRegex.test(input));
         break;
       case "p":
-        // Code für den Fall "p"
+        // Code for the case "p"
         setPredicateValid(iriRegex.test(input));
         break;
       case "o":
-        // Code für den Fall "o"
+        // Code for the case "o"
         setObjectValid(iriRegex.test(input));
         break;
       default:
@@ -116,9 +116,9 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }: {
         <Header variant="h6">Add Triple</Header>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
-            <Tooltip title="S: vor dem Subjekt" placement="top">
+            <Tooltip title="S: beforce the subject" placement="top">
               <StyledTextField
-                label="Subjekt"
+                label="subject"
                 value={formFields.subject}
                 onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddSubject(event)}
                 error={!subjectValid}
@@ -126,9 +126,9 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }: {
             </Tooltip>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Tooltip title="P: vor dem Prädikat" placement="top">
+            <Tooltip title="P: before the predicate" placement="top">
               <StyledTextField
-                label="Prädikat"
+                label="predicate"
                 value={formFields.predicate}
                 onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddPredicat(event)}
                 error={!predicateValid}
@@ -136,9 +136,9 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }: {
             </Tooltip>
           </Grid>
           <Grid item xs={12} sm={4}>
-            <Tooltip title="SO: vor dem Prädikat" placement="top">
+            <Tooltip title="SO: or O: before the object" placement="top">
               <StyledTextField
-                label="Objekt"
+                label="object"
                 value={formFields.object}
                 onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeAddObject(event)}
                 error={!objectValid}

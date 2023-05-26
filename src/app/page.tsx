@@ -133,7 +133,7 @@ export default function PersistentDrawerRight() {
       <DropDownBox>
         <DropDownForm variant="standard">
           <InputLabel variant="standard" style={{ color: "white" }}>
-            Visualisierung
+          Visualization
           </InputLabel>
           <Select
             defaultValue={"text"}

@@ -97,7 +97,7 @@ const Import = () => {
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            Die angegebene Datei kann nicht importiert werden.
+                        The specified file cannot be imported.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

@@ -69,7 +69,7 @@ const Export = () => {
                 </SubmitButton>
             </Grid>
             <Grid item xs={5} sx={{ marginBottom: 2 }}>
-                <Tooltip title="Exportfunktion aus einer Javascript Datei muss den Namen externExportFunction tragen, mit einer Triple Liste als Parameter" placement="top">
+                <Tooltip title="Exportfunction from a Javascript file must have the name externExportFunction, with a triple list as parameter" placement="top">
                     <SortFormControl>
                         <InputLabel id="exportFunction">Exportfunktion</InputLabel>
                         <Select 

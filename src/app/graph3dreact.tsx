@@ -100,7 +100,7 @@ export default function Graph3DReact({
     setLinkSourceName(database.dictionary.getElementById(link.source.id) as string);
     setLinkName(database.dictionary.getElementById(link.id) as string);
     setLinkTargetName(database.dictionary.getElementById(link.target.id) as string);
-    setLinkSource(link.source.originalId);
+    setLinkSource(link.source.id);
     setLinkTarget(link.target.originalId);
     setLinkId(link.id);
     setOpenLinkRight(true);
@@ -120,9 +120,6 @@ export default function Graph3DReact({
 
   //handle Submit when Triple Data is changed
   const handleSubmitLinkRight = () => {
-    console.log(source);
-    console.log(target);
-    console.log(pred);
     setOpenLinkRight(false);
   };
 
@@ -148,7 +145,6 @@ export default function Graph3DReact({
   };
 
   React.useEffect(() => {
-    console.log("TODO: Refresh GUI");
     setData(load_data(database, currentData));
   }, [currentData]);
 

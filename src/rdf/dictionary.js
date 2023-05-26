@@ -1,18 +1,5 @@
 import { Triple } from "./models/triple";
 
-const exampleTripleList = [
-  ["Inception", "filmed in", "L.A."],
-  ["L.A.", "city of", "USA"],
-  ["E. Page", "appears in", "Inception"],
-  ["L. DiCaprio", "appears in", "Inception"],
-  ["J. Gordon", "appears in", "Inception"],
-  ["J. Gordon", "born in", "USA"],
-  ["J. Gordon", "lives in", "L.A."],
-  ["E. Page", "born in", "Canada"],
-  ["L. DiCaprio", "born in", "USA"],
-  ["L. DiCaprio", "awarded", "Oscar 2015"],
-];
-
 /**
  * Class for handling the dictionary encoding for the RDFCSA
  */
@@ -29,17 +16,28 @@ export class Dictionary {
    * @param {string[][]} tripleList
    */
   createDictionaries(tripleList) {
-    const tripleListcopy = JSON.parse(JSON.stringify(tripleList));
-    // index starts at 0
-    tripleListcopy.forEach((triple) => {
+    const tripleListCopy = JSON.parse(JSON.stringify(tripleList));
+    tripleListCopy.forEach((triple) => {
       let subject = triple[0];
       let predicate = triple[1];
       let object = triple[2];
       this.#inputTriple(subject, predicate, object);
     });
+    this.#intersectArrays();
     this.#sortArrays();
   }
-
+  /**
+   * 
+   * @param {string} subject
+   * @param {string} predicate
+   * @param {string} object
+   */
+  #inputTriple(subject, predicate, object) {
+    this.S.push(subject);
+    this.P.push(predicate);
+    this.O.push(object);
+  }
+  
   /**
    * Adds every element of the triple to its respective array.
    * For all elements a check is performed whether they already exist in the respective array. If not, they are added.
@@ -49,7 +47,7 @@ export class Dictionary {
    * @param {string} predicate
    * @param {string} object
    */
-  #inputTriple(subject, predicate, object) {
+  #inputTripleForAdd(subject, predicate, object) {
     // for subject and object
     [
       [this.S, this.O, subject],
@@ -70,6 +68,47 @@ export class Dictionary {
       this.P.push(predicate);
     }
   }
+  
+  #distinctMapFromArray(array) {
+    const map = new Map();
+    array.forEach(elem => {
+      if (!map.get(elem)) {
+        map.set(elem, 1);
+      }
+    });
+    return map;
+  }
+
+  #intersectArrays() {
+    const sMap = this.#distinctMapFromArray(this.S)
+
+    const oMap = this.#distinctMapFromArray(this.O)
+
+    this.S = [];
+    this.O = [];
+
+    oMap.forEach((_, elem) => {
+      if (sMap.get(elem)) {
+        this.SO.push(elem);
+        sMap.set(elem, -1);
+      } else {
+        this.O.push(elem);
+      }
+    })
+
+    sMap.forEach((val, key) => {
+      if (val == 1) {
+        this.S.push(key);
+      }
+    })
+
+    const pMap = this.#distinctMapFromArray(this.P)
+    this.P = [];
+
+    pMap.forEach((_, key) => {
+      this.P.push(key);
+    })
+  }
 
   /**
    * Sorts the arrays SO, S, P and O ascending
@@ -88,7 +127,7 @@ export class Dictionary {
    * @param {string} object
    */
   addTriple(subject, predicate, object) {
-    this.#inputTriple(subject, predicate, object);
+    this.#inputTripleForAdd(subject, predicate, object);
     this.#sortArrays();
   }
 
@@ -254,5 +293,39 @@ export class Dictionary {
     const predicate = this.getElementById(triple.predicate);
     const object = this.getElementById(triple.object);
     return [subject, predicate, object];
+  }
+
+  getSubjectMap() {
+    const map = new Map();
+    this.SO.forEach((so, index) => {
+      map.set(so, index);
+    })
+    const soLength = this.SO.length;
+    this.S.forEach((subject, index) => {
+      map.set(subject, index + soLength);
+    })
+    return map;
+  }
+
+  getPredicateMap() {
+    const map = new Map();
+    const gap = this.SO.length + this.S.length;
+    this.P.forEach((predicate, index) => {
+      map.set(predicate, index + gap);
+    })
+    return map;
+  }
+
+  getObjectMap() {
+    const map = new Map();
+    const gap = this.SO.length + this.S.length + this.P.length;
+    this.SO.forEach((so, index) => {
+      map.set(so, index + gap);
+    })
+    const soLength = this.SO.length;
+    this.O.forEach((object, index) => {
+      map.set(object, index + gap + soLength);
+    })
+    return map;
   }
 }

@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  createFilterOptions,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -83,7 +84,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     let data = [...formFields];
     data[index]["subject"] = ("" + newValue);
     setFormFields(data);
-    console.log(formFields);
   };
 
   //Adaptation of the predicat filter
@@ -91,8 +91,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     let data = [...formFields];
     data[index]["predicate"] = ("" + newValue);
     setFormFields(data);
-
-    console.log(formFields);
   };
 
   //Adaptation of the object filter
@@ -100,8 +98,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     let data = [...formFields];
     data[index]["object"] = ("" + newValue);
     setFormFields(data);
-
-    console.log(formFields);
   };
 
   //Removes a triple pair of SPO filter elements with the corresponding join variables
@@ -112,8 +108,6 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     let data = [...formFields];
     data.splice(index, 1);
     setFormFields(data);
-
-    console.log(formFields);
   };
 
   //State for the Dialog to open
@@ -158,6 +152,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               }}
                             />
                           )}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
                           value={form.subject}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeSubject(event, index, newValue)}
                         />
@@ -178,6 +173,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               }}
                             />
                           )}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
                           value={form.predicate}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangePredicate(event, index, newValue)}
                         />
@@ -198,6 +194,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               }}
                             />
                           )}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
                           value={form.object}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeObject(event, index, newValue)}
                         />
@@ -205,8 +202,8 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                     </Grid>
                     <Grid item xs={13} sm={1} sx={{ display: "flex", justifyContent: "center" }}>
                       <Tooltip title="Löschen dieses Filter SPO-Triples" placement="top">
-                        <IconButton aria-label="delete">
-                          <DeleteIcon onClick={() => deleteFilterTriple(index)} />
+                        <IconButton aria-label="delete" onClick={() => deleteFilterTriple(index)}>
+                          <DeleteIcon />
                         </IconButton>
                       </Tooltip>
                     </Grid>

@@ -45,7 +45,6 @@ $x is in USA
   }
 ]
 */
-
 export class QueryCall {
   /**
    * 
@@ -134,19 +133,8 @@ export class QueryCall {
       }
       query.push(queryTriple);
     });
-    for (let i = 0; i < query.length; i++) {
-      console.log(`Triple ${i}:`);
-      console.log(`tripleName: ${query[i].tripleName}`);
-      if (query[i].queryElement == null) {
-        console.log(`query element: null`);
-      } else {
-        console.log(`id: ${query[i].queryElement.id}`);
-        console.log(`isJoinVar: ${query[i].queryElement.isJoinVar}`);
-      }
-    }
 
     const result = queryManager.getTriples(query);
-
     setCurrentData(result);
 
     return true;

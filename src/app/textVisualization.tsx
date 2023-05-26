@@ -118,7 +118,7 @@ export default function TextVisualization({ database, currentData, setCurrentDat
 
         let menuItems = []
         for (let i = 0; i < export_options[0].length; i++) {
-            menuItems.push(<MenuItem value={export_options[0][i]}> {export_options[0][i]} </MenuItem >)
+            menuItems.push(<MenuItem value={export_options[0][i]} key={export_options[0][i]}> {export_options[0][i]} </MenuItem >)
         }
 
         return menuItems
@@ -136,7 +136,6 @@ export default function TextVisualization({ database, currentData, setCurrentDat
         }
         const value = await exporter.serializeTriples(data, database.dictionary, format);
 
-        console.log("Fetching new data for format: " + format)
         if (value === "") {
             setRows([]);
             return
@@ -152,12 +151,10 @@ export default function TextVisualization({ database, currentData, setCurrentDat
         // Update data and rows depending on current query
         setData(currentData);
         getRows(format, currentData);
+        setPage(0);
     }, [currentData])
 
     React.useEffect(() => {
-        // Update data and rows depending on current query
-        console.log("sortData:")
-        console.log(sortData)
     }, [sortData])
 
     /**

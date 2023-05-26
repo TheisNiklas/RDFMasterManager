@@ -21,13 +21,19 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     var subject = triple.subject;
     var predicate = triple.predicate;
     var object = triple.object;
+    var subjectOriginalId = -1;
 
     if (database.dictionary.isSubjectObjectByObjectId(object)) {
       object = object - database.gaps![2];
+      subjectOriginalId = object;
     }
 
     //collect all nodes
-    arrayNodes.push({id: subject, origId: triple.subject});
+    if (subjectOriginalId !== -1) {
+        arrayNodes.push({id: subject, origId: subjectOriginalId});
+    } else {
+        arrayNodes.push({id: subject, origId: triple.subject});
+    }
     arrayNodes.push({id: object, origId: triple.object});
 
     //generate links array
@@ -54,6 +60,5 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
   //concatenate nodes and links array
   const result = { nodes: nodes, links: links };
 
-  console.log(result);
   return result;
 }

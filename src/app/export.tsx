@@ -65,19 +65,19 @@ const Export = () => {
                     color="primary"
                     onClick={() => userImportRequest()}
                 >
-                    Eigene Exportfunktion einfügen
+                    Insert your own export function
                 </SubmitButton>
             </Grid>
             <Grid item xs={5} sx={{ marginBottom: 2 }}>
                 <Tooltip title="Exportfunction from a Javascript file must have the name externExportFunction, with a triple list as parameter" placement="top">
                     <SortFormControl>
-                        <InputLabel id="exportFunction">Exportfunktion</InputLabel>
+                        <InputLabel id="exportFunction">Exportfunction</InputLabel>
                         <Select 
                             labelId="exportFunctionSelect"
                             defaultValue="binaer"
                             onChange={(event: SelectChangeEvent<string>) => handleFormChangeExportFunction(event)}
                         >
-                            <MenuItem value="binaer">nativ als Binärdatei (Standard)</MenuItem>
+                            <MenuItem value="binaer">native as binary file (default)</MenuItem>
                             <MenuItem value="turtle">Turtle-Datei</MenuItem>
                             <MenuItem value="nTriple">n-Triple-Datei</MenuItem>
                             <MenuItem value="json">JSON-Datei</MenuItem>
@@ -92,7 +92,7 @@ const Export = () => {
                         color="primary"
                         onClick={() => graphDataExport()}
                     >
-                        Export alle
+                        Export all
                     </SubmitButton>
                 </Grid>
                 <Grid item xs={6}>
@@ -101,12 +101,12 @@ const Export = () => {
                         color="primary"
                         onClick={() => subgraphDataExport()}
                     >
-                        Export Selektion
+                        Export selection
                     </SubmitButton>
                 </Grid>
             </Grid>
             <SubmitButton variant="contained" color="primary" onClick={() => exportBinaryTest()}>
-                Datenbasis speichern in Binär
+                Save database in binary
             </SubmitButton>
         </Container >
     );

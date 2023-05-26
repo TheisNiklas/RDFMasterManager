@@ -79,7 +79,7 @@ const Import = () => {
                     control={
                         <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)} />
                     }
-                    label="Daten anfügen"
+                    label="Attach data"
                 />
             </Grid>
             <Grid item xs={6} sm={3}>
@@ -93,7 +93,7 @@ const Import = () => {
                     aria-describedby="alert-dialog-description"
                 >
                     <DialogTitle id="alert-dialog-title">
-                        {"Import kann nicht ausgeführt werden."}
+                        {"Import cannot be executed."}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">

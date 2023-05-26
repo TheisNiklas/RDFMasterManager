@@ -122,7 +122,7 @@ const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: a
               </Grid>
             </Grid>
             <Grid item xs={6}>
-              <Tooltip title="Maximale Anzahl der Triple-Ergebnisse der Querys, > 0" placement="top">
+              <Tooltip title="Maximum number of triple results of queries, > 0" placement="top">
                 <StyledTextField
                   name="visualLimit"
                   label="Limit"

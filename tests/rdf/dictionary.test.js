@@ -2,11 +2,11 @@ import { Dictionary } from "../../src/rdf/dictionary";
 import { Triple } from "../../src/rdf/models/triple";
 import { exampleTripleList } from "./fixtures/dictionary.test.json";
 
-describe("Rdfcsa", () => {
+describe("Dictionary", () => {
   let dictionary;
   beforeEach(() => {
     dictionary = new Dictionary();
-    dictionary.createDictionariesNew(exampleTripleList);
+    dictionary.createDictionaries(exampleTripleList);
   });
   test("constructTArrays", () => {
     expect(dictionary.SO).toEqual(["Inception", "L.A."]);

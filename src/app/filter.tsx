@@ -19,6 +19,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
+  createFilterOptions,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
@@ -151,6 +152,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               }}
                             />
                           )}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
                           value={form.subject}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeSubject(event, index, newValue)}
                         />
@@ -171,6 +173,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               }}
                             />
                           )}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
                           value={form.predicate}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangePredicate(event, index, newValue)}
                         />
@@ -191,6 +194,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
                               }}
                             />
                           )}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
                           value={form.object}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeObject(event, index, newValue)}
                         />

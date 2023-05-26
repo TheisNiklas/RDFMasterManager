@@ -1,8 +1,15 @@
+/*
+
+ONLY FOR DOCUMENTATION PURPOSES, NON FUNCTIONAL
+
+*/
+
 import { Dictionary } from "../../src/rdf/dictionary";
+import { DictionaryNew } from "../../src/rdf/dictionary-new";
 import { exampleTripleList } from "./fixtures/dictionary.test.json";
 import { dataset } from "./fixtures/50k-dataset.json";
+import { RdfcsaOld } from "../../src/rdf/rdfcsa-old";
 import { Rdfcsa } from "../../src/rdf/rdfcsa";
-import { RdfcsaNew } from "../../src/rdf/rdfcsa-new";
 
 describe("Rdfcsa Performance", () => {
   // Result:
@@ -16,7 +23,7 @@ describe("Rdfcsa Performance", () => {
     for (let i = 0; i < 5; i++) {
       const start = performance.now();
       const data = dataset;
-      let rdfcsa = new Rdfcsa(data);
+      let rdfcsa = new RdfcsaOld(data);
       const end = performance.now();
       times.push(end-start)
     }
@@ -74,7 +81,7 @@ describe("Dictionary Performance", () => {
     let times = [];
     for (let i = 0; i < 5; i++) {
       const start = performance.now();
-      let dictionary = new Dictionary();
+      let dictionary = new DictionaryNew();
       const data = dataset;
       dictionary.createDictionariesNew(data);
       const end = performance.now();

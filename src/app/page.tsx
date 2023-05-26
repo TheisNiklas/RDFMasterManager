@@ -195,9 +195,11 @@ export default function PersistentDrawerRight() {
             setStartDialogOpen(true);
           } else {
             setDatabase(rdfcsa);
-            const queryManager = new QueryManager(rdfcsa);
-            const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-            setCurrentData(data);
+            if (rdfcsa.tripleCount < 10000) { // TODO: include in config
+                const queryManager = new QueryManager(rdfcsa);
+                const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+                setCurrentData(data);
+            }
             setStartDialogOpen(false);
           }
       });

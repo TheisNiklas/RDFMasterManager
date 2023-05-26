@@ -6,7 +6,9 @@ export class Rdfcsa {
    * @param {string[][]} tripleList
    */
   constructor(tripleList) {
+    this.tripleCount = tripleList.length;
     this.dictionary = new Dictionary(tripleList);
+    this.dictionary.createDictionaries(tripleList);
     const tArray = this.#constructTArrays(tripleList);
     const aArray = this.#constructA(tArray);
     this.D = this.#constructD(tArray, aArray);
@@ -17,17 +19,17 @@ export class Rdfcsa {
    * Constructs the array Tid and T from the `tipleList`
    * @param {string[][]} tripleList
    * @returns {number[]} Array T
-   */
+   */  
   #constructTArrays(tripleList) {
-    // create SO, S, P and O dictionaries
-    this.dictionary.createDictionaries(tripleList);
-    // transform string triple into number triple
+    const subjectMap = this.dictionary.getSubjectMap();
+    const predicateMap = this.dictionary.getPredicateMap();
+    const objectMap = this.dictionary.getObjectMap();
     tripleList.forEach((triple) => {
-      triple[0] = this.dictionary.getIdBySubject(triple[0]);
-      triple[1] = this.dictionary.getIdByPredicate(triple[1]);
-      triple[2] = this.dictionary.getIdByObject(triple[2]);
+      triple[0] = subjectMap.get(triple[0]);
+      triple[1] = predicateMap.get(triple[1]);
+      triple[2] = objectMap.get(triple[2]);
     });
-    // sort triples in list
+
     tripleList.sort((a, b) => {
       if (a[0]-b[0] !== 0) {
         return a[0]-b[0]
@@ -37,7 +39,7 @@ export class Rdfcsa {
       }
       return a[2]-b[2]
     });
-    // create and return tArray
+
     return this.#constructT(JSON.parse(JSON.stringify(tripleList)));
   }
 
@@ -54,12 +56,6 @@ export class Rdfcsa {
       this.dictionary.SO.length + this.dictionary.S.length + this.dictionary.P.length,
     ];
     this.gaps = gaps;
-    
-    // add gaps to triples
-    tripleList.forEach((triple) => {
-      triple[1] += gaps[1];
-      triple[2] += gaps[2];
-    });
 
     // generate tArray (all triples without grouping into triples)
     var tArray = [];
@@ -68,9 +64,6 @@ export class Rdfcsa {
       tArray.push(triple[1]);
       tArray.push(triple[2]);
     });
-
-    // 100 because it's a little big bigger (see paper; big number added at back)
-    //tArray.push(this.gaps[2] + this.dictionary.O.length + 100);
 
     return tArray;
   }
@@ -91,7 +84,6 @@ export class Rdfcsa {
     // creates array with indices from tArray
     let aArray = Array.from(tArray.keys());
     // delete last element (implementation trick in paper?)
-    // aArray.pop(); // remove largest number (added before)
     aArray.sort((a, b) => tArray[a] - tArray[b]); // where a,b are any two elements of aArray; then the value at those places in tArray are compared.
     return aArray;
   }

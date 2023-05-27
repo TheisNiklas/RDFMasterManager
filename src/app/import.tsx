@@ -15,7 +15,11 @@ import {
     DialogContentText,
     DialogActions
 } from '@mui/material';
-import { importFile } from '../rdf/import/ImportBinaryWindows';
+import { ImportService } from "@/rdf/importer/import-service";
+import { QueryManager } from "@/rdf/query-manager";
+import { QueryTriple } from "@/rdf/models/query-triple";
+import { Rdfcsa } from "@/rdf/rdfcsa";
+import { Triple } from "@/rdf/models/triple";
 
 const Header = styled(Typography)(({ theme }) => ({
     fontWeight: "bold",
@@ -46,7 +50,7 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
 
 
 
-const Import = () => {
+const Import = ({ database, setDatabase, currentData, setCurrentData }: { database: Rdfcsa, setDatabase: React.Dispatch<React.SetStateAction<Rdfcsa>>, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) => {
 
     let appendData = false;
 
@@ -59,9 +63,29 @@ const Import = () => {
     };
 
     //To start the data input for attaching to or replacing the old triple data
-    const userImportRequest = (
-    ) => {
-        setOpen(!importFile(appendData));
+    const userImportRequest = () => {
+        const fileInput = document.createElement('input');
+        fileInput.type = 'file';
+        const importService = new ImportService();
+    
+          // Add an event handler to get the selected file path.
+          fileInput.addEventListener('change', async event => {
+              const file = (event as any).target.files[0];
+              const rdfcsa = await importService.importFile(file, true);
+              if (rdfcsa === undefined) {
+                setOpen(true);
+              } else {
+                setDatabase(rdfcsa);
+                if (rdfcsa.tripleCount < 10000) { // TODO: include in config
+                    const queryManager = new QueryManager(rdfcsa);
+                    const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+                    setCurrentData(data);
+                }
+                setOpen(false);
+              }
+          });
+      
+          fileInput.click();
     };
 
     //State for the Dialog to open
@@ -79,7 +103,7 @@ const Import = () => {
                     control={
                         <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)} />
                     }
-                    label="Daten anfügen"
+                    label="Attach data"
                 />
             </Grid>
             <Grid item xs={6} sm={3}>
@@ -93,11 +117,11 @@ const Import = () => {
                     aria-describedby="alert-dialog-description"
                 >
                     <DialogTitle id="alert-dialog-title">
-                        {"Import kann nicht ausgeführt werden."}
+                        {"Import cannot be executed."}
                     </DialogTitle>
                     <DialogContent>
                         <DialogContentText id="alert-dialog-description">
-                            Die angegebene Datei kann nicht importiert werden.
+                        The specified file cannot be imported.
                         </DialogContentText>
                     </DialogContent>
                     <DialogActions>

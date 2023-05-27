@@ -133,7 +133,7 @@ export default function PersistentDrawerRight() {
       <DropDownBox>
         <DropDownForm variant="standard">
           <InputLabel variant="standard" style={{ color: "white" }}>
-            Visualisierung
+          Visualization
           </InputLabel>
           <Select
             defaultValue={"text"}
@@ -256,8 +256,8 @@ export default function PersistentDrawerRight() {
           currentData={currentData}
           setCurrentData={setCurrentData}
         ></AddTripleForm>
-        <Import></Import>
-        <Export></Export>
+        <Import database={database} setDatabase={setDatabase} currentData={currentData} setCurrentData={setCurrentData}></Import>
+        <Export database={database} currentData={currentData}></Export>
       </Drawer>
       <Dialog open={startDialogOpen}>
         <DialogTitle>Open Database / Import</DialogTitle>

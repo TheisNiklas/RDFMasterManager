@@ -18,7 +18,8 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
+import { open, close } from "./../actions";
 
 const drawerWidth = 240;
 
@@ -76,14 +77,13 @@ export default function PersistentDrawerRight() {
 
   //Redux
   const drawerOpen = useSelector((state: any) => state.isDrawerOpen);
-  console.log(drawerOpen);
-  const [open, setOpen] = React.useState(drawerOpen);
+  const dispatch = useDispatch();
 
   return (
     <>
       <Box sx={{ display: "flex" }}>
         <CssBaseline />
-        <AppBar position="fixed" open={open}>
+        <AppBar position="fixed" open={drawerOpen}>
           <Toolbar>
             <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
               Persistent drawer
@@ -93,15 +93,15 @@ export default function PersistentDrawerRight() {
               aria-label="open drawer"
               edge="end"
               onClick={() => {
-                drawerOpen ? setOpen(false) : setOpen(true);
+                drawerOpen ? dispatch(close()) : dispatch(open());
               }}
-              sx={{ ...(open && { display: "none" }) }}
+              sx={{ ...(drawerOpen && { display: "none" }) }}
             >
               <MenuIcon />
             </IconButton>
           </Toolbar>
         </AppBar>
-        <Main open={open}>
+        <Main open={drawerOpen}>
           <DrawerHeader />
           <h1>3D Graph</h1>
         </Main>
@@ -115,12 +115,12 @@ export default function PersistentDrawerRight() {
           }}
           variant="persistent"
           anchor="right"
-          open={open}
+          open={drawerOpen}
         >
           <DrawerHeader>
             <IconButton
               onClick={() => {
-                drawerOpen ? setOpen(true) : setOpen(false);
+                drawerOpen ? dispatch(open()) : dispatch(close());
               }}
             >
               {theme.direction === "rtl" ? <ChevronLeftIcon /> : <ChevronRightIcon />}

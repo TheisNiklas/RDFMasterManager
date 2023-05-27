@@ -1,3 +1,4 @@
+import { Triple } from "@/rdf/models/triple";
 //open drawer
 export const open = () => {
   return {
@@ -25,4 +26,29 @@ export const setSortOrder = (sortOrder: string) => ({
 export const setVisualLimit = (visualLimit: number) => ({
   type: "SET_VISUAL_LIMIT",
   payload: visualLimit,
+});
+
+export const addTriple = (triple: Triple) => ({
+  type: "ADD_TRIPLE",
+  payload: triple,
+});
+
+export const removeTriple = (index: number) => ({
+  type: "REMOVE_TRIPLE",
+  payload: index,
+});
+
+export const updateSubject = (index: number, value: string) => ({
+  type: "UPDATE_SUBJECT",
+  payload: { index, value },
+});
+
+export const updatePredicate = (index: number, value: string) => ({
+  type: "UPDATE_PREDICATE",
+  payload: { index, value },
+});
+
+export const updateObject = (index: number, value: string) => ({
+  type: "UPDATE_OBJECT",
+  payload: { index, value },
 });

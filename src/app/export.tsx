@@ -48,12 +48,12 @@ const Export = ({ database, currentData }: { database: Rdfcsa; currentData: Trip
 
   useEffect(() => {
     const exportersAvailable = exporter.getAvailableExporters();
-    setAvailableExporters(exportersAvailable[0]);
+    setAvailableExporters(exportersAvailable);
   }, [exporter]);
 
   useEffect(() => {
     if (availableExporters.length > 0) {
-      console.log(availableExporters[0]);
+      console.log(availableExporters);
       setExportFunction(availableExporters[0]);
     }
   }, [availableExporters]);

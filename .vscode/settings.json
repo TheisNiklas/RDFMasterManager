@@ -16,6 +16,9 @@
   "[javascriptreact]": {
     "editor.tabSize": 2
   },
+  "[typescriptreact]": {
+    "editor.tabSize": 2
+  },
   "debug.focusEditorOnBreak": false,
   "debug.focusWindowOnBreak": false
 }

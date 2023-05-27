@@ -50,7 +50,7 @@ function loadDefaultFormat() {
     const exporter = new ExportService();
     const export_options = exporter.getAvailableExporters();
 
-    return export_options[0][0]
+    return export_options[0]
 }
 
 export default function TextVisualization({ database, currentData, setCurrentData, sortData }: { database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>>, sortData: any }) {
@@ -117,8 +117,8 @@ export default function TextVisualization({ database, currentData, setCurrentDat
         const export_options = exporter.getAvailableExporters();
 
         let menuItems = []
-        for (let i = 0; i < export_options[0].length; i++) {
-            menuItems.push(<MenuItem value={export_options[0][i]} key={export_options[0][i]}> {export_options[0][i]} </MenuItem >)
+        for (let i = 0; i < export_options.length; i++) {
+            menuItems.push(<MenuItem value={export_options[i]} key={export_options[i]}> {export_options[i]} </MenuItem >)
         }
 
         return menuItems

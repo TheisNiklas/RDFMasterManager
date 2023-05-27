@@ -5,7 +5,6 @@ import { NTriplesExporter } from "./ntriples-exporter";
 import { TurtleExporter } from "./turtle-exporter";
 import { JsonldExporter } from "./jsonld-exporter";
 import { saveAs } from "file-saver";
-import streamSaver from 'streamsaver'
 
 export class ExportService {
   /** @type {{[key: string]: Exporter}} */
@@ -32,24 +31,18 @@ export class ExportService {
   async exportTriples(tripleList, dictionary, format) {
     const exporterData = this.#getExporter(format);
 
-    if (exporterData.isStreamExporter) {
-      const stream = await this.serializeTriples(tripleList, dictionary, format, exporterData);
-      const fileStream = streamSaver.createWriteStream(`export.${exporterData.extension}`);
-      stream.pipe(fileStream);
-    } else {
-      const result = await this.serializeTriples(tripleList, dictionary, format, exporterData);
-      let blob = new Blob([result], { type: exporterData.mimeType });
-      saveAs(blob, `export.${exporterData.extension}`);
-    }
+    const result = await this.serializeTriples(tripleList, dictionary, format, exporterData);
+    let blob = new Blob([result], { type: exporterData.mimeType });
+    saveAs(blob, `export.${exporterData.extension}`);
   }
 
   /**
    * Serializes a tripleList to a string of the given `format`.
    * @param {Triple[]} tripleList Triples to be exported.
-   * @param {Dictionary} dictionary
-   * @param {string} format name the exporter is registered with
-   * @param {boolean} isStreamExporter true if the chosen exporter is a `StreamExporter`. Defaults to false.
-   * @returns {Promise} serailized `tripleList` to `fromat`
+   * @param {Dictionary} dictionary dictionary from rdfcsa.
+   * @param {string} format name the exporter is registered with.
+   * @param {{instance: Exporter, extension: string, isStreamExporter: boolean, mimeType: string}} exporterData all relevant inforamtions regarding the exporter. Default to undefined.
+   * @returns {Promise} serailized `tripleList` to `fromat`.
    * @throws {Error} When no matching exporter is available.
    */
   async serializeTriples(tripleList, dictionary, format, exporterData = undefined) {
@@ -72,8 +65,8 @@ export class ExportService {
   }
 
   /**
-   * Get two lists with the names of the currently registered exporters
-   * @returns {string[][]} List containing the format names of the exporters.
+   * Get two lists with the names of the currently registered exporters.
+   * @returns {string[]} List containing the format names of the exporters.
    * @example ["N-Triples", "JSON-LD", "Turtle"]
    */
   getAvailableExporters() {
@@ -122,10 +115,8 @@ export class ExportService {
    * @returns {{instance: Exporter, extension: string, isStreamExporter: boolean, mimeType: string}}
    */
   #getExporter(format) {
-    let exporter;
-    try {
-      exporter = this.#exporters[format];
-    } catch (error) {
+    let exporter = this.#exporters[format];
+    if (exporter === undefined) {
       throw Error(
         `No exporter available for format ${format} in category ${isStreamExporter ? "normal" : "streaming"}`
       );

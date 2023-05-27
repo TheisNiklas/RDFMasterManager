@@ -52,3 +52,8 @@ export const updateObject = (index: number, value: string) => ({
   type: "UPDATE_OBJECT",
   payload: { index, value },
 });
+
+export const setCurrentData = (triples: Triple[]) => ({
+  type: "SET_CURRENTDATA",
+  payload: triples,
+});

@@ -256,8 +256,8 @@ export default function PersistentDrawerRight() {
           currentData={currentData}
           setCurrentData={setCurrentData}
         ></AddTripleForm>
-        <Import></Import>
-        <Export></Export>
+        <Import database={database} setDatabase={setDatabase} currentData={currentData} setCurrentData={setCurrentData}></Import>
+        <Export database={database} currentData={currentData}></Export>
       </Drawer>
       <Dialog open={startDialogOpen}>
         <DialogTitle>Open Database / Import</DialogTitle>

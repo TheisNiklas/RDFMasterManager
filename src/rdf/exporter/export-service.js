@@ -5,6 +5,7 @@ import { NTriplesExporter } from "./ntriples-exporter";
 import { TurtleExporter } from "./turtle-exporter";
 import { JsonldExporter } from "./jsonld-exporter";
 import { StreamExporter } from "./stream-exporter";
+import {saveAs} from "file-saver";
 
 export class ExportService {
   /** @type {{[key: string]: Exporter}} */
@@ -37,9 +38,9 @@ export class ExportService {
       const fileStream = streamSaver.createWriteStream("export.jsonld");
       stream.pipe(fileStream);
     } else {
-      const result = this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
+      const result = await this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
       let blob = new Blob([result], { type: "application/n-triples;charset=utf-8" });
-      FileSaver.saveAs(blob, `export.nt`);
+      saveAs(blob, `export.nt`);
     }
   }
 

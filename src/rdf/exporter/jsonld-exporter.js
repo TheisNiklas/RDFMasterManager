@@ -1,7 +1,5 @@
-import { Writer } from "n3";
 import { RdfJsMapper } from "../rdf-js-mapper";
 import { StreamExporter } from "./stream-exporter";
-import FileSaver from "file-saver";
 import { JsonLdSerializer } from "jsonld-streaming-serializer";
 
 export class JsonldExporter extends StreamExporter {

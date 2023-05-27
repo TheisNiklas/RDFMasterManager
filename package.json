@@ -10,7 +10,8 @@
     "lint": "next lint",
     "test": "jest",
     "test-cicd": "jest --maxWorkers=2 --json --outputFile=jest-results.json ",
-    "test-dev": "jest --watch"
+    "test-dev": "jest --watch",
+    "test-coverage": "jest --coverage --collectCoverageFrom='./src/rdf/**/*.js' --coverageDirectory='docs/tests/coverage'"
   },
   "dependencies": {
     "@emotion/react": "^11.11.0",

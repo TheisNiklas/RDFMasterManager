@@ -62,11 +62,14 @@ describe("ExportService", () => {
       { subject: 4, predicate: 6, object: 14 },
       { subject: 4, predicate: 7, object: 15 },
     ];
-    const result = await exportService.serializeTriples(input, rdfcsa.dictionary, "JSON-LD", true);
+    const result = await exportService.serializeTriples(input, rdfcsa.dictionary, "JSON-LD");
     expect(result).toEqual(
       '[\n  {\n    "@id": "SO:Inception",\n    "P:filmedin": [\n      {\n        "@id": "SO:L.A."\n      }\n    ]\n  },\n  {\n    "@id": "SO:L.A.",\n    "P:cityof": [\n      {\n        "@id": "O:USA"\n      }\n    ]\n  },\n  {\n    "@id": "S:E.Page",\n    "P:appearsin": [\n      {\n        "@id": "SO:Inception"\n      }\n    ],\n    "P:bornin": [\n      {\n        "@id": "O:Canada"\n      }\n    ]\n  },\n  {\n    "@id": "S:J.Gordon",\n    "P:appearsin": [\n      {\n        "@id": "SO:Inception"\n      }\n    ],\n    "P:bornin": [\n      {\n        "@id": "O:USA"\n      }\n    ],\n    "P:livesin": [\n      {\n        "@id": "SO:L.A."\n      }\n    ]\n  },\n  {\n    "@id": "S:L.DiCaprio",\n    "P:appearsin": [\n      {\n        "@id": "SO:Inception"\n      }\n    ],\n    "P:awarded": [\n      {\n        "@id": "O:Oscar2015"\n      }\n    ],\n    "P:bornin": [\n      {\n        "@id": "O:USA"\n      }\n    ]\n  }\n]\n'
     );
   });
 
-  ("Turtle");
+  test("getAvailableExporters", () => {
+    const result = exportService.getAvailableExporters();
+    expect(result).toEqual(["N-Triples", "JSON-LD", "Turtle"]);
+  })
 });

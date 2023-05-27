@@ -5,13 +5,11 @@ ONLY FOR DOCUMENTATION PURPOSES, NON FUNCTIONAL
 */
 
 import { Dictionary } from "../../src/rdf/dictionary";
-import { DictionaryNew } from "../../src/rdf/dictionary-new";
 import { exampleTripleList } from "./fixtures/dictionary.test.json";
 import { dataset } from "./fixtures/50k-dataset.json";
-import { RdfcsaOld } from "../../src/rdf/rdfcsa-old";
 import { Rdfcsa } from "../../src/rdf/rdfcsa";
 
-describe("Rdfcsa Performance", () => {
+describe.skip("Rdfcsa Performance", () => {
   // Result:
   //   28044.61419999972,
   //   10408.972900001332,
@@ -49,7 +47,7 @@ describe("Rdfcsa Performance", () => {
   });
 });
 
-describe("Dictionary Performance", () => {
+describe.skip("Dictionary Performance", () => {
 
   // Result:
   //  2244.7050000000745,

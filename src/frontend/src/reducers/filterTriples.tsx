@@ -2,9 +2,9 @@ const initialState: any[] = [];
 
 const filterTripleReducer = (state = initialState, action: any) => {
   switch (action.type) {
-    case "ADD_TRIPLE":
+    case "ADD_QUERYTRIPLE":
       return [...state, action.payload];
-    case "REMOVE_TRIPLE":
+    case "REMOVE_QUERYTRIPLE":
       return state.filter((triple, index) => index !== action.payload);
     case "UPDATE_SUBJECT": {
         const { index, value } = action.payload;

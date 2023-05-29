@@ -23,7 +23,7 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     var object = triple.object;
     var subjectOriginalId = -1;
 
-    if (database.dictionary.isSubjectObjectByObjectId(object)) {
+    if (database.dictionary.isSubjectObjectById(object)) {
       object = object - database.gaps![2];
       subjectOriginalId = object;
     }

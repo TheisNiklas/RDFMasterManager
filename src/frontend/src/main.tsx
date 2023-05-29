@@ -6,7 +6,7 @@ import rootReducer from "./reducers/index.js";
 import { Provider } from "react-redux";
 import { devToolsEnhancer } from '@redux-devtools/extension';
 
-const composeEnhancers = (window as any).__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
+
 const store = createStore(rootReducer, devToolsEnhancer() );
 
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(

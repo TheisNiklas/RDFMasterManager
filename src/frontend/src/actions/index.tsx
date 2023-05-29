@@ -74,3 +74,8 @@ export const setDatabase = (rdfcsa: Rdfcsa) => ({
   type: "SET_DATABASE",
   payload: rdfcsa,
 });
+
+export const setMainFrame = (mainFrameContent: string) => ({
+  type: "SET_MAINFRAME",
+  payload: mainFrameContent,
+})

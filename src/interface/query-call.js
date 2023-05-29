@@ -54,7 +54,7 @@ export class QueryCall {
    * @param {React.Dispatch<React.SetStateAction<Triple[]>>} setCurrentData 
    * @returns 
    */
-  static queryCallData(queryData, database, currentData, setCurrentData) {
+  static queryCallData(queryData, database) {
     const queryManager = new QueryManager(database);
 
     const query = [];
@@ -135,8 +135,7 @@ export class QueryCall {
     });
 
     const result = queryManager.getTriples(query);
-    setCurrentData(result);
 
-    return true;
+    return result;
   }
 }

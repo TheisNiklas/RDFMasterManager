@@ -28,7 +28,7 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { Rdfcsa } from "../rdf/rdfcsa";
 import { Triple } from "../rdf/models/triple";
 import { useSelector, useDispatch } from "react-redux";
-import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple } from "./../actions";
+import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData } from "./../actions";
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
   marginBottom: theme.spacing(2),
@@ -58,6 +58,11 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 }));
 
 const FilterForm = () => {
+  //Redux
+  const filterTriples = useSelector((state: any) => state.filterTriples);
+  const database = useSelector((state: any) => state.database);
+  const currentData = useSelector((state: any) => state.currentData);
+  const dispatch = useDispatch();
   //Adds a SPO triple to the previous formField of the filter triple
   //true as default value for the checkboxes
   const addFilterTriple = () => {
@@ -73,7 +78,7 @@ const FilterForm = () => {
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-    setOpen(!QueryCall.queryCallData(filterTriples, database, currentData, setCurrentData));
+    dispatch(setCurrentData(QueryCall.queryCallData(filterTriples, database)));
   };
 
   //Adaptation of the subject filter
@@ -106,10 +111,7 @@ const FilterForm = () => {
     setOpen(false);
   };
 
-  //Redux
-  const filterTriples = useSelector((state: any) => state.filterTriples);
-  const database = useSelector((state: any) => state.database);
-  const dispatch = useDispatch();
+  
   return (
     <Accordion defaultExpanded={true}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">

@@ -25,8 +25,13 @@ import { ImportService } from "../rdf/importer/import-service";
 import { useSelector, useDispatch } from "react-redux";
 import { open, close, setCurrentData, setDatabase } from "./../actions";
 import AddTripleForm from "./addTriple";
+import DropDownMenue from "./dropDownMenu"
 import SortFormData from "./sort";
 import FilterForm from "./filter";
+import Import from "./import";
+import Export from "./export";
+import TextVisualization from "./textVisualization";
+import Graph3DReact from "./graph3dreact";
 
 const drawerWidth = 500;
 
@@ -88,6 +93,26 @@ export default function PersistentDrawerRight() {
 
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
 
+  //Redux
+  const drawerOpen = useSelector((state: any) => state.isDrawerOpen);
+  const mainFrame = useSelector((state: any) => state.mainFrame);
+  const database = useSelector((state: any) => state.database);
+  const currentData = useSelector((state: any) => state.currentData);
+  const dispatch = useDispatch();
+  
+  const handleMainFrame = React.useCallback(() => {
+    if (mainFrame === "text") {
+      return <TextVisualization/>;
+    } else if (mainFrame === "3d") {
+      return <Graph3DReact/>;
+    } else if (mainFrame === "2d") {
+      return (
+        //<Graph2D />
+        <div />
+      );
+    }
+  }, [database, currentData, mainFrame]);
+
   const handleFromFromExample = () => {
     const rdfcsa = new ImportService().loadSample()
     const queryManager = new QueryManager(rdfcsa);
@@ -126,9 +151,7 @@ export default function PersistentDrawerRight() {
       fileInput.click();
     };
 
-  //Redux
-  const drawerOpen = useSelector((state: any) => state.isDrawerOpen);
-  const dispatch = useDispatch();
+  
 
   return (
     <>
@@ -137,8 +160,9 @@ export default function PersistentDrawerRight() {
         <AppBar position="fixed" open={drawerOpen}>
           <Toolbar>
             <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
-              Persistent drawer
+              RDF Master Manager
             </Typography>
+            <DropDownMenue></DropDownMenue>
             <IconButton
               color="inherit"
               aria-label="open drawer"
@@ -154,7 +178,7 @@ export default function PersistentDrawerRight() {
         </AppBar>
         <Main open={drawerOpen}>
           <DrawerHeader />
-          <h1>3D Graph</h1>
+          {handleMainFrame()}
         </Main>
         <Drawer
           sx={{
@@ -181,7 +205,8 @@ export default function PersistentDrawerRight() {
           <FilterForm></FilterForm>
         <SortFormData></SortFormData>
         <AddTripleForm></AddTripleForm>
-      
+        <Import></Import>
+        <Export></Export>
         </Drawer>
         <Dialog open={startDialogOpen}>
         <DialogTitle>Open Database / Import</DialogTitle>

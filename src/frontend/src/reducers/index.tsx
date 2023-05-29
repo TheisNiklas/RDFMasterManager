@@ -4,6 +4,7 @@ import sortOptionsReducer from "./sortOptions";
 import filterTripleReducer from "./filterTriples";
 import currentDataReducer from "./currentData";
 import databaseReducer from "./database";
+import mainFrameReducer from "./mainFrame";
 
 // root reducer to combine all reducers
 const rootReducer = combineReducers({
@@ -11,7 +12,8 @@ const rootReducer = combineReducers({
   sortOptions: sortOptionsReducer,
   filterTriples: filterTripleReducer,
   currentData: currentDataReducer,
-  database: databaseReducer
+  database: databaseReducer,
+  mainFrame: mainFrameReducer
 });
 
 export default rootReducer;

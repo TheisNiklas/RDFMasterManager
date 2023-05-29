@@ -52,23 +52,57 @@ export class Dictionary {
    */
   #inputTripleForAdd(subject, predicate, object) {
     // for subject and object
-    [
-      [this.S, this.O, subject],
-      [this.O, this.S, object],
-    ].forEach(([array, otherArray, element]) => {
-      if (!this.SO.includes(element)) {
-        if (otherArray.includes(element)) {
-          this.SO.push(element);
-          let pos = otherArray.indexOf(element);
-          otherArray.splice(pos, 1);
-        } else if (!array.includes(element)) {
-          array.push(element);
-        }
+    const subjectIsNew = !this.SO.includes(subject) && !this.S.includes(subject);
+    const predicateIsNew = !this.P.includes(predicate);
+    const objectIsNew = !this.SO.includes(object) && !this.O.includes(object);
+    const subjectWasSO = this.SO.includes(subject);
+    const objectWasSO = this.SO.includes(object);
+    const subjectGotSO = false;
+
+    if (!subjectWasSO) {
+      if (this.O.includes(subject)) {
+        this.SO.push(subject);
+        let pos = this.O.indexOf(subject);
+        this.O.splice(pos, 1);
+        subjectGotSO = true;
+      } else if (!this.S.includes(subject)) {
+        this.S.push(subject);
       }
-    });
+    }
+    
+    if (!objectWasSO) {
+      if (this.S.includes(object)) {
+        this.SO.push(object);
+        let pos = this.S.indexOf(object);
+        this.S.splice(pos, 1);
+        subjectGotSO = true;
+      } else if (!this.O.includes(object)) {
+        this.O.push(object);
+      }
+    }
+
     // for predicate
-    if (!this.P.includes(predicate)) {
+    if (!predicateExists) {
       this.P.push(predicate);
+    }
+
+    const subjectId = this.getIdByElement(subject)
+    const predicateId = this.getIdByElement(predicate)
+    const objectId = this.getIdByElement(object)
+
+    return {
+      subject: {
+        id: subjectId,
+        isNew: subjectIsNew
+      },
+      predicate: {
+        id: predicateId,
+        isNew: predicateIsNew
+      },
+      object: {
+        id: objectId,
+        isNew: objectIsNew
+      }
     }
   }
   

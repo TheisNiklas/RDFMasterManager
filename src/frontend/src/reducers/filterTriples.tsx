@@ -1,4 +1,4 @@
-const initialState: any[] = [];
+const initialState = [{ subject: "", predicate: "", object: "" }];
 
 const filterTripleReducer = (state = initialState, action: any) => {
   switch (action.type) {

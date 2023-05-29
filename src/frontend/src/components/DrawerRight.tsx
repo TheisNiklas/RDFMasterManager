@@ -18,10 +18,17 @@ import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import InboxIcon from "@mui/icons-material/MoveToInbox";
 import MailIcon from "@mui/icons-material/Mail";
+import { Dialog, DialogTitle, Button, DialogContent } from "@mui/material";
+import { QueryManager } from "../rdf/query-manager";
+import { QueryTriple } from "../rdf/models/query-triple";
+import { ImportService } from "../rdf/importer/import-service";
 import { useSelector, useDispatch } from "react-redux";
-import { open, close } from "./../actions";
+import { open, close, setCurrentData, setDatabase } from "./../actions";
+import AddTripleForm from "./addTriple";
+import SortFormData from "./sort";
+import FilterForm from "./filter";
 
-const drawerWidth = 240;
+const drawerWidth = 500;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -72,8 +79,52 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   justifyContent: "flex-start",
 }));
 
+const DialogButton = styled(Button)(({ theme }) => ({
+  marginTop: "16px"
+}))
+
 export default function PersistentDrawerRight() {
   const theme = useTheme();
+
+  const [startDialogOpen, setStartDialogOpen] = React.useState(true);
+
+  const handleFromFromExample = () => {
+    const rdfcsa = new ImportService().loadSample()
+    const queryManager = new QueryManager(rdfcsa);
+    const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+    dispatch(setCurrentData(data));
+    dispatch(setDatabase(rdfcsa));
+    setStartDialogOpen(false);
+  };
+
+  const handleFromScratch = () => {
+    setStartDialogOpen(false);
+  }
+
+  const handleImportRequest = () => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    const importService = new ImportService();
+
+      // Add an event handler to get the selected file path.
+      fileInput.addEventListener('change', async event => {
+          const file = (event as any).target.files[0];
+          const rdfcsa = await importService.importFile(file, true);
+          if (rdfcsa === undefined) {
+            setStartDialogOpen(true);
+          } else {
+            setDatabase(rdfcsa);
+            if (rdfcsa.tripleCount < 10000) { // TODO: include in config
+                const queryManager = new QueryManager(rdfcsa);
+                const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+                setCurrentData(data);
+            }
+            setStartDialogOpen(false);
+          }
+      });
+  
+      fileInput.click();
+    };
 
   //Redux
   const drawerOpen = useSelector((state: any) => state.isDrawerOpen);
@@ -127,28 +178,21 @@ export default function PersistentDrawerRight() {
             </IconButton>
           </DrawerHeader>
           <Divider />
-          <List>
-            {["Inbox", "Starred", "Send email", "Drafts"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-          <Divider />
-          <List>
-            {["All mail", "Trash", "Spam"].map((text, index) => (
-              <ListItem key={text} disablePadding>
-                <ListItemButton>
-                  <ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-                  <ListItemText primary={text} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
+          <FilterForm></FilterForm>
+        <SortFormData></SortFormData>
+        <AddTripleForm></AddTripleForm>
+      
         </Drawer>
+        <Dialog open={startDialogOpen}>
+        <DialogTitle>Open Database / Import</DialogTitle>
+        <DialogContent>
+          <Box display="flex" flexDirection="column" alignItems="center">
+            <DialogButton variant="contained" color="primary" onClick={handleImportRequest} fullWidth>Import</DialogButton>
+            <DialogButton variant="contained" color="primary" onClick={handleFromScratch} fullWidth>Start from Scratch</DialogButton>
+            <DialogButton variant="contained" color="primary" onClick={handleFromFromExample} fullWidth>Start from Example</DialogButton>
+          </Box>
+        </DialogContent>
+      </Dialog>
       </Box>
     </>
   );

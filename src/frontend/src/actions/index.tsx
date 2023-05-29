@@ -1,5 +1,6 @@
-import { QueryTriple } from "@rdf/models/query-triple";
-import { Triple } from "@/rdf/models/triple";
+import { QueryTriple } from "../rdf/models/query-triple";
+import { Triple } from "../rdf/models/triple";
+import { Rdfcsa } from "../rdf/rdfcsa";
 //open drawer
 export const open = () => {
   return {
@@ -67,4 +68,9 @@ export const removeTripleFromCurrentData = (index: number) => ({
 export const setCurrentData = (triples: Triple[]) => ({
   type: "SET_CURRENTDATA",
   payload: triples,
+});
+
+export const setDatabase = (rdfcsa: Rdfcsa) => ({
+  type: "SET_DATABASE",
+  payload: rdfcsa,
 });

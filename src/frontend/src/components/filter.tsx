@@ -77,8 +77,18 @@ const FilterForm = () => {
 
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
+  //check if the query is correct
   const handleSubmit = () => {
-    dispatch(setCurrentData(QueryCall.queryCallData(filterTriples, database)));
+    let queryResult = QueryCall.queryCallData(filterTriples, database)
+    if (queryResult)
+    {
+      dispatch(setCurrentData(queryResult));
+    }  
+    else
+    {
+      //change popup
+      setOpen(true);
+    }
   };
 
   //Adaptation of the subject filter

@@ -23,6 +23,12 @@ export class BitVector{
     this.bits = 0;
   }
   
+  /**
+   * Get value of Bit at index in BitVector.
+   * In BitVector the last value is the value of the last 1. All following 0 are not saved in BitVector.
+   * @param {number} index of Bit
+   * @returns bit value at index
+   */
   getBit(index) {
     if (index >= this.toString().length) {
       return 0;
@@ -31,13 +37,18 @@ export class BitVector{
     return (this.bits & mask) === 0 ? 0 : 1;
   }
 
-  setBit(pos) {
-    if (pos >= this.toString().length) {
-      throw new Error('Index out of range');
-    }
-    this.bits |= 1 << pos;
+  /**
+   * Set value of Bit at index in BitVector
+   * @param {number} index 
+   */
+  setBit(index) {
+    this.bits |= 1 << index;
   }
 
+  /**
+   * Unset value of Bit at index in BitVector
+   * @param {number} index 
+   */
   unsetBit(pos) {
     if (pos >= this.toString().length) {
       throw new Error('Index out of range');
@@ -45,6 +56,11 @@ export class BitVector{
     this.bits &= ~(1 << pos);
   }
 
+  /**
+   * 
+   * @param {number} index 
+   * @returns {number} rank 1 of index
+   */
   static rank(index) {
     let result = 0;
     for (let i = 0; i <= index; i++) {
@@ -55,6 +71,11 @@ export class BitVector{
     return result;
   }
 
+  /**
+   * 
+   * @param {number} count 
+   * @returns {number}
+   */
   static select(count) {
     for (let index = 0; index < this.toString().length; index++) {
       count -= this.getBit(index);
@@ -65,6 +86,10 @@ export class BitVector{
     return -1;
   }
 
+  /**
+   * add 0 Bit at index.
+   * @param {number} index 
+   */
   addBit(index){
     let length = this.toString().length - index;
     const mask = ((1 << length) - 1) << index;
@@ -73,6 +98,10 @@ export class BitVector{
     this.bits = (this.bits & ~mask) | (shiftedSubpart << index);
   }
 
+  /**
+   * delete Bit at index.
+   * @param {number} index 
+   */
   deleteBit(index){
     let length = this.toString().length - index;
     const mask = ((1 << length) - 1) << index;
@@ -81,6 +110,10 @@ export class BitVector{
     this.bits = (this.bits & ~mask) | (shiftedSubpart << index);
   }
   
+  /**
+   * 
+   * @returns string of bits in BitVector ordered by index (left to right)
+   */
    toString() {
     const bitString = this.bits.toString(2);
     return bitString.split('').reverse().join('');

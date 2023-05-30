@@ -13,8 +13,8 @@
         },
         "background": {
           "activeOnStart": true,
-          "beginsPattern": "- ready .*", // Signals the begin of the Task
-          "endsPattern": "- event compiled client and server successfully .*" // Signals that now the initialization of the task is complete
+          "beginsPattern": ".*", // Signals the begin of the Task
+          "endsPattern": ".*Local:.*" // Signals that now the initialization of the task is complete
         }
       }
     },

@@ -16,8 +16,6 @@ import {
 import { RdfOperations } from "../rdf/rdf-operations";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
-import { Rdfcsa } from "../rdf/rdfcsa";
-import { Triple } from "../rdf/models/triple";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase } from "../actions";
 

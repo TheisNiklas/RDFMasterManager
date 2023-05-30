@@ -1,7 +1,7 @@
 export declare class QueryElement {
   id: int | null;
-  isJoinVar: bool;
-  constructor(id = null, isJoinVar = false) {
+  isJoinVar: boolean;
+  constructor(id: number | null = null, isJoinVar: boolean = false) {
     this.id = id;
     this.isJoinVar = isJoinVar;
   }

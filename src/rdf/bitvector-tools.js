@@ -18,7 +18,6 @@ export class BitvectorTools {
   }
 }
 
-
 export class BitVector{
   constructor(){
     this.bits = 0;
@@ -65,21 +64,25 @@ export class BitVector{
     }
     return -1;
   }
+
+  addBit(index){
+    let length = this.toString().length - index;
+    const mask = ((1 << length) - 1) << index;
+    const subpart = (this.bits & mask) >>> index;
+    const shiftedSubpart = subpart << 1;
+    this.bits = (this.bits & ~mask) | (shiftedSubpart << index);
+  }
+
+  deleteBit(index){
+    let length = this.toString().length - index;
+    const mask = ((1 << length) - 1) << index;
+    const subpart = (this.bits & mask) >>> index;
+    const shiftedSubpart = subpart >> 1;
+    this.bits = (this.bits & ~mask) | (shiftedSubpart << index);
+  }
   
    toString() {
     const bitString = this.bits.toString(2);
     return bitString.split('').reverse().join('');
   }
 }
-
-// let bitvector = new BitVector();
-
-// console.log(bitvector.toString());
-// console.log(bitvector.toString().length);
-// console.log(bitvector.bits);
-// bitvector.setBit(3)
-// console.log(bitvector.toString())
-// console.log(bitvector.getBit(3))
-// bitvector.unsetBit(3)
-// console.log(bitvector.toString())
-// console.log(bitvector.bits)

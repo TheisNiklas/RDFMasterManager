@@ -51,7 +51,7 @@ function loadDefaultFormat() {
     const exporter = new ExportService();
     const export_options = exporter.getAvailableExporters();
 
-    return export_options[0][0]
+    return export_options[0]
 }
 
 export default function TextVisualization() {
@@ -67,7 +67,7 @@ export default function TextVisualization() {
     const currentData = useSelector((state: any) => state.currentData);
     const sortOptions = useSelector((state: any) => state.sortOptions);
     const dispatch = useDispatch();
-    var currentId = -1;
+    let currentId = -1;
 
     const columns = [
         {
@@ -123,7 +123,7 @@ export default function TextVisualization() {
 
         let menuItems = []
         for (let i = 0; i < export_options[0].length; i++) {
-            menuItems.push(<MenuItem value={export_options[0][i]} key={export_options[0][i]}> {export_options[0][i]} </MenuItem >)
+            menuItems.push(<MenuItem value={export_options[i]} key={export_options[i]}> {export_options[i]} </MenuItem >)
         }
 
         return menuItems

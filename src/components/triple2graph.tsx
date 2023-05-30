@@ -18,12 +18,12 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
   const arrayNodes: any = [];
 
   data.forEach((triple) => {
-    var subject = triple.subject;
-    var predicate = triple.predicate;
-    var object = triple.object;
-    var subjectOriginalId = -1;
+    const subject = triple.subject;
+    const predicate = triple.predicate;
+    let object = triple.object;
+    let subjectOriginalId = -1;
 
-    if (database.dictionary.isSubjectObjectByObjectId(object)) {
+    if (database.dictionary.isSubjectObjectById(object)) {
       object = object - database.gaps![2];
       subjectOriginalId = object;
     }

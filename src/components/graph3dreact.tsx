@@ -31,10 +31,11 @@ const NoSSRForceGraph = dynamic(() => import("../lib/NoSSRForceGraph"), {
 export default function Graph3DReact() {
   //load data into the 3D Graph
   const database = useSelector((state: any) => state.database);
-    const currentData = useSelector((state: any) => state.currentData);
+  const currentData = useSelector((state: any) => state.currentData);
 
-const dispatch = useDispatch();
-  const [data, setData] = React.useState(load_data(database, currentData));
+  const dispatch = useDispatch();
+  const initial_data = load_data(database, currentData)
+  const [data, setData] = React.useState(initial_data);
 
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
   const [openNodeRight, setOpenNodeRight] = React.useState(false);

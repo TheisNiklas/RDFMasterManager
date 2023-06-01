@@ -24,16 +24,11 @@ const Header = styled(Typography)(({ theme }) => ({
   marginBottom: theme.spacing(2),
 }));
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)(() => ({
   width: "100%",
 }));
 
-const AddButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(2),
-  width: "100%",
-}));
-
-const SubmitButton = styled(Button)(({ theme }) => ({
+const SubmitButton = styled(Button)(() => ({
   width: "100%",
 }));
 

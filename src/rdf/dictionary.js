@@ -188,7 +188,7 @@ export class Dictionary {
   /**
    * Get the id of `subject`
    * @param {string} subject
-   * @returns {int}
+   * @returns {number}
    */
   getIdBySubject(subject) {
     return this.getIdByElement(subject, this.S);
@@ -197,7 +197,7 @@ export class Dictionary {
   /**
    * Get the id of `object`
    * @param {string} object
-   * @returns {int}
+   * @returns {number}
    */
   getIdByObject(object) {
     const temp = this.getIdByElement(object, this.O);
@@ -208,7 +208,7 @@ export class Dictionary {
    * Get the id of the object or subject `element` out of `SO` or `array`
    * @param {string} element
    * @param {string[]} array
-   * @returns {int}
+   * @returns {number}
    */
   getIdByElement(element, array) {
     const soIndex = this.SO.findIndex((el) => el === element);
@@ -225,7 +225,7 @@ export class Dictionary {
   /**
    * Get the id of `predicate`
    * @param {string} predicate
-   * @returns {int}
+   * @returns {number}
    */
   getIdByPredicate(predicate) {
     return this.P.findIndex((el) => el === predicate) + this.SO.length + this.S.length;
@@ -233,7 +233,7 @@ export class Dictionary {
 
   /**
    * Get subject with `id`
-   * @param {int} id
+   * @param {number} id
    * @returns {string}
    */
   getSubjectById(id) {
@@ -248,7 +248,7 @@ export class Dictionary {
 
   /**
    * Get object with `id`
-   * @param {int} id
+   * @param {number} id
    * @returns {string}
    */
   getObjectById(id) {
@@ -262,7 +262,7 @@ export class Dictionary {
 
   /**
    * Get object with `id`
-   * @param {int} id
+   * @param {number} id
    * @returns {string}
    */
   getPredicateById(id) {
@@ -274,7 +274,7 @@ export class Dictionary {
 
   /**
    * Returns element (string) by id
-   * @param {int} id 
+   * @param {number} id 
    * @returns 
    */
   getElementById(id) {
@@ -293,7 +293,7 @@ export class Dictionary {
   /**
    * Returns true if element by id is subject and object.
    * Dictionary consists of SO+S+P+SO+O. Yes SO appear twice but that makes it easier to handle
-   * @param {int} id 
+   * @param {number} id 
    * @returns 
    */
   isSubjectObjectById(id) {
@@ -310,7 +310,7 @@ export class Dictionary {
   }
 
   /**
-   *
+   * 
    * @param {Triple} triple
    */
   decodeTriple(triple) {
@@ -320,6 +320,10 @@ export class Dictionary {
     return [subject, predicate, object];
   }
 
+  /**
+   * Get subjects in a map
+   * @returns {Map<string,number>}
+   */
   getSubjectMap() {
     const map = new Map();
     this.SO.forEach((so, index) => {
@@ -332,6 +336,10 @@ export class Dictionary {
     return map;
   }
 
+  /**
+   * Get predicates in a map
+   * @returns {Map<string,number>}
+   */
   getPredicateMap() {
     const map = new Map();
     const gap = this.SO.length + this.S.length;
@@ -341,6 +349,10 @@ export class Dictionary {
     return map;
   }
 
+  /**
+   * Get objects in a map
+   * @returns {Map<string,number>}
+   */
   getObjectMap() {
     const map = new Map();
     const gap = this.SO.length + this.S.length + this.P.length;

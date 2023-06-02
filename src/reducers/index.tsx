@@ -5,6 +5,7 @@ import filterTripleReducer from "./filterTriples";
 import currentDataReducer from "./currentData";
 import databaseReducer from "./database";
 import mainFrameReducer from "./mainFrame";
+import graphDataReducer from "./graph";
 
 // root reducer to combine all reducers
 const rootReducer = combineReducers({
@@ -13,7 +14,8 @@ const rootReducer = combineReducers({
   filterTriples: filterTripleReducer,
   currentData: currentDataReducer,
   database: databaseReducer,
-  mainFrame: mainFrameReducer
+  mainFrame: mainFrameReducer,
+  graphData: graphDataReducer
 });
 
 export default rootReducer;

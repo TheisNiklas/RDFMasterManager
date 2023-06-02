@@ -7,7 +7,7 @@ const currentDataReducer = (state = initialState, action: any) => {
     case "REMOVE_TRIPLE":
       return state.filter((triple, index) => index !== action.payload);
     case "SET_CURRENTDATA":
-        return action.payload;
+      return action.payload;
     default:
       return state;
   }

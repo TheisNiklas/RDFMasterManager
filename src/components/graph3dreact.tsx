@@ -7,7 +7,6 @@ import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogContentText from "@mui/material/DialogContentText";
 import DialogTitle from "@mui/material/DialogTitle";
-import load_data from "./triple2graph";
 import { Rdfcsa } from "../rdf/rdfcsa";
 import { Triple } from "../rdf/models/triple";
 import { RdfOperations } from "../rdf/rdf-operations";
@@ -17,8 +16,7 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentData, setDatabase } from "../actions";
-import filterTriples from "../reducers/filterTriples";
+import { setCurrentData, setDatabase, setGraphData } from "../actions";
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("../lib/NoSSRForceGraph"), {
   ssr: false,
@@ -32,15 +30,14 @@ export default function Graph3DReact() {
   //load data into the 3D Graph
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
+  const graphData = useSelector((state:any) => state.graphData);
 
   const dispatch = useDispatch();
-  const initial_data = load_data(database, currentData)
-  const [data, setData] = React.useState(initial_data);
+  //const initial_data = load_data(database, currentData)
+  //const [data, setData] = React.useState(initial_data);
 
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
-  const [openNodeRight, setOpenNodeRight] = React.useState(false);
   const [openLinkLeft, setOpenLinkLeft] = React.useState(false);
-  const [openLinkRight, setOpenLinkRight] = React.useState(false);
   const [nodeId, setNodeId] = React.useState("");
   const [nodeName, setNodeName] = React.useState("");
   const [linkSource, setLinkSource] = React.useState("");
@@ -64,14 +61,6 @@ export default function Graph3DReact() {
     setOpenLinkLeft(false);
   };
 
-  const handleNodeRightClose = () => {
-    setOpenNodeRight(false);
-  };
-
-  const handleLinkRightClose = () => {
-    setOpenLinkRight(false);
-  };
-
   //display information about the node
   const handleNodeLeftClick = (node: any) => {
     setNodeId(node.id);
@@ -84,40 +73,30 @@ export default function Graph3DReact() {
     setLinkSourceName(database.dictionary.getElementById(link.source.id) as string);
     setLinkName(database.dictionary.getElementById(link.id) as string);
     setLinkTargetName(database.dictionary.getElementById(link.target.id) as string);
-    setOpenLinkLeft(true);
-  };
-
-  const handleNodeRightClick = (node: any) => {
-    setNodeId(node.id);
-    setNodeName(node.content);
-    setOpenNodeRight(true);
-  };
-
-  const handleLinkRightClick = (link: any) => {
-    setLinkSourceName(database.dictionary.getElementById(link.source.id) as string);
-    setLinkName(database.dictionary.getElementById(link.id) as string);
-    setLinkTargetName(database.dictionary.getElementById(link.target.id) as string);
     setLinkSource(link.source.id);
     setLinkTarget(link.target.originalId);
     setLinkId(link.id);
-    setOpenLinkRight(true);
+    setOpenLinkLeft(true);
   };
 
   //handle Submit when Node Data is changed
-  const handleSubmitNodeRight = () => {
+  const handleSubmitNode = () => {
     const rdfOperations = new RdfOperations(database);
     const newDatabase = rdfOperations.changeInDictionary(nodeId, formField);
     dispatch(setDatabase(newDatabase as Rdfcsa));
     const queryManager = new QueryManager(newDatabase);
     dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+    dispatch(setGraphData(database, currentData));
     setToastMessage("Successfully renamed node");
     setToastOpen(true);
-    setOpenNodeRight(false);
+    setOpenNodeLeft(false);
   };
 
   //handle Submit when Triple Data is changed
-  const handleSubmitLinkRight = () => {
-    setOpenLinkRight(false);
+  const handleSubmitLink = () => {
+    setToastMessage("Successfully renamed triple");
+    setToastOpen(true);
+    setOpenLinkLeft(false);
   };
 
   //handle Delete of Triple
@@ -128,9 +107,10 @@ export default function Graph3DReact() {
     dispatch(setDatabase(newDatabase as Rdfcsa));
     const queryManager = new QueryManager(newDatabase);
     dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+    dispatch(setGraphData(database, currentData));
     setToastMessage("Successfully deleted triple");
     setToastOpen(true);
-    setOpenLinkRight(false);
+    setOpenLinkLeft(false);
   };
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -141,76 +121,76 @@ export default function Graph3DReact() {
     setToastOpen(false);
   };
 
-  React.useEffect(() => {
-    setData(load_data(database, currentData));
-  }, [currentData]);
-
   return (
     <div>
       <NoSSRForceGraph
-        graphData={data}
+        graphData={graphData.payload}
         nodeAutoColorBy="group"
         linkDirectionalArrowLength={5}
         linkDirectionalArrowRelPos={1.05}
         linkWidth={1}
         linkOpacity={1}
         nodeOpacity={1}
-        onNodeClick={(node) => handleNodeLeftClick(node)}
-        onNodeRightClick={(node) => handleNodeRightClick(node)}
-        onLinkClick={(link) => handleLinkLeftClick(link)}
-        onLinkRightClick={(link) => handleLinkRightClick(link)}
+        onNodeClick={(node: any) => handleNodeLeftClick(node)}
+        onLinkClick={(link: any) => handleLinkLeftClick(link)}
       ></NoSSRForceGraph>
       <Dialog open={openNodeLeft} onClose={handleNodeLeftClose}>
-        <DialogTitle id="node-left-title">{"Informationen"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="node-left-text">Name: {nodeName}</DialogContentText>
+        <DialogTitle id="node-left-title">{"Node Informationen"}</DialogTitle>
+        <DialogContent style={{ paddingTop: "10px" }}>
+          <TextField
+            label="Name"
+            variant="outlined"
+            defaultValue={nodeName}
+            onChange={(event) => setFormField(event.target.value)}
+          />
         </DialogContent>
+        <DialogActions>
+          <Button onClick={handleNodeLeftClose}>Cancel</Button>
+          <Button onClick={handleSubmitNode}>Rename Triple</Button>
+        </DialogActions>
       </Dialog>
       <Dialog open={openLinkLeft} onClose={handleLinkLeftClose}>
-        <DialogTitle id="link-left-title">{"Informationen"}</DialogTitle>
+        <DialogTitle id="link-left-title">{"Triple Informationen"}</DialogTitle>
         <DialogContent>
           <DialogContentText id="link-left-text">
-            <p> Subject: {linkSourceName} </p>
-            <p> Predicate: {linkName} </p>
-            <p> Object: {linkTargetName} </p>
-          </DialogContentText>
-        </DialogContent>
-      </Dialog>
-      <Dialog open={openNodeRight} onClose={handleNodeRightClose}>
-        <DialogTitle id="node-right-title">Rename</DialogTitle>
-        <DialogContent style={{paddingTop: 4}}>
-          <DialogContentText id="node-right-text">
-            <TextField label="Name" variant="outlined" defaultValue={nodeName} onChange={(event) => setFormField(event.target.value)} />
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleNodeRightClose}>Cancel</Button>
-          <Button onClick={handleSubmitNodeRight}>Submit</Button>
-        </DialogActions>
-      </Dialog>
-      <Dialog open={openLinkRight} onClose={handleLinkRightClose}>
-        <DialogTitle id="link-right-title"> Delete or rename triple</DialogTitle>
-        <DialogActions>
-          <Button onClick={handleDeleteTriple}>Delete Triple</Button>
-        </DialogActions>
-        <DialogContent>
-          <DialogContentText id="link-right-text">
-            <Grid container spacing={2}>
+            <Grid container spacing={2} style={{ paddingTop: "10px" }}>
               <Grid item xs={4}>
-                <TextField label="Subject" variant="outlined" defaultValue={linkSourceName} onChange={(event) => setSource(event.target.value)} />
+                <TextField
+                  label="Subject"
+                  variant="outlined"
+                  defaultValue={linkSourceName}
+                  onChange={(event) => setSource(event.target.value)}
+                />
               </Grid>
               <Grid item xs={4}>
-                <TextField label="Predicate" variant="outlined" defaultValue={linkName} onChange={(event) => setPred(event.target.value)} />
+                <TextField
+                  label="Predicate"
+                  variant="outlined"
+                  defaultValue={linkName}
+                  onChange={(event) => setPred(event.target.value)}
+                />
               </Grid>
               <Grid item xs={4}>
-                <TextField label="Object" variant="outlined" defaultValue={linkTargetName} onChange={(event) => setTarget(event.target.value)} />
+                <TextField
+                  label="Object"
+                  variant="outlined"
+                  defaultValue={linkTargetName}
+                  onChange={(event) => setTarget(event.target.value)}
+                />
               </Grid>
             </Grid>
           </DialogContentText>
         </DialogContent>
         <DialogActions>
-          <Button onClick={handleLinkRightClose}>Cancel</Button>
-          <Button onClick={handleSubmitLinkRight}>Submit</Button>
+          <Button
+            onClick={() => {
+              setOpenLinkLeft(false);
+            }}
+          >
+            Cancel
+          </Button>
+          <Button onClick={handleDeleteTriple}>Delete Triple</Button>
+          <Button onClick={handleSubmitLink}>Submit</Button>
         </DialogActions>
       </Dialog>
       <Snackbar open={toastOpen} autoHideDuration={6000} onClose={handleClose}>

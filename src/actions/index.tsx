@@ -1,3 +1,4 @@
+import load_data from "../components/triple2graph";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { Triple } from "../rdf/models/triple";
 import { Rdfcsa } from "../rdf/rdfcsa";
@@ -78,4 +79,9 @@ export const setDatabase = (rdfcsa: Rdfcsa) => ({
 export const setMainFrame = (mainFrameContent: string) => ({
   type: "SET_MAINFRAME",
   payload: mainFrameContent,
-})
+});
+
+export const setGraphData = (database: any, currentData: any) => ({
+  type: "SET_GRAPHDATA",
+  payload: load_data(database, currentData),
+});

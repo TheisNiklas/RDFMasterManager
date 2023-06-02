@@ -16,7 +16,7 @@ import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { ImportService } from "../rdf/importer/import-service";
 import { useSelector, useDispatch } from "react-redux";
-import { open, close, setCurrentData, setDatabase } from "./../actions";
+import { open, close, setCurrentData, setDatabase, setGraphData } from "./../actions";
 import AddTripleForm from "./addTriple";
 import DropDownMenue from "./dropDownMenu"
 import SortFormData from "./sort";
@@ -91,7 +91,9 @@ export default function PersistentDrawerRight() {
   const mainFrame = useSelector((state: any) => state.mainFrame);
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
+  const graphData = useSelector((state:any) => state.graphData);
   const dispatch = useDispatch();
+  
   
   const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
@@ -104,14 +106,19 @@ export default function PersistentDrawerRight() {
         <div />
       );
     }
-  }, [database, currentData, mainFrame]);
+  }, [database, currentData, mainFrame, graphData]);
 
   const handleFromFromExample = () => {
     const rdfcsa = new ImportService().loadSample()
     const queryManager = new QueryManager(rdfcsa);
     const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+    //const data = queryManager.getAllTriples()
     dispatch(setCurrentData(data));
+    console.log(currentData)
     dispatch(setDatabase(rdfcsa));
+    dispatch(setGraphData(database,currentData));
+    console.log(database)
+    console.log(graphData)
     setStartDialogOpen(false);
   };
 

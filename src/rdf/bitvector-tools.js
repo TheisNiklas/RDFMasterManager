@@ -20,7 +20,8 @@ export class BitvectorTools {
 
 export class BitVector{
   constructor(){
-    this.bits = 0;
+    this.bits = new Uint32Array([0]);
+    this.arrayLength = 1;
   }
   
   /**
@@ -33,8 +34,9 @@ export class BitVector{
     if (index >= this.toString().length) {
       return 0;
     }
-    const mask = 1 << index;
-    return (this.bits & mask) === 0 ? 0 : 1;
+    let element = Math.floor(index / (Uint32Array.BYTES_PER_ELEMENT*8))
+    const mask = 1 << (index % (Uint32Array.BYTES_PER_ELEMENT*8));
+    return (this.bits[element] & mask) === 0 ? 0 : 1;
   }
 
   /**
@@ -42,18 +44,30 @@ export class BitVector{
    * @param {number} index 
    */
   setBit(index) {
-    this.bits |= 1 << index;
+    let element = Math.floor(index / (Uint32Array.BYTES_PER_ELEMENT*8))
+    if (element >= this.arrayLength)
+    {
+      let array = [];
+      for (let i = 0; i < this.arrayLength; i++){
+        array.push(this.bits[i])
+      }
+      array.push(0);
+      this.bits = new Uint32Array(array);
+      this.arrayLength++;
+    }
+    this.bits[element] |= 1 << (index % (Uint32Array.BYTES_PER_ELEMENT*8));
   }
 
   /**
    * Unset value of Bit at index in BitVector
    * @param {number} index 
    */
-  unsetBit(pos) {
-    if (pos >= this.toString().length) {
+  unsetBit(index) {
+    if (index >= this.toString().length) {
       throw new Error('Index out of range');
     }
-    this.bits &= ~(1 << pos);
+    let element = Math.floor(index / (Uint32Array.BYTES_PER_ELEMENT*8))
+    this.bits[element] &= ~(1 << (index % (Uint32Array.BYTES_PER_ELEMENT*8)));
   }
 
   /**
@@ -61,7 +75,7 @@ export class BitVector{
    * @param {number} index 
    * @returns {number} rank 1 of index
    */
-  static rank(index) {
+  rank(index) {
     let result = 0;
     for (let i = 0; i <= index; i++) {
       if(this.getBit(i)){
@@ -76,7 +90,7 @@ export class BitVector{
    * @param {number} count 
    * @returns {number}
    */
-  static select(count) {
+  select(count) {
     for (let index = 0; index < this.toString().length; index++) {
       count -= this.getBit(index);
       if (count === 0) {
@@ -91,11 +105,28 @@ export class BitVector{
    * @param {number} index 
    */
   addBit(index){
-    let length = this.toString().length - index;
-    const mask = ((1 << length) - 1) << index;
-    const subpart = (this.bits & mask) >>> index;
+    let element = Math.floor(index / (Uint32Array.BYTES_PER_ELEMENT*8))
+
+    let length = this.toString().length - (index % (Uint32Array.BYTES_PER_ELEMENT*8));
+    const mask = ((1 << length) - 1) << (index % (Uint32Array.BYTES_PER_ELEMENT*8));
+    const subpart = (this.bits[element] & mask) >>> (index % (Uint32Array.BYTES_PER_ELEMENT*8));
     const shiftedSubpart = subpart << 1;
-    this.bits = (this.bits & ~mask) | (shiftedSubpart << index);
+    this.bits[element] = (this.bits[element] & ~mask) | (shiftedSubpart << (index % (Uint32Array.BYTES_PER_ELEMENT*8)));
+
+    for (let i = element + 1; i < this.arrayLength; i++)
+    {
+      // Shift the number 31 bits to the right to keep only the last bit
+      let lastbit = this.bits[i-1] >> 31;
+
+      // Use the bitwise AND operator to isolate the first bit
+      lastbit = lastbit & 1;
+
+      // Shift the number 1 bit to the left
+      var shiftedNumber = this.bits[i] << 1;
+
+      // Use the bitwise OR operator to insert the last bit
+      this.bits[i] = shiftedNumber | lastbit;
+    }
   }
 
   /**
@@ -103,11 +134,23 @@ export class BitVector{
    * @param {number} index 
    */
   deleteBit(index){
-    let length = this.toString().length - index;
-    const mask = ((1 << length) - 1) << index;
-    const subpart = (this.bits & mask) >>> index;
+    let element = Math.floor(index / (Uint32Array.BYTES_PER_ELEMENT*8))
+
+    let length = this.toString().length - (index % (Uint32Array.BYTES_PER_ELEMENT*8));
+    const mask = ((1 << length) - 1) << (index % (Uint32Array.BYTES_PER_ELEMENT*8));
+    const subpart = (this.bits[element] & mask) >>> (index % (Uint32Array.BYTES_PER_ELEMENT*8));
     const shiftedSubpart = subpart >> 1;
-    this.bits = (this.bits & ~mask) | (shiftedSubpart << index);
+    this.bits[element] = (this.bits[element] & ~mask) | (shiftedSubpart << (index % (Uint32Array.BYTES_PER_ELEMENT*8)));
+
+    for (let i = element + 1; i < this.arrayLength; i++)
+    {
+      // Shift the number 1 bit to the left
+      this.bits[i] = this.bits[i] >> 1;
+    }
+    if (this.bits[this.arrayLength-1] === 0)
+    {
+        arrayLength--;
+    }
   }
   
   /**
@@ -115,7 +158,16 @@ export class BitVector{
    * @returns string of bits in BitVector ordered by index (left to right)
    */
    toString() {
-    const bitString = this.bits.toString(2);
-    return bitString.split('').reverse().join('');
+       let bitString = "";
+       for (let i = 0; i < this.arrayLength; i++){
+          let elementString = this.bits[i].toString(2);
+          elementString = elementString.split('').reverse().join('');
+           while (i < this.arrayLength-1 && elementString.length < 32)
+           {
+               elementString += '0';
+           }
+          bitString += elementString;
+       }
+    return bitString
   }
 }

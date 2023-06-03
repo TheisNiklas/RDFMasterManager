@@ -378,11 +378,14 @@ export class QueryManager {
     if (resultList.length > 0) {
       mergedResults = resultList[0];
     }
+    var joinVars = [];
+    joinVars.push(this.#getJoinVars(queries[0]));
     for (var i = 1; i < resultList.length; i++) {
       // get join variable  ((?x, p1, o1)x(?y, p2, o2)x(?x, p3, ?y),
       //                     (?x, p1, ?y)x(?y, p2, o2)x(?x, p3, o1)x(?y, p1, o4))
-      const preJoinVar = this.#getJoinVar(queries[i - 1]); // TODO: noch nicht richtig (Überprüfung aller vorherigen Arrays)
-      const curJoinVar = this.#getJoinVar(queries[i]);
+      joinVars.push(this.#getJoinVars(queries[i]));
+      const preJoinVar = joinVars[i-1]; // TODO: noch nicht richtig (Überprüfung aller vorherigen Arrays)
+      const curJoinVar = joinVars[i];
       // compare join variable
       var joinVar = undefined;
       for (var j = 0; j < curJoinVar.length; j++) {
@@ -418,24 +421,24 @@ export class QueryManager {
    * @param {QueryTriple} triple the triple pattern of type queryTriple
    * @returns {number[]} array of join variable ids of one Triple -> if id = -1, no join variable; example: [-1,-1,5] -> O is join var
    */
-  #getJoinVar(triple) {
-    const joinVar = [];
+  #getJoinVars(triple) {
+    const joinVars = [];
     if (triple.subject.isJoinVar) {
-      joinVar.push(triple.subject.id);
+      joinVars.push(triple.subject.id);
     } else {
-      joinVar.push(-1);
+      joinVars.push(-1);
     }
     if (triple.predicate.isJoinVar) {
-      joinVar.push(triple.predicate.id);
+      joinVars.push(triple.predicate.id);
     } else {
-      joinVar.push(-1);
+      joinVars.push(-1);
     }
     if (triple.object.isJoinVar) {
-      joinVar.push(triple.object.id);
+      joinVars.push(triple.object.id);
     } else {
-      joinVar.push(-1);
+      joinVars.push(-1);
     }
-    return joinVar;
+    return joinVars;
   }
 
   /**

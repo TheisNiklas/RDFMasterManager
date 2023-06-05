@@ -57,7 +57,7 @@ export class Dictionary {
     const objectIsNew = !this.SO.includes(object) && !this.O.includes(object);
     const subjectWasSO = this.SO.includes(subject);
     const objectWasSO = this.SO.includes(object);
-    const subjectGotSO = false;
+    let subjectGotSO = false;
 
     if (!subjectWasSO) {
       if (this.O.includes(subject)) {
@@ -82,13 +82,15 @@ export class Dictionary {
     }
 
     // for predicate
-    if (!predicateExists) {
+    if (predicateIsNew) {
       this.P.push(predicate);
     }
 
-    const subjectId = this.getIdByElement(subject)
-    const predicateId = this.getIdByElement(predicate)
-    const objectId = this.getIdByElement(object)
+    this.#sortArrays();
+
+    const subjectId = this.getIdBySubject(subject)
+    const predicateId = this.getIdByPredicate(predicate)
+    const objectId = this.getIdByObject(object)
 
     return {
       subject: {
@@ -169,8 +171,8 @@ export class Dictionary {
    * @param {string} object
    */
   addTriple(subject, predicate, object) {
-    this.#inputTripleForAdd(subject, predicate, object);
-    this.#sortArrays();
+    const metadata = this.#inputTripleForAdd(subject, predicate, object);
+    return metadata;
   }
 
   /**
@@ -235,6 +237,9 @@ export class Dictionary {
    */
   getIdByObject(object) {
     const temp = this.getIdByElement(object, this.O);
+    if (temp === -1) {
+      return temp;
+    }
     return temp + this.SO.length + this.S.length + this.P.length;
   }
 
@@ -262,7 +267,11 @@ export class Dictionary {
    * @returns {int}
    */
   getIdByPredicate(predicate) {
-    return this.P.findIndex((el) => el === predicate) + this.SO.length + this.S.length;
+    const temp = this.P.findIndex((el) => el === predicate);
+    if (temp === -1) {
+      return temp;
+    }
+    return temp + this.SO.length + this.S.length;
   }
 
   /**

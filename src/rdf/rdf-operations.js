@@ -3,6 +3,7 @@ import { QueryTriple } from "./models/query-triple";
 import { Triple } from "./models/triple";
 import { QueryManager } from "./query-manager";
 import { Rdfcsa } from "./rdfcsa";
+import { BitvectorTools } from "./bitvector-tools";
 
 export class RdfOperations {
   /**
@@ -51,6 +52,190 @@ export class RdfOperations {
       if (result.length > 0) {
         return;
       }
+    }
+
+    const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
+    const stringTriples = [];
+    oldTriples.forEach((oldTriple) => {
+      stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
+    });
+    stringTriples.push([subject, predicate, object]);
+    this.rdfcsa = new Rdfcsa(stringTriples);
+    return this.rdfcsa;
+  }
+
+  /**
+   * Adds a new element (triple) to rdfcsa - what happens if element already exists?
+   * @param {string} subject
+   * @param {string} predicate
+   * @param {string} object
+   */
+  addTripleNew(subject, predicate, object) {
+    // add new triple to dic†ionary and re†urn the id of the elements after insert
+    // Step 1 and 2 of insert concept (for the first case)
+    const metadata = this.rdfcsa.dictionary.addTriple(subject, predicate, object);
+
+    const queryManager = new QueryManager(this.rdfcsa);
+
+    if (!metadata.subject.isNew && !metadata.predicate.isNew && !metadata.object.isNew) {
+      // check if triple exists
+      const result = queryManager.getTriples([
+        new QueryTriple(
+          new QueryElement(metadata.subject.id),
+          new QueryElement(metadata.predicate.id),
+          new QueryElement(metadata.object.id)
+        ),
+      ]);
+      if (result.length > 0) {
+        return;
+      }
+      // case 2: add triple where every element exists in dict without changing S or O to SO
+      const sRange = [
+        BitvectorTools.select(this.rdfcsa.D, metadata.subject.id),
+        BitvectorTools.select(this.rdfcsa.D, metadata.subject.id + 1) - 1,
+      ];
+      const pRange = [
+        BitvectorTools.select(this.rdfcsa.D, metadata.predicate.id),
+        BitvectorTools.select(this.rdfcsa.D, metadata.predicate.id + 1) - 1,
+      ];
+      const oRange = [
+        BitvectorTools.select(this.rdfcsa.D, metadata.object.id),
+        BitvectorTools.select(this.rdfcsa.D, metadata.object.id + 1) - 1,
+      ];
+
+      // init insert Index after end of range by default
+      let sInsertIndex = sRange[1] + 1
+      let pInsertIndex = pRange[1] + 1
+      let oInsertIndex = oRange[1] + 1
+
+      for (let i = sRange[0]; i <= sRange[1]; i++) {
+        if (this.rdfcsa.psi[i] < pRange[0]) {
+          continue;
+        }
+        if (this.rdfcsa.psi[i] > pRange[1]) {
+          sInsertIndex = i;
+          break;
+        }
+        if (this.rdfcsa.psi[i] >= pRange[0] && this.rdfcsa.psi[i] <= pRange[1]) {
+          if (this.rdfcsa.psi[this.rdfcsa.psi[i]] < oRange[0]) {
+            continue;
+          }
+          if (this.rdfcsa.psi[this.rdfcsa.psi[i]] > oRange[1]) {
+            sInsertIndex = i;
+            break;
+          }
+        }
+      }
+
+      for (let i = pRange[0]; i <= pRange[1]; i++) {
+        if (this.rdfcsa.psi[i] < oRange[0]) {
+          continue;
+        }
+        if (this.rdfcsa.psi[i] > oRange[1]) {
+          pInsertIndex = i;
+          break;
+        }
+        if (this.rdfcsa.psi[i] >= oRange[0] && this.rdfcsa.psi[i] <= oRange[1]) {
+          if (this.rdfcsa.psi[this.rdfcsa.psi[i]] < sRange[0]) {
+            continue;
+          }
+          if (this.rdfcsa.psi[this.rdfcsa.psi[i]] > sRange[1]) {
+            pInsertIndex = i;
+            break;
+          }
+        }
+      }
+
+      for (let i = oRange[0]; i <= oRange[1]; i++) {
+        if (this.rdfcsa.psi[i] < sRange[0]) {
+          continue;
+        }
+        if (this.rdfcsa.psi[i] > sRange[1]) {
+          oInsertIndex = i;
+          break;
+        }
+        if (this.rdfcsa.psi[i] >= sRange[0] && this.rdfcsa.psi[i] <= sRange[1]) {
+          if (this.rdfcsa.psi[this.rdfcsa.psi[i]] < pRange[0]) {
+            continue;
+          }
+          if (this.rdfcsa.psi[this.rdfcsa.psi[i]] > pRange[1]) {
+            oInsertIndex = i;
+            break;
+          }
+        }
+      }
+
+      // add ones for the new elements in D array
+      this.rdfcsa.D.splice(sRange[0] + 1, 0, 0);
+      this.rdfcsa.D.splice(pRange[0] + 2, 0, 0);
+      this.rdfcsa.D.splice(oRange[0] + 3, 0, 0);
+
+      for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
+        const subjectArealength = this.rdfcsa.psi.length / 3;
+
+        if (this.rdfcsa.psi[i] < pInsertIndex) {
+          this.rdfcsa.psi[i] += 1;
+        } else {
+          this.rdfcsa.psi[i] += 2;
+        }
+
+        if (this.rdfcsa.psi[i + subjectArealength] < oInsertIndex) {
+          this.rdfcsa.psi[i + subjectArealength] += 2;
+        } else {
+          this.rdfcsa.psi[i + subjectArealength] += 3;
+        }
+
+        if (this.rdfcsa.psi[i + 2 * subjectArealength] >= sInsertIndex) {
+          this.rdfcsa.psi[i + 2 * subjectArealength] += 1;
+        }
+      }
+
+      this.rdfcsa.psi.splice(sInsertIndex, 0, pInsertIndex + 1);
+      this.rdfcsa.psi.splice(pInsertIndex + 1, 0, oInsertIndex + 2);
+      this.rdfcsa.psi.splice(oInsertIndex + 2, 0, sInsertIndex);
+
+      return this.rdfcsa;
+
+
+    } else if (metadata.subject.isNew && metadata.predicate.isNew && metadata.object.isNew) {
+      // case: insert a triple where every element is new
+      const sInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.subject.id);
+      const pInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.predicate.id - 1);
+      const oInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.object.id - 2);
+
+      // add ones for the new elements in D array
+      this.rdfcsa.D.splice(sInsertIndex, 0, 1);
+      this.rdfcsa.D.splice(pInsertIndex + 1, 0, 1);
+      this.rdfcsa.D.splice(oInsertIndex + 2, 0, 1);
+
+      for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
+        const subjectArealength = this.rdfcsa.psi.length / 3;
+
+        if (this.rdfcsa.psi[i] < pInsertIndex) {
+          this.rdfcsa.psi[i] += 1;
+        } else {
+          this.rdfcsa.psi[i] += 2;
+        }
+
+        if (this.rdfcsa.psi[i + subjectArealength] < oInsertIndex) {
+          this.rdfcsa.psi[i + subjectArealength] += 2;
+        } else {
+          this.rdfcsa.psi[i + subjectArealength] += 3;
+        }
+
+        if (this.rdfcsa.psi[i + 2 * subjectArealength] >= sInsertIndex) {
+          this.rdfcsa.psi[i + 2 * subjectArealength] += 1;
+        }
+      }
+
+      this.rdfcsa.psi.splice(sInsertIndex, 0, pInsertIndex + 1);
+      this.rdfcsa.psi.splice(pInsertIndex + 1, 0, oInsertIndex + 2);
+      this.rdfcsa.psi.splice(oInsertIndex + 2, 0, sInsertIndex);
+
+      this.rdfcsa.gaps[1] += 1;
+      this.rdfcsa.gaps[2] += 2;
+
+      return this.rdfcsa;
     }
 
     const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);

@@ -89,24 +89,57 @@ export class RdfOperations {
       if (result.length > 0) {
         return;
       }
-      // case 2: add triple where every element exists in dict without changing S or O to SO
-      const sRange = [
-        BitvectorTools.select(this.rdfcsa.D, metadata.subject.id),
-        BitvectorTools.select(this.rdfcsa.D, metadata.subject.id + 1) - 1,
-      ];
-      const pRange = [
-        BitvectorTools.select(this.rdfcsa.D, metadata.predicate.id),
-        BitvectorTools.select(this.rdfcsa.D, metadata.predicate.id + 1) - 1,
-      ];
-      const oRange = [
-        BitvectorTools.select(this.rdfcsa.D, metadata.object.id),
-        BitvectorTools.select(this.rdfcsa.D, metadata.object.id + 1) - 1,
-      ];
+    }
 
-      // init insert Index after end of range by default
-      let sInsertIndex = sRange[1] + 1
-      let pInsertIndex = pRange[1] + 1
-      let oInsertIndex = oRange[1] + 1
+    let sInsertIndex = -1;
+    let pInsertIndex = -1;
+    let oInsertIndex = -1;
+
+    let sRange = [
+      BitvectorTools.select(this.rdfcsa.D, metadata.subject.id),
+      BitvectorTools.select(this.rdfcsa.D, metadata.subject.id + 1) - 1,
+    ];
+
+    let oldPredicateId = metadata.predicate.id;
+    if (metadata.subject.isNew) {
+      oldPredicateId -= 1;
+    }
+
+    let pRange = [
+      BitvectorTools.select(this.rdfcsa.D, oldPredicateId),
+      BitvectorTools.select(this.rdfcsa.D, oldPredicateId + 1) - 1,
+    ];
+
+    let oldObjectId = metadata.object.id;
+    if (metadata.subject.isNew) {
+      oldObjectId -= 1;
+    }
+    if (metadata.predicate.isNew) {
+      oldObjectId -= 1;
+    }
+
+    let oRange = [
+      BitvectorTools.select(this.rdfcsa.D, oldObjectId),
+      BitvectorTools.select(this.rdfcsa.D, oldObjectId + 1) - 1,
+    ];
+
+    if (metadata.subject.isNew) {
+      sInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.subject.id);
+      sRange = [sInsertIndex, sInsertIndex];
+    }
+
+    if (metadata.predicate.isNew) {
+      pInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.predicate.id - 1);
+      pRange = [pInsertIndex, pInsertIndex];
+    }
+
+    if (metadata.object.isNew) {
+      oInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.object.id - 2);
+      oRange = [oInsertIndex, oInsertIndex];
+    }
+
+    if (!metadata.subject.isNew) {
+      sInsertIndex = sRange[1] + 1;
 
       for (let i = sRange[0]; i <= sRange[1]; i++) {
         if (this.rdfcsa.psi[i] < pRange[0]) {
@@ -116,7 +149,7 @@ export class RdfOperations {
           sInsertIndex = i;
           break;
         }
-        if (this.rdfcsa.psi[i] >= pRange[0] && this.rdfcsa.psi[i] <= pRange[1]) {
+        if (this.rdfcsa.psi[i] >= pRange[0] && this.rdfcsa.psi[i] <= pRange[1] && !metadata.predicate.isNew) {
           if (this.rdfcsa.psi[this.rdfcsa.psi[i]] < oRange[0]) {
             continue;
           }
@@ -124,8 +157,19 @@ export class RdfOperations {
             sInsertIndex = i;
             break;
           }
+          if (metadata.object.isNew) {
+            sInsertIndex = i;
+            break;
+          }
+        } else {
+          sInsertIndex = i;
+          break;
         }
       }
+    }
+
+    if (!metadata.predicate.isNew) {
+      pInsertIndex = pRange[1] + 1;
 
       for (let i = pRange[0]; i <= pRange[1]; i++) {
         if (this.rdfcsa.psi[i] < oRange[0]) {
@@ -143,8 +187,19 @@ export class RdfOperations {
             pInsertIndex = i;
             break;
           }
+          if (metadata.subject.isNew) {
+            pInsertIndex = i;
+            break;
+          }
+        } else {
+          pInsertIndex = i;
+          break;
         }
       }
+    }
+
+    if (!metadata.object.isNew) {
+      oInsertIndex = oRange[1] + 1;
 
       for (let i = oRange[0]; i <= oRange[1]; i++) {
         if (this.rdfcsa.psi[i] < sRange[0]) {
@@ -154,7 +209,7 @@ export class RdfOperations {
           oInsertIndex = i;
           break;
         }
-        if (this.rdfcsa.psi[i] >= sRange[0] && this.rdfcsa.psi[i] <= sRange[1]) {
+        if (this.rdfcsa.psi[i] >= sRange[0] && this.rdfcsa.psi[i] <= sRange[1] && !metadata.subject.isNew) {
           if (this.rdfcsa.psi[this.rdfcsa.psi[i]] < pRange[0]) {
             continue;
           }
@@ -162,89 +217,67 @@ export class RdfOperations {
             oInsertIndex = i;
             break;
           }
+          if (metadata.predicate.isNew) {
+            oInsertIndex = i;
+            break;
+          }
+        } else {
+          oInsertIndex = i;
+          break;
         }
       }
-
-      // add ones for the new elements in D array
-      this.rdfcsa.D.splice(sRange[0] + 1, 0, 0);
-      this.rdfcsa.D.splice(pRange[0] + 2, 0, 0);
-      this.rdfcsa.D.splice(oRange[0] + 3, 0, 0);
-
-      for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
-        const subjectArealength = this.rdfcsa.psi.length / 3;
-
-        if (this.rdfcsa.psi[i] < pInsertIndex) {
-          this.rdfcsa.psi[i] += 1;
-        } else {
-          this.rdfcsa.psi[i] += 2;
-        }
-
-        if (this.rdfcsa.psi[i + subjectArealength] < oInsertIndex) {
-          this.rdfcsa.psi[i + subjectArealength] += 2;
-        } else {
-          this.rdfcsa.psi[i + subjectArealength] += 3;
-        }
-
-        if (this.rdfcsa.psi[i + 2 * subjectArealength] >= sInsertIndex) {
-          this.rdfcsa.psi[i + 2 * subjectArealength] += 1;
-        }
-      }
-
-      this.rdfcsa.psi.splice(sInsertIndex, 0, pInsertIndex + 1);
-      this.rdfcsa.psi.splice(pInsertIndex + 1, 0, oInsertIndex + 2);
-      this.rdfcsa.psi.splice(oInsertIndex + 2, 0, sInsertIndex);
-
-      return this.rdfcsa;
-
-
-    } else if (metadata.subject.isNew && metadata.predicate.isNew && metadata.object.isNew) {
-      // case: insert a triple where every element is new
-      const sInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.subject.id);
-      const pInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.predicate.id - 1);
-      const oInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.object.id - 2);
-
-      // add ones for the new elements in D array
-      this.rdfcsa.D.splice(sInsertIndex, 0, 1);
-      this.rdfcsa.D.splice(pInsertIndex + 1, 0, 1);
-      this.rdfcsa.D.splice(oInsertIndex + 2, 0, 1);
-
-      for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
-        const subjectArealength = this.rdfcsa.psi.length / 3;
-
-        if (this.rdfcsa.psi[i] < pInsertIndex) {
-          this.rdfcsa.psi[i] += 1;
-        } else {
-          this.rdfcsa.psi[i] += 2;
-        }
-
-        if (this.rdfcsa.psi[i + subjectArealength] < oInsertIndex) {
-          this.rdfcsa.psi[i + subjectArealength] += 2;
-        } else {
-          this.rdfcsa.psi[i + subjectArealength] += 3;
-        }
-
-        if (this.rdfcsa.psi[i + 2 * subjectArealength] >= sInsertIndex) {
-          this.rdfcsa.psi[i + 2 * subjectArealength] += 1;
-        }
-      }
-
-      this.rdfcsa.psi.splice(sInsertIndex, 0, pInsertIndex + 1);
-      this.rdfcsa.psi.splice(pInsertIndex + 1, 0, oInsertIndex + 2);
-      this.rdfcsa.psi.splice(oInsertIndex + 2, 0, sInsertIndex);
-
-      this.rdfcsa.gaps[1] += 1;
-      this.rdfcsa.gaps[2] += 2;
-
-      return this.rdfcsa;
     }
 
-    const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
-    const stringTriples = [];
-    oldTriples.forEach((oldTriple) => {
-      stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
-    });
-    stringTriples.push([subject, predicate, object]);
-    this.rdfcsa = new Rdfcsa(stringTriples);
+    if (metadata.subject.isNew) {
+      this.rdfcsa.D.splice(sInsertIndex, 0, 1);
+    } else {
+      this.rdfcsa.D.splice(sRange[0] + 1, 0, 0);
+    }
+
+    if (metadata.predicate.isNew) {
+      this.rdfcsa.D.splice(pInsertIndex + 1, 0, 1);
+    } else {
+      this.rdfcsa.D.splice(pRange[0] + 2, 0, 0);
+    }
+
+    if (metadata.object.isNew) {
+      this.rdfcsa.D.splice(oInsertIndex + 2, 0, 1);
+    } else {
+      this.rdfcsa.D.splice(oRange[0] + 3, 0, 0);
+    }
+
+    for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
+      const subjectArealength = this.rdfcsa.psi.length / 3;
+
+      if (this.rdfcsa.psi[i] < pInsertIndex) {
+        this.rdfcsa.psi[i] += 1;
+      } else {
+        this.rdfcsa.psi[i] += 2;
+      }
+
+      if (this.rdfcsa.psi[i + subjectArealength] < oInsertIndex) {
+        this.rdfcsa.psi[i + subjectArealength] += 2;
+      } else {
+        this.rdfcsa.psi[i + subjectArealength] += 3;
+      }
+
+      if (this.rdfcsa.psi[i + 2 * subjectArealength] >= sInsertIndex) {
+        this.rdfcsa.psi[i + 2 * subjectArealength] += 1;
+      }
+    }
+
+    this.rdfcsa.psi.splice(sInsertIndex, 0, pInsertIndex + 1);
+    this.rdfcsa.psi.splice(pInsertIndex + 1, 0, oInsertIndex + 2);
+    this.rdfcsa.psi.splice(oInsertIndex + 2, 0, sInsertIndex);
+
+    if (metadata.subject.isNew) {
+      this.rdfcsa.gaps[1] += 1;
+      this.rdfcsa.gaps[2] += 1;
+    }
+    if (metadata.predicate.isNew) {
+      this.rdfcsa.gaps[2] += 1;
+    }
+
     return this.rdfcsa;
   }
 

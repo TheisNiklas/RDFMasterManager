@@ -53,7 +53,7 @@ describe("RdfOperations", () => {
 
   test("addTriple: case 1 - compare to Old", () => {
     const addSubject = "Klaus";
-    const addPredicate = "haut";
+    const addPredicate = "appears in";
     const addObject = "Oscar 2015";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);

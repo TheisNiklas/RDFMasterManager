@@ -129,12 +129,23 @@ export class RdfOperations {
     }
 
     if (metadata.predicate.isNew) {
-      pInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.predicate.id - 1);
+      let oldPredicateId = metadata.predicate.id;
+      if (metadata.subject.isNew){
+        oldPredicateId -= 1
+      }
+      pInsertIndex = BitvectorTools.select(this.rdfcsa.D, oldPredicateId);
       pRange = [pInsertIndex, pInsertIndex];
     }
 
     if (metadata.object.isNew) {
-      oInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.object.id - 2);
+      let oldObjectId = metadata.object.id;
+      if (metadata.subject.isNew){
+        oldObjectId -= 1
+      }
+      if (metadata.predicate.isNew){
+        oldObjectId -= 1
+      }
+      oInsertIndex = BitvectorTools.select(this.rdfcsa.D, oldObjectId);
       oRange = [oInsertIndex, oInsertIndex];
     }
 
@@ -172,7 +183,7 @@ export class RdfOperations {
       pInsertIndex = pRange[1] + 1;
 
       for (let i = pRange[0]; i <= pRange[1]; i++) {
-        if (this.rdfcsa.psi[i] < oRange[0]) {
+        if (this.rdfcsa.psi[i] < oRange[0] && this.rdfcsa.psi[this.rdfcsa.psi[i]] < sRange[0]) {
           continue;
         }
         if (this.rdfcsa.psi[i] > oRange[1]) {

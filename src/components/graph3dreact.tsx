@@ -17,6 +17,7 @@ import Alert from "@mui/material/Alert";
 import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setGraphData } from "../actions";
+import load_data from "./triple2graph";
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("../lib/NoSSRForceGraph"), {
   ssr: false,
@@ -33,8 +34,9 @@ export default function Graph3DReact() {
   const graphData = useSelector((state:any) => state.graphData);
 
   const dispatch = useDispatch();
-  //const initial_data = load_data(database, currentData)
-  //const [data, setData] = React.useState(initial_data);
+  //dispatch(graphData(database, currentData))
+  const initial_data = load_data(database, currentData)
+  const [data, setData] = React.useState(initial_data);
 
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
   const [openLinkLeft, setOpenLinkLeft] = React.useState(false);
@@ -124,7 +126,7 @@ export default function Graph3DReact() {
   return (
     <div>
       <NoSSRForceGraph
-        graphData={graphData.payload}
+        graphData={data}
         nodeAutoColorBy="group"
         linkDirectionalArrowLength={5}
         linkDirectionalArrowRelPos={1.05}
@@ -133,6 +135,8 @@ export default function Graph3DReact() {
         nodeOpacity={1}
         onNodeClick={(node: any) => handleNodeLeftClick(node)}
         onLinkClick={(link: any) => handleLinkLeftClick(link)}
+        width = {1150}
+        height = {450}
       ></NoSSRForceGraph>
       <Dialog open={openNodeLeft} onClose={handleNodeLeftClose}>
         <DialogTitle id="node-left-title">{"Node Informationen"}</DialogTitle>

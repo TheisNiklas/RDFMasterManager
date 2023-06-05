@@ -37,6 +37,7 @@
     "react-force-graph-2d": "^1.25.0",
     "react-force-graph-3d": "^1.23.0",
     "react-redux": "^8.0.5",
+    "react-responsive": "^9.0.2",
     "redux": "^4.2.1",
     "streamsaver": "^2.0.6",
     "tailwindcss": "3.3.2",

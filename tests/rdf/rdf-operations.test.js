@@ -12,6 +12,7 @@ import {
   tripleListTypo,
   addTripleCase1,
   addTripleCase2,
+  addTripleCase4,
   tripleList
 } from "./fixtures/rdf-operations.test.json";
 
@@ -52,9 +53,9 @@ describe("RdfOperations", () => {
   });
 
   test("addTriple: case 1 - compare to Old", () => {
-    const addSubject = "J. Gordon";
-    const addPredicate = "appears in";
-    const addObject = "Inception";
+    const addSubject = "Inception";
+    const addPredicate = "city of";
+    const addObject = "J. Gordon";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
     const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
@@ -69,6 +70,19 @@ describe("RdfOperations", () => {
     expect(res.gaps).toEqual(resRef.gaps);
     expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
+  });
+
+  test("addTriple: case 4", () => {
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
+    let ops = new RdfOperations(rdfcsa);
+    const res = ops.addTripleNew("Inception", "city of", "J. Gordon");
+    expect(res.psi).toEqual(addTripleCase4.resultPsi);
+    expect(res.gaps).toEqual(addTripleCase4.resultGaps);
+    expect(res.D).toEqual(addTripleCase4.resultD);
+    expect(res.dictionary.SO).toEqual(addTripleCase4.resultDict.SO);
+    expect(res.dictionary.S).toEqual(addTripleCase4.resultDict.S);
+    expect(res.dictionary.P).toEqual(addTripleCase4.resultDict.P);
+    expect(res.dictionary.O).toEqual(addTripleCase4.resultDict.O);
   });
   
   test("addTriple: case 1 - two triples", () => {

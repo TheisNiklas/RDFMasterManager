@@ -294,6 +294,83 @@ export class RdfOperations {
       this.rdfcsa.gaps[2] += 1;
     }
 
+    // TODO: SO here
+    if (metadata.soChange.subjectGotSO) {
+      const rangeToMove = [
+        BitvectorTools.select(this.rdfcsa.D, metadata.soChange.oldSubjectId),
+        BitvectorTools.select(this.rdfcsa.D, metadata.soChange.oldSubjectId + 1) - 1
+      ]
+
+      const targetIndex = BitvectorTools.select(this.rdfcsa.D, metadata.object.id - this.rdfcsa.gaps[2]);
+
+      const distanceToMove = rangeToMove[0] - targetIndex;
+
+      const rangeToMoveOver = [
+        targetIndex,
+        rangeToMove[0] - 1
+      ]
+
+      const moves = [];
+      const changes = [];
+      
+      for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
+        const movePredicate = this.rdfcsa.psi[i];
+        const referencePredicateId = BitvectorTools.rank(this.rdfcsa.D, movePredicate);
+        const rangePredicate = [
+          BitvectorTools.select(this.rdfcsa.D, referencePredicateId),
+          BitvectorTools.select(this.rdfcsa.D, referencePredicateId + 1) - 1
+        ]
+        // IDEA: maybe move into second for loop to not calculate if not needed, save if calculated to not repeat for every loop iteration
+        const referenceObjectId = BitvectorTools.rank(this.rdfcsa.D, this.rdfcsa.psi[movePredicate]);
+        const rangeObject = [
+          BitvectorTools.select(this.rdfcsa.D, referenceObjectId),
+          BitvectorTools.select(this.rdfcsa.D, referenceObjectId + 1) - 1
+        ]
+        for (let j = rangeToMoveOver[0]; j <= rangeToMoveOver[1]; j++) {
+          const moveOverPredicate = this.rdfcsa.psi[j];
+          if (moveOverPredicate >= rangePredicate[0] && moveOverPredicate <= rangePredicate[1] && moveOverPredicate < movePredicate) {
+            moves.push([movePredicate, -1]);
+            changes.push([i, -1]);
+            changes.push([j, +1]);
+          }
+          const moveOverObject = this.rdfcsa.psi[moveOverPredicate]
+          if (moveOverObject >= rangeObject[0] && moveOverObject <= rangeObject[1] && moveOverObject < this.rdfcsa.psi[movePredicate]) {
+            moves.push([this.rdfcsa.psi[movePredicate], -1]);
+            changes.push([movePredicate, -1]);
+            changes.push([moveOverPredicate, +1]);
+          }
+        }
+        moves.push([i, - distanceToMove]);
+        changes.push([this.rdfcsa.psi[movePredicate], -distanceToMove]);
+      }
+
+      for (let k = rangeToMoveOver[0]; k <= rangeToMoveOver[1]; k++) {
+        const target = this.rdfcsa.psi[this.rdfcsa.psi[k]]
+        changes.push([target, distanceToMove]);
+      }
+
+
+      changes.forEach(([index, change]) => {
+        this.rdfcsa.psi[index] += change;
+      })
+
+      moves.forEach(([index, movesLength]) => {
+        const temp = this.rdfcsa.psi[index + movesLength];
+        this.rdfcsa.psi[index + movesLength] = this.rdfcsa.psi[index];
+        this.rdfcsa.psi[index] = temp;
+      })
+      // change D range
+      for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
+        const temp = this.rdfcsa.D[i - distanceToMove];
+        this.rdfcsa.D[i - distanceToMove] = this.rdfcsa.D[i];
+        this.rdfcsa.D[i] = temp;
+      }
+    }
+    
+    if (metadata.soChange.objectGotSO) {
+
+    }
+
     return this.rdfcsa;
   }
 

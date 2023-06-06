@@ -58,13 +58,18 @@ export class Dictionary {
     const subjectWasSO = this.SO.includes(subject);
     const objectWasSO = this.SO.includes(object);
     let subjectGotSO = false;
+    let objectGotSO = false;
+
+    let oldSubjectId;
+    let oldObjectId;
 
     if (!subjectWasSO) {
       if (this.O.includes(subject)) {
-        this.SO.push(subject);
         let pos = this.O.indexOf(subject);
+        oldObjectId = this.SO.length + this.S.length + this.P.length + this.SO.length + pos;
         this.O.splice(pos, 1);
-        subjectGotSO = true;
+        objectGotSO = true;
+        this.SO.push(subject);
       } else if (!this.S.includes(subject)) {
         this.S.push(subject);
       }
@@ -72,10 +77,11 @@ export class Dictionary {
     
     if (!objectWasSO) {
       if (this.S.includes(object)) {
-        this.SO.push(object);
         let pos = this.S.indexOf(object);
+        oldSubjectId = this.SO.length + pos;
         this.S.splice(pos, 1);
         subjectGotSO = true;
+        this.SO.push(object);
       } else if (!this.O.includes(object)) {
         this.O.push(object);
       }
@@ -104,6 +110,12 @@ export class Dictionary {
       object: {
         id: objectId,
         isNew: objectIsNew
+      },
+      soChange: {
+        subjectGotSO: subjectGotSO,
+        oldSubjectId: oldSubjectId,
+        objectGotSO: objectGotSO,
+        oldObjectId: oldObjectId
       }
     }
   }

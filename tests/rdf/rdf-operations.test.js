@@ -52,8 +52,28 @@ describe("RdfOperations", () => {
     expect(res.dictionary.O).toEqual(addTripleCase2.resultDict.O);
   });
 
-  test("addTriple: case 1 - compare to Old", () => {
+  test("addTriple: case 4 - compare to Old", () => {
     const addSubject = "Inception";
+    const addPredicate = "city of";
+    const addObject = "J. Gordon";
+    let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
+    let opsRef = new RdfOperations(rdfcsaRef);
+    const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
+
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
+    let ops = new RdfOperations(rdfcsa);
+    const res = ops.addTripleNew(addSubject, addPredicate, addObject);
+    expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
+    expect(res.dictionary.S).toEqual(resRef.dictionary.S);
+    expect(res.dictionary.P).toEqual(resRef.dictionary.P);
+    expect(res.dictionary.O).toEqual(resRef.dictionary.O);
+    expect(res.gaps).toEqual(resRef.gaps);
+    expect(res.D).toEqual(resRef.D);
+    expect(res.psi).toEqual(resRef.psi);
+  });
+
+  test("addTriple: case 4 - failing if subject is new", () => {
+    const addSubject = "Hans";
     const addPredicate = "city of";
     const addObject = "J. Gordon";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));

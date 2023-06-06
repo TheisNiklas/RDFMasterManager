@@ -50,7 +50,7 @@ export class RdfOperations {
         new QueryTriple(new QueryElement(subjectId), new QueryElement(predicateId), new QueryElement(objectId)),
       ]);
       if (result.length > 0) {
-        return;
+        return this.rdfcsa;
       }
     }
 
@@ -86,69 +86,65 @@ export class RdfOperations {
           new QueryElement(metadata.object.id)
         ),
       ]);
+      // If triple exists return the current unchanged rdfcsa
       if (result.length > 0) {
-        return;
+        return this.rdfcsa;
       }
     }
 
-    let sInsertIndex = -1;
-    let pInsertIndex = -1;
-    let oInsertIndex = -1;
+    // Init the indices, where the new triple should be inserted
+    let sInsertIndex;
+    let pInsertIndex;
+    let oInsertIndex;
 
-    let sRange = [
-      BitvectorTools.select(this.rdfcsa.D, metadata.subject.id),
-      BitvectorTools.select(this.rdfcsa.D, metadata.subject.id + 1) - 1,
-    ];
-
+    // For the case that new elements got inserted into the dictionary, calculate the original ids for existing objects and predicates
+    let oldObjectId = metadata.object.id;
     let oldPredicateId = metadata.predicate.id;
     if (metadata.subject.isNew) {
-      oldPredicateId -= 1;
-    }
-
-    let pRange = [
-      BitvectorTools.select(this.rdfcsa.D, oldPredicateId),
-      BitvectorTools.select(this.rdfcsa.D, oldPredicateId + 1) - 1,
-    ];
-
-    let oldObjectId = metadata.object.id;
-    if (metadata.subject.isNew) {
       oldObjectId -= 1;
+      oldPredicateId -= 1;
     }
     if (metadata.predicate.isNew) {
       oldObjectId -= 1;
     }
 
-    let oRange = [
-      BitvectorTools.select(this.rdfcsa.D, oldObjectId),
-      BitvectorTools.select(this.rdfcsa.D, oldObjectId + 1) - 1,
-    ];
-
-    if (metadata.subject.isNew) {
+    // Get the range where the existing subject is or the new subject will be
+    let sRange;
+    if (!metadata.subject.isNew) {
+      sRange = [
+        BitvectorTools.select(this.rdfcsa.D, metadata.subject.id),
+        BitvectorTools.select(this.rdfcsa.D, metadata.subject.id + 1) - 1,
+      ];
+    } else {
       sInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.subject.id);
       sRange = [sInsertIndex, sInsertIndex];
     }
 
-    if (metadata.predicate.isNew) {
-      let oldPredicateId = metadata.predicate.id;
-      if (metadata.subject.isNew){
-        oldPredicateId -= 1
-      }
+    // Get the range where the existing predicate is or the new predicate will be
+    let pRange
+    if (!metadata.predicate.isNew) {
+      pRange = [
+        BitvectorTools.select(this.rdfcsa.D, oldPredicateId),
+        BitvectorTools.select(this.rdfcsa.D, oldPredicateId + 1) - 1,
+      ];
+    } else {
       pInsertIndex = BitvectorTools.select(this.rdfcsa.D, oldPredicateId);
       pRange = [pInsertIndex, pInsertIndex];
     }
 
-    if (metadata.object.isNew) {
-      let oldObjectId = metadata.object.id;
-      if (metadata.subject.isNew){
-        oldObjectId -= 1
-      }
-      if (metadata.predicate.isNew){
-        oldObjectId -= 1
-      }
+    // Get the range where the existing object is or the new object will be
+    let oRange;
+    if (!metadata.object.isNew) {
+      oRange = [
+        BitvectorTools.select(this.rdfcsa.D, oldObjectId),
+        BitvectorTools.select(this.rdfcsa.D, oldObjectId + 1) - 1,
+      ];
+    } else {
       oInsertIndex = BitvectorTools.select(this.rdfcsa.D, oldObjectId);
       oRange = [oInsertIndex, oInsertIndex];
     }
-
+    
+    // If the subject already exists, calculate the insertion position inside the range of existing triples with the subject
     if (!metadata.subject.isNew) {
       sInsertIndex = sRange[1] + 1;
 
@@ -179,6 +175,7 @@ export class RdfOperations {
       }
     }
 
+    // If the predicate already exists, calculate the insertion position inside the range of existing triples with the predicate
     if (!metadata.predicate.isNew) {
       pInsertIndex = pRange[1] + 1;
 
@@ -208,7 +205,8 @@ export class RdfOperations {
         }
       }
     }
-
+    
+    // If the object already exists, calculate the insertion position inside the range of existing triples with the object
     if (!metadata.object.isNew) {
       oInsertIndex = oRange[1] + 1;
 
@@ -239,6 +237,7 @@ export class RdfOperations {
       }
     }
 
+    // Update the bitvector D, with 1s for new elements and 0s after first index of its respective range for existing elements
     if (metadata.subject.isNew) {
       this.rdfcsa.D.splice(sInsertIndex, 0, 1);
     } else {
@@ -256,31 +255,37 @@ export class RdfOperations {
     } else {
       this.rdfcsa.D.splice(oRange[0] + 3, 0, 0);
     }
-
+    
+    // Update existing references in psi
     for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
       const subjectArealength = this.rdfcsa.psi.length / 3;
 
+      // Update first third ("subjects"), referencing the index of the predicates
       if (this.rdfcsa.psi[i] < pInsertIndex) {
         this.rdfcsa.psi[i] += 1;
       } else {
         this.rdfcsa.psi[i] += 2;
       }
 
+      // Update second third ("predicate"), referencing the index of the objects
       if (this.rdfcsa.psi[i + subjectArealength] < oInsertIndex) {
         this.rdfcsa.psi[i + subjectArealength] += 2;
       } else {
         this.rdfcsa.psi[i + subjectArealength] += 3;
       }
 
+      // Update third third ("objects"), referencing the index of the subjects
       if (this.rdfcsa.psi[i + 2 * subjectArealength] >= sInsertIndex) {
         this.rdfcsa.psi[i + 2 * subjectArealength] += 1;
       }
     }
 
+    // Insert the new references into psi
     this.rdfcsa.psi.splice(sInsertIndex, 0, pInsertIndex + 1);
     this.rdfcsa.psi.splice(pInsertIndex + 1, 0, oInsertIndex + 2);
     this.rdfcsa.psi.splice(oInsertIndex + 2, 0, sInsertIndex);
 
+    // Update gaps if new elements were added to the dictionary
     if (metadata.subject.isNew) {
       this.rdfcsa.gaps[1] += 1;
       this.rdfcsa.gaps[2] += 1;

@@ -88,8 +88,8 @@ describe("RdfOperations", () => {
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
     expect(res.dictionary.O).toEqual(resRef.dictionary.O);
     expect(res.gaps).toEqual(resRef.gaps);
-    expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
+    expect(res.D).toEqual(resRef.D);
   });
 
   test("addTriple: case 4", () => {

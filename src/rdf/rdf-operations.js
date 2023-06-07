@@ -98,11 +98,16 @@ export class RdfOperations {
     let oInsertIndex;
 
     // For the case that new elements got inserted into the dictionary, calculate the original ids for existing objects and predicates
+    let oldSubjectId = metadata.subject.id;
     let oldObjectId = metadata.object.id;
     let oldPredicateId = metadata.predicate.id;
+
     if (metadata.subject.isNew) {
       oldObjectId -= 1;
       oldPredicateId -= 1;
+      if (metadata.soChange.subjectGotSO) {
+        oldSubjectId -= 1;
+      }
     }
     if (metadata.predicate.isNew) {
       oldObjectId -= 1;
@@ -112,11 +117,11 @@ export class RdfOperations {
     let sRange;
     if (!metadata.subject.isNew) {
       sRange = [
-        BitvectorTools.select(this.rdfcsa.D, metadata.subject.id),
-        BitvectorTools.select(this.rdfcsa.D, metadata.subject.id + 1) - 1,
+        BitvectorTools.select(this.rdfcsa.D, oldSubjectId),
+        BitvectorTools.select(this.rdfcsa.D, oldSubjectId + 1) - 1,
       ];
     } else {
-      sInsertIndex = BitvectorTools.select(this.rdfcsa.D, metadata.subject.id);
+      sInsertIndex = BitvectorTools.select(this.rdfcsa.D, oldSubjectId);
       sRange = [sInsertIndex, sInsertIndex];
     }
 
@@ -184,6 +189,9 @@ export class RdfOperations {
           continue;
         }
         if (this.rdfcsa.psi[i] > oRange[1]) {
+          if (this.rdfcsa.psi[this.rdfcsa.psi[i]] < sRange[0]) {
+            continue;
+          }
           pInsertIndex = i;
           break;
         }
@@ -294,8 +302,10 @@ export class RdfOperations {
       this.rdfcsa.gaps[2] += 1;
     }
 
-    // TODO: SO here
     if (metadata.soChange.subjectGotSO) {
+      if (metadata.subject.isNew && metadata.subject.id - 1 <= metadata.soChange.oldSubjectId) {
+        metadata.soChange.oldSubjectId += 1
+      }
       const rangeToMove = [
         BitvectorTools.select(this.rdfcsa.D, metadata.soChange.oldSubjectId),
         BitvectorTools.select(this.rdfcsa.D, metadata.soChange.oldSubjectId + 1) - 1

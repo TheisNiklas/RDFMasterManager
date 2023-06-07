@@ -454,48 +454,17 @@ export class QueryManager {
    */
   #intersectTwoResultLists(l1, l2, joinElement) {
     const resultList = [];
-    switch (joinElement) {
-      case "S":
-        l1.forEach((triple1) => {
-          l2.forEach((triple2, index) => {
-            if (triple2.subject === triple1.subject) {
-              resultList.push(triple1);
-              resultList.push(triple2);
-              // CHECK: pop of triple2 from l2 faster, to reduce nessecary iterations
-            }
-          });
-        });
-        break;
-      case "O":
-        l1.forEach((triple1) => {
-          l2.forEach((triple2) => {
-            if (triple2.object === triple1.object) {
-              resultList.push(triple1);
-              resultList.push(triple2);
-            }
-          });
-        });
-        break;
-      case "SO":
-        l1.forEach((triple1) => {
-          l2.forEach((triple2) => {
-            if (triple2.object === triple1.subject) {
-              resultList.push(triple1);
-              resultList.push(triple2);
-            }
-          });
-        });
-        break;
-      case "OS":
-        l1.forEach((triple1) => {
-          l2.forEach((triple2) => {
-            if (triple2.subject === triple1.object) {
-              resultList.push(triple1);
-              resultList.push(triple2);
-            }
-          });
-        });
-    }
+    l1.forEach((triple1) => {
+      l2.forEach((triple2, index) => {
+        if (joinElement==="S" && triple2.subject !== triple1.subject ||
+            joinElement==="O" && triple2.object !== triple1.object ||
+            joinElement==="SO" && triple2.object !== triple1.subject ||
+            joinElement==="OS" && triple2.subject !== triple1.object){
+          return;
+        }
+        resultList.push(triple1, triple2);
+      });
+    });
     return resultList;
   }
 

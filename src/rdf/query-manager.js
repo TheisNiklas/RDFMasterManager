@@ -355,6 +355,7 @@ export class QueryManager {
    */
   #mergeJoin(queries) {
     //TODO: sortieren nach Join Variablen
+    //TODO: Check whether set is faster
     const resultList = [];
     queries.forEach((query) => {
       const countUnboundType = this.#getQueryType(query);
@@ -411,7 +412,7 @@ export class QueryManager {
         }
       }
       // get merged results
-      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], joinVar);
+      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], [joinVar]);
     }
     return mergedResults;
   }
@@ -442,24 +443,24 @@ export class QueryManager {
   }
 
   /**
-   * Intersects two given lists with triples by the in `joinElement` element.
+   * Intersects two given lists with triples by the in `joinElements` element.
    * The resulting list contains the matching triples from both lists
    * @param {Triple[]} l1
    * @param {Triple[]} l2
-   * @param {string} joinElement:
+   * @param {string} joinVars:
    *    S: Join on subject
    *    O: Join on Object
    *    SO: Join Subject of `l1` on Object of `l2`
    *    OS: Join Object of `l1` on Subject of `l2`
    */
-  #intersectTwoResultLists(l1, l2, joinElement) {
+  #intersectTwoResultLists(l1, l2, joinVars) {
     const resultList = [];
     l1.forEach((triple1) => {
       l2.forEach((triple2, index) => {
-        if (joinElement==="S" && triple2.subject !== triple1.subject ||
-            joinElement==="O" && triple2.object !== triple1.object ||
-            joinElement==="SO" && triple2.object !== triple1.subject ||
-            joinElement==="OS" && triple2.subject !== triple1.object){
+        if (joinVars.includes("S") && triple2.subject !== triple1.subject ||
+            joinVars.includes("O") && triple2.object !== triple1.object ||
+            joinVars.includes("SO") && triple2.object !== triple1.subject ||
+            joinVars.includes("OS") && triple2.subject !== triple1.object){
           return;
         }
         resultList.push(triple1, triple2);

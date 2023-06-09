@@ -9,10 +9,13 @@ import { devToolsEnhancer } from '@redux-devtools/extension';
 
 const store = createStore(rootReducer, devToolsEnhancer() );
 
+
+
+
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
-      <PersistentDrawerRight />
+      isLandscape ? <PersistentDrawerRight /> : <h1>test</h1>
     </Provider>
   </React.StrictMode>
 );

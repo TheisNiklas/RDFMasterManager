@@ -18,10 +18,12 @@ import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setGraphData } from "../actions";
 import load_data from "./triple2graph";
+import { Hidden } from "@mui/material";
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("../lib/NoSSRForceGraph"), {
   ssr: false,
 });
+
 
 /**
  * Visualization of the 3D graph and handling of all interaction with the 3D graph.
@@ -135,8 +137,8 @@ export default function Graph3DReact() {
         nodeOpacity={1}
         onNodeClick={(node: any) => handleNodeLeftClick(node)}
         onLinkClick={(link: any) => handleLinkLeftClick(link)}
-        width = {1150}
-        height = {450}
+        // width = {1150}
+        // height = {450}
       ></NoSSRForceGraph>
       <Dialog open={openNodeLeft} onClose={handleNodeLeftClose}>
         <DialogTitle id="node-left-title">{"Node Informationen"}</DialogTitle>

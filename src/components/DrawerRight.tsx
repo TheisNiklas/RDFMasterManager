@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Dialog, DialogTitle, Button, DialogContent } from "@mui/material";
+import { Dialog, DialogTitle, Button, DialogContent} from "@mui/material";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { ImportService } from "../rdf/importer/import-service";
@@ -25,14 +25,17 @@ import Import from "./import";
 import Export from "./export";
 import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
+import { useMediaQuery } from 'react-responsive';
+import { drawerOpenWidth, isMobileDevice } from "../constants/media";
 
-const drawerWidth = 500;
+
+let drawerWidth = 500;
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  padding: theme.spacing(3),
+  padding: theme.spacing(2),
   transition: theme.transitions.create("margin", {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -82,10 +85,21 @@ const DialogButton = styled(Button)(({ theme }) => ({
 }))
 
 export default function PersistentDrawerRight() {
+
+  document.body.style.overflow='hidden';
+
+  if(useMediaQuery({
+    query: "(min-device-width: 480px)"})) {
+     window.screen.orientation.lock('landscape-primary');
+    
+  }
+
   const theme = useTheme();
 
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
 
+
+  const [isLandscape, setIsLandscape] = React.useState(window.screen.orientation.type==='landscape-primary');
   //Redux
   const drawerOpen = useSelector((state: any) => state.isDrawerOpen);
   const mainFrame = useSelector((state: any) => state.mainFrame);
@@ -109,6 +123,7 @@ export default function PersistentDrawerRight() {
   }, [database, currentData, mainFrame, graphData]);
 
   const handleFromFromExample = () => {
+
     const rdfcsa = new ImportService().loadSample()
     const queryManager = new QueryManager(rdfcsa);
     const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
@@ -123,10 +138,13 @@ export default function PersistentDrawerRight() {
   };
 
   const handleFromScratch = () => {
+
     setStartDialogOpen(false);
+  
   }
 
   const handleImportRequest = () => {
+   
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
     const importService = new ImportService();
@@ -150,6 +168,18 @@ export default function PersistentDrawerRight() {
   
       fileInput.click();
     };
+
+    React.useEffect(() => {
+      if(window.screen.orientation.type === "landscape-primary"){
+        setIsLandscape(true)
+        
+      }else {
+        setIsLandscape(false)
+    
+      }
+  
+    },[])
+
 
   
 
@@ -186,7 +216,12 @@ export default function PersistentDrawerRight() {
             flexShrink: 0,
             "& .MuiDrawer-paper": {
               width: drawerWidth,
-            },
+              ...(useMediaQuery({
+                query: "(min-device-width: 480px)",
+              }) && {
+                width: '100%'
+              }),
+            }
           }}
           variant="persistent"
           anchor="right"

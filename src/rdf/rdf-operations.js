@@ -356,7 +356,7 @@ export class RdfOperations {
 
       for (let k = rangeToMoveOver[0]; k <= rangeToMoveOver[1]; k++) {
         const target = this.rdfcsa.psi[this.rdfcsa.psi[k]]
-        changes.push([target, distanceToMove]);
+        changes.push([target, rangeToMove[1] - rangeToMove[0] + 1]);
       }
 
 
@@ -365,15 +365,19 @@ export class RdfOperations {
       })
 
       moves.forEach(([index, movesLength]) => {
-        const temp = this.rdfcsa.psi[index + movesLength];
-        this.rdfcsa.psi[index + movesLength] = this.rdfcsa.psi[index];
-        this.rdfcsa.psi[index] = temp;
+        for (let i = index; i > index + movesLength; i--) {   
+          const temp = this.rdfcsa.psi[i - 1];
+          this.rdfcsa.psi[i - 1] = this.rdfcsa.psi[i];
+          this.rdfcsa.psi[i] = temp;
+        }
       })
       // change D range
-      for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
-        const temp = this.rdfcsa.D[i - distanceToMove];
-        this.rdfcsa.D[i - distanceToMove] = this.rdfcsa.D[i];
-        this.rdfcsa.D[i] = temp;
+      for (let index = rangeToMove[0]; index <= rangeToMove[1]; index++) {
+        for (let i = index; i > index - distanceToMove; i--) {   
+          const temp = this.rdfcsa.D[i - 1];
+          this.rdfcsa.D[i - 1] = this.rdfcsa.D[i];
+          this.rdfcsa.D[i] = temp;
+        }
       }
     }
     

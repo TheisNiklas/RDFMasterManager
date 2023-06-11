@@ -18,12 +18,14 @@ import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setGraphData } from "../actions";
 import load_data from "./triple2graph";
-import { Hidden } from "@mui/material";
+import { Box, Hidden } from "@mui/material";
+
+let widthValue = "30%";
+
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("../lib/NoSSRForceGraph"), {
   ssr: false,
 });
-
 
 /**
  * Visualization of the 3D graph and handling of all interaction with the 3D graph.
@@ -117,6 +119,29 @@ export default function Graph3DReact() {
     setOpenLinkLeft(false);
   };
 
+  const handleResizeGraph3 = (userViewPerspective) => {
+    console.log("handleResizeGraph3");
+
+    if(userViewPerspectiv === "landscape-primary"){
+      widthValue = "30%";
+    }
+    else
+    {
+      widthValue = "100%";
+    }
+
+    const rdfOperations = new RdfOperations(database);
+    const tripleToDelete = new Triple(linkSource, linkId, linkTarget);
+    const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
+    dispatch(setDatabase(newDatabase as Rdfcsa));
+    const queryManager = new QueryManager(newDatabase);
+    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+    dispatch(setGraphData(database, currentData));
+    setToastMessage("Successfully deleted triple");
+    setToastOpen(true);
+    setOpenLinkLeft(false);
+  };
+
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -126,8 +151,9 @@ export default function Graph3DReact() {
   };
 
   return (
-    <div>
-      <NoSSRForceGraph
+    <Box>
+      <Grid sx={{marginTop: -5, marginLeft: -2, marginRight: -2 }}>
+      <NoSSRForceGraph         
         graphData={data}
         nodeAutoColorBy="group"
         linkDirectionalArrowLength={5}
@@ -204,6 +230,7 @@ export default function Graph3DReact() {
           {toastMessage}
         </Alert>
       </Snackbar>
-    </div>
+      </Grid>
+    </Box>
   );
 }

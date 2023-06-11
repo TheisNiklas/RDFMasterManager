@@ -25,11 +25,14 @@ import Import from "./import";
 import Export from "./export";
 import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
+import handleResizeGraph3 from "./graph3dreact";
 import { useMediaQuery } from 'react-responsive';
 import { drawerOpenWidth, isMobileDevice } from "../constants/media";
+import { WavingHandTwoTone } from "@mui/icons-material";
 
 
 let drawerWidth = 500;
+let userViewPerspective = "landscape-primary";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -171,18 +174,31 @@ export default function PersistentDrawerRight() {
 
     React.useEffect(() => {
       if(window.screen.orientation.type === "landscape-primary"){
-        setIsLandscape(true)
+        setIsLandscape(true);
+        userViewPerspective = "landscape-primary";
         
       }else {
-        setIsLandscape(false)
-    
+        setIsLandscape(false);
+        userViewPerspective = "portrai-primary";
       }
   
     },[])
 
+    addEventListener("resize", (event) => { 
 
+      if(userViewPerspective === "landscape-primary"){
+        userViewPerspective = "portrai-primary"
+      }
+      else
+      {
+        userViewPerspective = "landscape-primary"
+      }
+
+      //handleResizeGraph3(userViewPerspective);
+      console.log("handleResizeGraph3:");
+      console.log(userViewPerspective);
+    });
   
-
   return (
     <>
       <Box sx={{ display: "flex" }}>

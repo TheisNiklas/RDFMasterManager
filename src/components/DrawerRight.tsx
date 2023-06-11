@@ -11,7 +11,7 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Dialog, DialogTitle, Button, DialogContent} from "@mui/material";
+import { Dialog, DialogTitle, Button, DialogContent, DialogContentText} from "@mui/material";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { ImportService } from "../rdf/importer/import-service";
@@ -88,18 +88,20 @@ export default function PersistentDrawerRight() {
 
   document.body.style.overflow='hidden';
 
-  if(useMediaQuery({
-    query: "(min-device-width: 480px)"})) {
-     window.screen.orientation.lock('landscape-primary');
-    
-  }
 
   const theme = useTheme();
 
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
+  const [openDialog, setOpenDialog] = React.useState(false);
+  window.matchMedia("(orientation: portrait)").addEventListener("change", e => {
+    const portrait = e.matches;
+    if (portrait){
+      setOpenDialog(true);
+    }else{
+      setOpenDialog(false);
+    }
+  })
 
-
-  const [isLandscape, setIsLandscape] = React.useState(window.screen.orientation.type==='landscape-primary');
   //Redux
   const drawerOpen = useSelector((state: any) => state.isDrawerOpen);
   const mainFrame = useSelector((state: any) => state.mainFrame);
@@ -170,14 +172,12 @@ export default function PersistentDrawerRight() {
     };
 
     React.useEffect(() => {
-      if(window.screen.orientation.type === "landscape-primary"){
-        setIsLandscape(true)
-        
-      }else {
-        setIsLandscape(false)
-    
-      }
-  
+      const portrait = window.matchMedia("(orientation: portrait)").matches;
+    if (portrait){
+      setOpenDialog(true);
+    }else{
+      setOpenDialog(false);
+    }
     },[])
 
 
@@ -254,6 +254,18 @@ export default function PersistentDrawerRight() {
         </DialogContent>
       </Dialog>
       </Box>
+      <Dialog
+                    open={openDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">{"Bitte drehen sie ihr Gerät."}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                      Die Website funktioniert nur in der Landscape-Ansicht.
+                      </DialogContentText>
+                    </DialogContent>
+                  </Dialog>
     </>
   );
 }

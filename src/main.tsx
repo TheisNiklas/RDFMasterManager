@@ -5,17 +5,17 @@ import { compose, createStore } from "redux";
 import rootReducer from "./reducers/index.js";
 import { Provider } from "react-redux";
 import { devToolsEnhancer } from '@redux-devtools/extension';
+import { Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 
 const store = createStore(rootReducer, devToolsEnhancer() );
 
 
 
-
 ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
-      isLandscape ? <PersistentDrawerRight /> : <h1>test</h1>
+      <PersistentDrawerRight />
     </Provider>
   </React.StrictMode>
 );

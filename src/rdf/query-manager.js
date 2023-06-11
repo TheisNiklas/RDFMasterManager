@@ -345,31 +345,22 @@ export class QueryManager {
       const preJoinVar = joinVars[i-1]; // TODO: noch nicht richtig (Überprüfung aller vorherigen Arrays)
       const curJoinVar = joinVars[i];
       // compare join variable
-      var joinVar = undefined;
-      for (var j = 0; j < curJoinVar.length; j++) {
-        if (curJoinVar[j] >= 0 && joinVar === undefined) {
-          switch (j) {
-            case 0:
-              if (curJoinVar[j] === preJoinVar[0]) {
-                joinVar = "S";
-              } else if (curJoinVar[j] === preJoinVar[2]) {
-                joinVar = "SO";
-              }
-              break;
-            case 2:
-              if (curJoinVar[j] === preJoinVar[0]) {
-                joinVar = "OS";
-              } else if (curJoinVar[j] === preJoinVar[2]) {
-                joinVar = "O";
-              }
-              break;
-            default:
-              break;
-          }
-        }
+      var joinCombinations = [];
+      console.log(curJoinVar)
+      if (curJoinVar[0] === preJoinVar[0]) {
+        joinCombinations.push("S");
+      }
+      if (curJoinVar[0] === preJoinVar[2]) {
+        joinCombinations.push("SO");
+      }
+      if (curJoinVar[2] === preJoinVar[0]) {
+        joinCombinations.push("OS");
+      }
+      if (curJoinVar[2] === preJoinVar[2]) {
+        joinCombinations.push("O");
       }
       // get merged results
-      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], [joinVar]);
+      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], [joinCombinations]);
     }
     return mergedResults;
   }

@@ -35,23 +35,7 @@ export class QueryManager {
     if (queries.length === 1) {
       const query = queries[0];
       // get number of unbound elements
-      const countUnboundType = this.#getQueryType(query);
-      switch (countUnboundType) {
-        case 0:
-          resultArray = this.getBoundTriple(query);
-          break;
-        case 1:
-          resultArray = this.getOneUnboundTriple(query);
-          break;
-        case 2:
-          resultArray = this.getTwoUnboundTriple(query);
-          break;
-        case 3:
-          resultArray = this.getAllTriples();
-          break;
-        default:
-          return [];
-      }
+      resultArray = this.#getQueryType(query);
       // convert result array to array with triple elements
       resultArray.forEach((triple) => {
         result.push(new Triple(triple[0], triple[1], triple[2]));
@@ -276,21 +260,8 @@ export class QueryManager {
   // step 4: append all solutions for each results of step3
   leftChainingJoinTwoQueries(queries) {
     let result1;
-    const countUnboundType = this.#getQueryType(queries[0]);
-    switch (countUnboundType) {
-      case 0:
-        result1 = this.getBoundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
-        break;
-      case 1:
-        result1 = this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
-        break;
-      case 2:
-        result1 = this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
-        break;
-      default:
-        result1 = this.getAllTriples();
-        break;
-    }
+    result1 = this.#getQueryType(queries[0]);
+    
     // find query var in left triple
 
     let result2 = [];
@@ -358,21 +329,7 @@ export class QueryManager {
     //TODO: Check whether set is faster
     const resultList = [];
     queries.forEach((query) => {
-      const countUnboundType = this.#getQueryType(query);
-      switch (countUnboundType) {
-        case 0:
-          resultList.push(this.getBoundTriple(this.#createNormalQueryFromJoinQuery(query)));
-          break;
-        case 1:
-          resultList.push(this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
-          break;
-        case 2:
-          resultList.push(this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
-          break;
-        default:
-          resultList.push(this.getAllTriples());
-          break;
-      }
+      resultList.push(this.#getQueryType(query));
     });
 
     var mergedResults = undefined;
@@ -492,7 +449,16 @@ export class QueryManager {
     if (query.object === null || query.object.isJoinVar) {
       countUnbound += 1;
     }
-    return countUnbound;
+    switch (countUnbound) {
+      case 0:
+        return this.getBoundTriple(this.#createNormalQueryFromJoinQuery(query));
+      case 1:
+        return this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(query));
+      case 2:
+        return this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(query));
+      default:
+        return this.getAllTriples();
+    }
   }
 
   /**

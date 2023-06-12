@@ -75,6 +75,9 @@ export class RdfOperations {
     });
     stringTriples.push([subject, predicate, object]);
     this.rdfcsa = new Rdfcsa(stringTriples);
+
+    this.rdfcsa.tripleCount += 1;
+
     return this.rdfcsa;
   }
 
@@ -292,6 +295,7 @@ export class RdfOperations {
 
     if (metadata.subject.isNew && metadata.subject.id === 0) {
       this.rdfcsa.D[0] = 0
+      this.rdfcsa.D[1] = 1 // toggle because element got shifted by one place 
     }
     
     // Update existing references in psi
@@ -392,6 +396,11 @@ export class RdfOperations {
           this.rdfcsa.psi[i] = temp;
         }
       })
+      
+      if (rangeToMoveOver[0] === 0) {
+        this.rdfcsa.D[0] = 1
+        this.rdfcsa.D[rangeToMove[0]] = 0
+      }
       // change D range
       for (let index = rangeToMove[0]; index <= rangeToMove[1]; index++) {
         for (let i = index; i > index - distanceToMove; i--) {   
@@ -459,6 +468,8 @@ export class RdfOperations {
         }
       }
     }
+
+    this.rdfcsa.tripleCount += 1;
 
     return this.rdfcsa;
   }
@@ -698,6 +709,8 @@ export class RdfOperations {
     this.rdfcsa.gaps[1] -= predicateIdDifference;
     this.rdfcsa.gaps[2] -= objectIdDifference;
 
+    this.rdfcsa.tripleCount -= 1;
+
     return this.rdfcsa;
   }
 
@@ -770,6 +783,9 @@ export class RdfOperations {
       stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
     });
     this.rdfcsa = new Rdfcsa(stringTriples);
+
+    this.rdfcsa.tripleCount -= 1;
+
     return this.rdfcsa;
   }
 

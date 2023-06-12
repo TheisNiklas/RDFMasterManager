@@ -1,6 +1,8 @@
 import { Triple } from "../../src/rdf/models/triple";
 import { RdfOperations } from "../../src/rdf/rdf-operations";
 import { Rdfcsa } from "../../src/rdf/rdfcsa";
+import { dataset } from "./fixtures/50k-dataset.json";
+import { dataset_1k } from "./fixtures/1k-dataset.json"
 import {
   tripleListReduced,
   resultD,
@@ -581,4 +583,64 @@ describe("RdfOperations", () => {
     expect(res.gaps).toEqual(resultGaps);
     expect(res.D).toEqual(resultD);
   });
+});
+
+describe("RDFOperation inserts Test", () => {
+  test("test paper insert", () => {
+    let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
+
+    let rdfcsa = new Rdfcsa([]);
+    let ops = new RdfOperations(rdfcsa);
+    tripleList.forEach((triple) => {
+      ops.addTripleNew(triple[0], triple[1], triple[2]);
+    });
+
+    expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
+    expect(rdfcsa.dictionary.S).toEqual(rdfcsaOld.dictionary.S);
+    expect(rdfcsa.dictionary.P).toEqual(rdfcsaOld.dictionary.P);
+    expect(rdfcsa.dictionary.O).toEqual(rdfcsaOld.dictionary.O);
+    expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
+    expect(rdfcsa.D).toEqual(rdfcsaOld.D);
+    expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
+  });
+
+  test("maxiTest 1000 triples insert", () => {
+    let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k)));
+
+    let rdfcsa = new Rdfcsa([]);
+    let ops = new RdfOperations(rdfcsa);
+    dataset_1k.forEach((triple) => {
+      ops.addTripleNew(triple[0], triple[1], triple[2]);
+    });
+
+    expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
+    expect(rdfcsa.dictionary.S).toEqual(rdfcsaOld.dictionary.S);
+    expect(rdfcsa.dictionary.P).toEqual(rdfcsaOld.dictionary.P);
+    expect(rdfcsa.dictionary.O).toEqual(rdfcsaOld.dictionary.O);
+    expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
+    expect(rdfcsa.D).toEqual(rdfcsaOld.D);
+    expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
+  })
+});
+
+
+describe.skip("RDFOperation MaxiTest", () => {
+  // funzt
+  test("maxiTest 50000 Triples", () => {
+    let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset)));
+
+    let rdfcsa = new Rdfcsa([]);
+    let ops = new RdfOperations(rdfcsa);
+    dataset.forEach((triple) => {
+      ops.addTripleNew(triple[0], triple[1], triple[2]);
+    });
+
+    expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
+    expect(rdfcsa.dictionary.S).toEqual(rdfcsaOld.dictionary.S);
+    expect(rdfcsa.dictionary.P).toEqual(rdfcsaOld.dictionary.P);
+    expect(rdfcsa.dictionary.O).toEqual(rdfcsaOld.dictionary.O);
+    expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
+    expect(rdfcsa.D).toEqual(rdfcsaOld.D);
+    expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
+  })
 });

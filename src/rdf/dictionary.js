@@ -188,6 +188,59 @@ export class Dictionary {
   }
 
   /**
+   * delete one triple
+   * @param {Triple} triple
+   */
+  deleteTriple(triple, subjectDeleted, predicateDeleted, objectDeleted) {
+    const subjectWasSO = this.isSubjectObjectById(triple.subject)
+    const objectWasSO = this.isSubjectObjectById(triple.object)
+    let newObjectId = -1;
+    let newSubjectId = -1;
+    if (subjectDeleted) {
+      if (subjectWasSO){
+        const subject = this.SO.splice(triple.subject, 1)[0];
+        this.O.push(subject);
+        this.O.sort();
+        newObjectId = this.getIdByObject(subject);
+      } else {
+        const index = triple.subject - this.SO.length;
+        this.S.splice(index, 1);
+      }
+    }
+    if (predicateDeleted) {
+      let index = triple.predicate - (this.SO.length + this.S.length);
+      if (subjectDeleted) {
+        index -= 1
+      }
+      this.P.splice(index, 1);
+    }
+    if (objectDeleted) {
+      let index = triple.object - (this.SO.length + this.S.length + this.P.length + this.SO.length);
+      if (subjectDeleted) {
+        index -= 1
+      }
+      if (predicateDeleted) {
+        index -= 1
+      }
+      if (objectWasSO){
+        const object = this.SO.splice(index, 1)[0];
+        this.S.push(object);
+        this.S.sort();
+        newSubjectId = this.getIdBySubject(object);
+      } else {
+        this.O.splice(index, 1);
+      }
+    }
+
+    return {
+      subjectWasSO: subjectWasSO,
+      objectWasSO: objectWasSO,
+      newObjectId: newObjectId,
+      newSubjectId: newSubjectId
+    }
+  }
+
+  /**
    * Deletes the element in SO containing `subjectObjectToDelete`
    * @param {string} subjectObjectToDelete
    */

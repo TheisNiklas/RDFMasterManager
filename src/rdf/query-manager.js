@@ -327,6 +327,7 @@ export class QueryManager {
   #mergeJoin(queries) {
     //TODO: sortieren nach Join Variablen
     //TODO: Check whether set is faster
+    console.log(queries)
     const resultList = [];
     queries.forEach((query) => {
       resultList.push(this.#getQueryType(query));
@@ -338,6 +339,7 @@ export class QueryManager {
     }
     var joinVars = [];
     joinVars.push(this.#getJoinVars(queries[0]));
+    console.log(joinVars)
     for (var i = 1; i < resultList.length; i++) {
       // get join variable  ((?x, p1, o1)x(?y, p2, o2)x(?x, p3, ?y),
       //                     (?x, p1, ?y)x(?y, p2, o2)x(?x, p3, o1)x(?y, p1, o4))
@@ -346,21 +348,21 @@ export class QueryManager {
       const curJoinVar = joinVars[i];
       // compare join variable
       var joinCombinations = [];
-      console.log(curJoinVar)
-      if (curJoinVar[0] === preJoinVar[0]) {
+      console.log("Interpret " + curJoinVar + " " + preJoinVar)
+      if (curJoinVar[0] >= 0 && curJoinVar[0] === preJoinVar[0]) {
         joinCombinations.push("S");
       }
-      if (curJoinVar[0] === preJoinVar[2]) {
+      if (curJoinVar[0] >= 0 && curJoinVar[0] === preJoinVar[2]) {
         joinCombinations.push("SO");
       }
-      if (curJoinVar[2] === preJoinVar[0]) {
+      if (curJoinVar[2] >= 0 &&curJoinVar[2] === preJoinVar[0]) {
         joinCombinations.push("OS");
       }
-      if (curJoinVar[2] === preJoinVar[2]) {
+      if (curJoinVar[2] >= 0 &&curJoinVar[2] === preJoinVar[2]) {
         joinCombinations.push("O");
       }
       // get merged results
-      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], [joinCombinations]);
+      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], joinCombinations);
     }
     return mergedResults;
   }
@@ -401,16 +403,19 @@ export class QueryManager {
    *    SO: Join Subject of `l1` on Object of `l2`
    *    OS: Join Object of `l1` on Subject of `l2`
    */
-  #intersectTwoResultLists(l1, l2, joinVars) {
+  #intersectTwoResultLists(l1, l2, joinCombinations) {
     const resultList = [];
+    console.log("Intersect\n"+ l1 + "\n" + l2 + "\nCombinations " + joinCombinations)
     l1.forEach((triple1) => {
       l2.forEach((triple2, index) => {
-        if (joinVars.includes("S") && triple2.subject !== triple1.subject ||
-            joinVars.includes("O") && triple2.object !== triple1.object ||
-            joinVars.includes("SO") && triple2.object !== triple1.subject ||
-            joinVars.includes("OS") && triple2.subject !== triple1.object){
+        if (joinCombinations.includes("S") && triple2[0] !== triple1[0] ||
+            joinCombinations.includes("O") && triple2[2] !== triple1[2] ||
+            joinCombinations.includes("SO") && triple2[2] !== triple1[0] ||
+            joinCombinations.includes("OS") && triple2[0] !== triple1[2]){
+          console.log("Not pushed "+ triple1 + " " + triple2)
           return;
         }
+        console.log("Pushed "+ triple1 + " " + triple2)
         resultList.push(triple1, triple2);
       });
     });

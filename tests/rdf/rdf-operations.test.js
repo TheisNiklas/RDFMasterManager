@@ -152,7 +152,7 @@ describe("RdfOperations", () => {
     expect(res.psi).toEqual(resRef.psi);
   });
 
-  test("addTriple: case 5 - two triples", () => {
+  test("addTriple: case 4 - Praesi", () => {
     const addSubject = "USA";
     const addPredicate = "born in";
     const addObject = "Oscar 2015";

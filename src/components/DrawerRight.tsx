@@ -176,11 +176,11 @@ export default function PersistentDrawerRight() {
 
     React.useEffect(() => {
       if(window.screen.orientation.type === "landscape-primary"){
-        setIsLandscape(true);
+        //setIsLandscape(true);
         userViewPerspective = "landscape-primary";
         
       }else {
-        setIsLandscape(false);
+        //setIsLandscape(false);
         userViewPerspective = "portrai-primary";
       }
   
@@ -272,18 +272,6 @@ export default function PersistentDrawerRight() {
         </DialogContent>
       </Dialog>
       </Box>
-      <Dialog
-                    open={openDialog}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                  >
-                    <DialogTitle id="alert-dialog-title">{"Bitte drehen sie ihr Gerät."}</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                      Die Website funktioniert nur in der Landscape-Ansicht.
-                      </DialogContentText>
-                    </DialogContent>
-                  </Dialog>
     </>
   );
 }

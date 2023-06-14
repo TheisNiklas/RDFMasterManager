@@ -35,7 +35,7 @@ export default function Graph3DReact() {
   //load data into the 3D Graph
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
-  const graphData = useSelector((state:any) => state.graphData);
+  const graphData = useSelector((state: any) => state.graphData);
 
   const dispatch = useDispatch();
   //dispatch(graphData(database, currentData))
@@ -119,14 +119,13 @@ export default function Graph3DReact() {
     setOpenLinkLeft(false);
   };
 
-  const handleResizeGraph3 = (userViewPerspective) => {
+  const handleResizeGraph3 = (userViewPerspectiv: string) => {
     console.log("handleResizeGraph3");
 
-    if(userViewPerspectiv === "landscape-primary"){
+    if (userViewPerspectiv === "landscape-primary") {
       widthValue = "30%";
     }
-    else
-    {
+    else {
       widthValue = "100%";
     }
 
@@ -151,9 +150,8 @@ export default function Graph3DReact() {
   };
 
   return (
-    <Box>
-      <Grid sx={{marginTop: -5, marginLeft: -2, marginRight: -2 }}>
-      <NoSSRForceGraph         
+    <Grid sx={{ marginTop: -5, marginLeft: -2, marginRight: -2 }}>
+      <NoSSRForceGraph
         graphData={data}
         nodeAutoColorBy="group"
         linkDirectionalArrowLength={5}
@@ -163,8 +161,8 @@ export default function Graph3DReact() {
         nodeOpacity={1}
         onNodeClick={(node: any) => handleNodeLeftClick(node)}
         onLinkClick={(link: any) => handleLinkLeftClick(link)}
-        // width = {1150}
-        // height = {450}
+      // width = {1150}
+      // height = {450}
       ></NoSSRForceGraph>
       <Dialog open={openNodeLeft} onClose={handleNodeLeftClose}>
         <DialogTitle id="node-left-title">{"Node Informationen"}</DialogTitle>
@@ -230,7 +228,6 @@ export default function Graph3DReact() {
           {toastMessage}
         </Alert>
       </Snackbar>
-      </Grid>
-    </Box>
+    </Grid>
   );
 }

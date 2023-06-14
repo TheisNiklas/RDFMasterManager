@@ -115,7 +115,7 @@ export class RdfOperations {
     let oInsertIndex;
 
     // For the case that new elements got inserted into the dictionary, calculate the original ids for existing objects and predicates
-    let oldSubjectId = metadata.subject.id; // Zans
+    let oldSubjectId = metadata.subject.id;
     let oldObjectId = metadata.object.id;
     let oldPredicateId = metadata.predicate.id;
 
@@ -628,6 +628,7 @@ export class RdfOperations {
         BitvectorTools.select(this.rdfcsa.D, triple.object - this.rdfcsa.gaps[2] + 1) - 1
       ]
 
+      // + 1 because the 1 of the range to move is also counted by the select
       const targetIndex = BitvectorTools.select(this.rdfcsa.D, metadata.newSubjectId + 1);
 
       if (targetIndex - 1 > rangeToMoveOver[1]) {

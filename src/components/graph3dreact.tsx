@@ -18,12 +18,14 @@ import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setGraphData } from "../actions";
 import load_data from "./triple2graph";
-import { Hidden } from "@mui/material";
+import { Box, Hidden } from "@mui/material";
+
+let widthValue = "30%";
+
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph = dynamic(() => import("../lib/NoSSRForceGraph"), {
   ssr: false,
 });
-
 
 /**
  * Visualization of the 3D graph and handling of all interaction with the 3D graph.
@@ -33,7 +35,7 @@ export default function Graph3DReact() {
   //load data into the 3D Graph
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
-  const graphData = useSelector((state:any) => state.graphData);
+  const graphData = useSelector((state: any) => state.graphData);
 
   const dispatch = useDispatch();
   //dispatch(graphData(database, currentData))

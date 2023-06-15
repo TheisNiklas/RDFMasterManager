@@ -27,7 +27,7 @@ import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
 import { useMediaQuery } from 'react-responsive';
 import { drawerOpenWidth, isMobileDevice } from "../constants/media";
-
+import { WavingHandTwoTone } from "@mui/icons-material";
 
 let drawerWidth = 500;
 
@@ -88,9 +88,7 @@ export default function PersistentDrawerRight() {
 
   document.body.style.overflow='hidden';
 
-
   const theme = useTheme();
-
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
   const [openDialog, setOpenDialog] = React.useState(true);
   const [drawerWidth, setDrawerWidth] = React.useState(500);
@@ -201,16 +199,13 @@ export default function PersistentDrawerRight() {
 
     React.useEffect(() => {
       const portrait = window.matchMedia("(orientation: portrait)").matches;
-    if (portrait){
-      setOpenDialog(true);
-    }else{
-      setOpenDialog(false);
-    }
-    },[])
-
-
+      if (portrait){
+        setOpenDialog(true);
+      }else{
+        setOpenDialog(false);
+      }
+      },[])
   
-
   return (
     <>
       <Box sx={{ display: "flex", overflow: 'hidden'}}>

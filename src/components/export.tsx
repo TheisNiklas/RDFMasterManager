@@ -68,8 +68,8 @@ const Export = () => {
   };
 
   //calls the interface function for the import of the export function from the user
-  const userImportRequest = () => {
-    //setOpen(!importExportFunction());
+  const userExportFunction = () => {
+    const result = importExportFunction();
   };
 
   //calls the interface function for the export of the current selected graph data
@@ -95,13 +95,13 @@ const Export = () => {
     <Container maxWidth="md" sx={{ marginBottom: 2 }}>
       <Header variant="h6">Export</Header>
       <Grid item xs={6} sx={{ marginBottom: 2 }}>
-        <SubmitButton variant="contained" color="primary" onClick={() => userImportRequest()}>
+        <SubmitButton variant="contained" color="primary" onClick={() => userExportFunction()}>
           Insert your own export function
         </SubmitButton>
       </Grid>
       <Grid item xs={5} sx={{ marginBottom: 2 }}>
         <Tooltip
-          title="Exportfunction from a Javascript file must have the name externExportFunction, with a triple list as parameter"
+          title="Exportfunction from a .txt file must have the name externExportFunction, with a triple list as parameter. For question see exampleExternExportFunction.txt"
           placement="top"
         >
           <SortFormControl>

@@ -35,9 +35,9 @@ const SubmitButton = styled(Button)(() => ({
 const AddTripleForm = () => {
   const [formFields, setFormFields] = useState({ subject: "", predicate: "", object: "" });
 
-  const [subjectValid, setSubjectValid] = useState(false);
-  const [predicateValid, setPredicateValid] = useState(false);
-  const [objectValid, setObjectValid] = useState(false);
+  const [subjectValid, setSubjectValid] = useState(true);
+  const [predicateValid, setPredicateValid] = useState(true);
+  const [objectValid, setObjectValid] = useState(true);
 
 
   const handleIRIValidation = (input: string, type: string) => {

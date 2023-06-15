@@ -18,6 +18,7 @@ import { Triple } from '../rdf/models/triple';
 import { Rdfcsa } from '../rdf/rdfcsa';
 import currentData from '../reducers/currentData';
 import { useSelector, useDispatch } from "react-redux";
+import { useMediaQuery } from 'react-responsive';
 const TextCard = styled(Card)(({ theme }) => ({
     '& .MuiTableCell-stickyHeader': {
         backgroundColor: '#1976d2'
@@ -190,7 +191,19 @@ export default function TextVisualization() {
     }
 
     return (
-        <TextCard elevation={6}>
+        <TextCard elevation={6} sx={{
+            width: "98vw",
+            ...(useMediaQuery({
+                query: "(min-device-width: 320px)",
+              }) && {
+                width:  "95vw",
+              }),
+              ...(useMediaQuery({
+                query: "(min-device-width: 1024px)",
+              }) && {
+                width:  "98vw",
+              }),
+            }}>
             <TableContainer style={{ height: "80vh" }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead style={{ backgroundColor: "#1976d2" }}>

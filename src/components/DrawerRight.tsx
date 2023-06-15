@@ -90,7 +90,8 @@ export default function PersistentDrawerRight() {
 
   const theme = useTheme();
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
-  const [openDialog, setOpenDialog] = React.useState(false);
+  const [openDialog, setOpenDialog] = React.useState(true);
+  const [drawerWidth, setDrawerWidth] = React.useState(500);
   window.matchMedia("(orientation: portrait)").addEventListener("change", e => {
     const portrait = e.matches;
     if (portrait){
@@ -169,6 +170,33 @@ export default function PersistentDrawerRight() {
       fileInput.click();
     };
 
+    function isMobileDevice(){
+      console.log("BEFORE IS MOBILE");
+      if(window.screen.width < 1200 && window.screen.width >= 480){
+          return true;
+      }else{
+        return false;
+      }
+    }
+
+    const handleDrawerOpen = () => {
+      if(isMobileDevice()){
+        setDrawerWidth(400);
+      }else{
+        setDrawerWidth(500);
+      }
+      dispatch(open());
+    }
+
+    const handleDrawerClose = () => {
+      if(isMobileDevice()){
+        setDrawerWidth(500);
+      }else{
+        setDrawerWidth(400);
+      }
+      dispatch(close());
+    }
+
     React.useEffect(() => {
       const portrait = window.matchMedia("(orientation: portrait)").matches;
       if (portrait){
@@ -180,7 +208,7 @@ export default function PersistentDrawerRight() {
   
   return (
     <>
-      <Box sx={{ display: "flex" }}>
+      <Box sx={{ display: "flex", overflow: 'hidden'}}>
         <CssBaseline />
         <AppBar position="fixed" open={drawerOpen}>
           <Toolbar>
@@ -193,7 +221,7 @@ export default function PersistentDrawerRight() {
               aria-label="open drawer"
               edge="end"
               onClick={() => {
-                drawerOpen ? dispatch(close()) : dispatch(open());
+                drawerOpen ? handleDrawerClose() : handleDrawerOpen();
               }}
               sx={{ ...(drawerOpen && { display: "none" }) }}
             >
@@ -211,9 +239,7 @@ export default function PersistentDrawerRight() {
             flexShrink: 0,
             "& .MuiDrawer-paper": {
               width: drawerWidth,
-              ...(useMediaQuery({
-                query: "(min-device-width: 480px)",
-              }) && {
+              ...( isMobileDevice() && {
                 width: '100%'
               }),
             }
@@ -225,7 +251,7 @@ export default function PersistentDrawerRight() {
           <DrawerHeader>
             <IconButton
               onClick={() => {
-                drawerOpen ? dispatch(open()) : dispatch(close());
+                drawerOpen ? handleDrawerOpen() : handleDrawerClose();
               }}
             >
               {theme.direction === "rtl" ? <ChevronLeftIcon /> : <ChevronRightIcon />}
@@ -253,6 +279,7 @@ export default function PersistentDrawerRight() {
                     open={openDialog}
                     aria-labelledby="alert-dialog-title"
                     aria-describedby="alert-dialog-description"
+                    fullScreen={true}
                   >
                     <DialogTitle id="alert-dialog-title">{"Bitte drehen sie ihr Gerät."}</DialogTitle>
                     <DialogContent>

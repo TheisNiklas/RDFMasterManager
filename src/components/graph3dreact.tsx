@@ -139,8 +139,6 @@ export default function Graph3DReact() {
         nodeOpacity={1}
         onNodeClick={(node: any) => handleNodeLeftClick(node)}
         onLinkClick={(link: any) => handleLinkLeftClick(link)}
-      // width = {1150}
-      // height = {450}
       ></NoSSRForceGraph>
       <Dialog open={openNodeLeft} onClose={handleNodeLeftClose}>
         <DialogTitle id="node-left-title">{"Node Informationen"}</DialogTitle>

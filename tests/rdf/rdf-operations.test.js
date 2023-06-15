@@ -17,17 +17,17 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(tripleListReduced);
     let ops = new RdfOperations(rdfcsa);
     const res = ops.addTriple("L. DiCaprio", "awarded", "Oscar 2015");
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.gaps).toEqual(resultGaps);
-    expect(res.D).toEqual(resultD);
+    expect(res?.psi).toEqual(resultPsi);
+    expect(res?.gaps).toEqual(resultGaps);
+    expect(res?.D).toEqual(resultD);
   });
   test("deleteTriple", () => {
     let rdfcsa = new Rdfcsa(tripleListExtended);
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTriple(new Triple(3, 6, 14));
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.gaps).toEqual(resultGaps);
-    expect(res.D).toEqual(resultD);
+    expect(res?.psi).toEqual(resultPsi);
+    expect(res?.gaps).toEqual(resultGaps);
+    expect(res?.D).toEqual(resultD);
   });
   test("modifyTriple", () => {
     let rdfcsa = new Rdfcsa(tripleListModified);
@@ -41,16 +41,16 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(tripleListForDeleteInDict);
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteElementInDictionary(10);
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.gaps).toEqual(resultGaps);
-    expect(res.D).toEqual(resultD);
+    expect(res?.psi).toEqual(resultPsi);
+    expect(res?.gaps).toEqual(resultGaps);
+    expect(res?.D).toEqual(resultD);
   });
   test("changeInDictionary", () => {
     let rdfcsa = new Rdfcsa(tripleListTypo);
     let ops = new RdfOperations(rdfcsa);
     const res = ops.changeInDictionary(1, "Inception");
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.gaps).toEqual(resultGaps);
-    expect(res.D).toEqual(resultD);
+    expect(res?.psi).toEqual(resultPsi);
+    expect(res?.gaps).toEqual(resultGaps);
+    expect(res?.D).toEqual(resultD);
   });
 });

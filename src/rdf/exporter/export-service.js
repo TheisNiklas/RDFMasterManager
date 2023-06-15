@@ -1,25 +1,19 @@
-import { Dictionary } from "../dictionary";
-import { Exporter } from "./exporter";
-import { Triple } from "../models/triple";
 import { NTriplesExporter } from "./ntriples-exporter";
 import { TurtleExporter } from "./turtle-exporter";
 import { JsonldExporter } from "./jsonld-exporter";
-import { StreamExporter } from "./stream-exporter";
+import { saveAs } from "file-saver";
 
 export class ExportService {
   /** @type {{[key: string]: Exporter}} */
   #exporters = {};
-  // TODO: check as far this could be nessecary and how usable is it?
-  /** @type {{[key: string]: StreamExporter}} */
-  #streamExporters = {};
 
   /**
    * Service for handling the exports
    */
   constructor() {
-    this.registerExporter(new NTriplesExporter(), ["N-Triples"]);
-    this.registerExporter(new JsonldExporter(), ["JSON-LD"]);
-    this.registerExporter(new TurtleExporter(), ["Turtle"]);
+    this.registerExporter(new NTriplesExporter(), ["N-Triples"], "nt", "application/n-triples");
+    this.registerExporter(new JsonldExporter(), ["JSON-LD"], "jsonld", "application/ld+json", true);
+    this.registerExporter(new TurtleExporter(), ["Turtle"], "ttl", "text/turtle");
   }
 
   /**
@@ -31,44 +25,31 @@ export class ExportService {
    * @returns {string} serailized `tripleList` to `fromat`
    * @throws {Error} When no matching exporter is available.
    */
-  async exportTriples(tripleList, dictionary, format, isStreamExporter = false) {
-    if (isStreamExporter) {
-      const stream = this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
-      const fileStream = streamSaver.createWriteStream("export.jsonld");
-      stream.pipe(fileStream);
-    } else {
-      const result = this.serializeTriples(tripleList, dictionary, format, isStreamExporter);
-      let blob = new Blob([result], { type: "application/n-triples;charset=utf-8" });
-      FileSaver.saveAs(blob, `export.nt`);
-    }
+  async exportTriples(tripleList, dictionary, format) {
+    const exporterData = this.#getExporter(format);
+
+    const result = await this.serializeTriples(tripleList, dictionary, format, exporterData);
+    let blob = new Blob([result], { type: exporterData.mimeType });
+    saveAs(blob, `export.${exporterData.extension}`);
   }
 
   /**
    * Serializes a tripleList to a string of the given `format`.
    * @param {Triple[]} tripleList Triples to be exported.
-   * @param {Dictionary} dictionary
-   * @param {string} format name the exporter is registered with
-   * @param {boolean} isStreamExporter true if the chosen exporter is a `StreamExporter`. Defaults to false.
-   * @returns {Promise} serailized `tripleList` to `fromat`
+   * @param {Dictionary} dictionary dictionary from rdfcsa.
+   * @param {string} format name the exporter is registered with.
+   * @param {{instance: Exporter, extension: string, isStreamExporter: boolean, mimeType: string}} exporterData all relevant inforamtions regarding the exporter. Default to undefined.
+   * @returns {Promise} serailized `tripleList` to `fromat`.
    * @throws {Error} When no matching exporter is available.
    */
-  async serializeTriples(tripleList, dictionary, format, isStreamExporter = false) {
-    let exporter;
-    try {
-      if (isStreamExporter) {
-        exporter = this.#streamExporters[format];
-      } else {
-        exporter = this.#exporters[format];
-      }
-    } catch (error) {
-      throw Error(
-        `No exporter available for format ${format} in category ${isStreamExporter ? "normal" : "streaming"}`
-      );
+  async serializeTriples(tripleList, dictionary, format, exporterData = undefined) {
+    if (exporterData === undefined) {
+      exporterData = this.#getExporter(format);
     }
 
     const tripleStringList = this.#translateTripleIds(tripleList, dictionary);
-    if (isStreamExporter) {
-      const stream = exporter.exportTriples(tripleStringList);
+    if (exporterData.isStreamExporter) {
+      const stream = exporterData.instance.exportTriples(tripleStringList);
       const result = await new Promise((resolve) => {
         let resultString = "";
         stream.on("data", (chunk) => (resultString += chunk)).on("end", () => resolve(resultString));
@@ -76,21 +57,18 @@ export class ExportService {
       });
       return result;
     } else {
-      return exporter.exportTriples(tripleStringList);
+      return exporterData.instance.exportTriples(tripleStringList);
     }
   }
 
   /**
-   * Get two lists with the names of the currently registered exporters
-   * @returns {string[][]} Tuple containing two list.
-   * First list contains the names of the normal exporters.
-   * Second list contains the names of the stream exporters.
+   * Get two lists with the names of the currently registered exporters.
+   * @returns {string[]} List containing the format names of the exporters.
    * @example ["N-Triples", "JSON-LD", "Turtle"]
    */
   getAvailableExporters() {
-    const normalExporters = Object.getOwnPropertyNames(this.#exporters);
-    const streamExporters = Object.getOwnPropertyNames(this.#streamExporters);
-    return [normalExporters, streamExporters];
+    const exporters = Object.getOwnPropertyNames(this.#exporters);
+    return exporters;
   }
 
   /**
@@ -98,16 +76,16 @@ export class ExportService {
    * If for a given format an exporter already exists, it is replaced with the new one
    * @param {Exporter} exporter Instance of the exporter
    * @param {string} exporterFormat Format the exporter should be registered with
+   * @param {string} extension File extension for the exported file
+   * @param {string} mimeType MIME type of the exported format
+   * @param {boolean} isStreamExporter
    * @throws {Error} When the `exporter` is not based on the Exporter or StreamExporter interface class
    */
-  registerExporter(exporter, exporterFormat) {
-    if (exporter instanceof Exporter) {
-      this.#exporters[exporterFormat] = exporter;
-    } else if (exporter instanceof StreamExporter) {
-      this.#streamExporters[exporterFormat] = exporter;
-    } else {
-      throw Error("The given exporter is not based in the interface class Importer or StreamImporter");
+  registerExporter(exporter, exporterFormat, extension, mimeType, isStreamExporter = false) {
+    if (exporter.exportTriples === undefined) {
+      throw Error("The given exporter is not based on the interface class Importer or StreamImporter");
     }
+    this.#exporters[exporterFormat] = {instance: exporter, extension: extension, isStreamExporter: isStreamExporter, mimeType: mimeType};
   }
 
   /**
@@ -128,5 +106,18 @@ export class ExportService {
     return resultList;
   }
 
-  #streamToString(stream) {}
+  /**
+   * 
+   * @param {string} format 
+   * @returns {{instance: Exporter, extension: string, isStreamExporter: boolean, mimeType: string}}
+   */
+  #getExporter(format) {
+    let exporter = this.#exporters[format];
+    if (exporter === undefined) {
+      throw Error(
+        `No exporter available for format ${format} in category ${exporter.isStreamExporter ? "normal" : "streaming"}`
+      );
+    }
+    return exporter;
+  }
 }

@@ -18,8 +18,6 @@ export class NTriplesExporter extends Exporter {
         throw error;
       }
       resultString = result;
-      // let blob = new Blob([result], { type: "application/n-triples;charset=utf-8" });
-      // FileSaver.saveAs(blob, `export.nt`);
     });
     return resultString;
   }

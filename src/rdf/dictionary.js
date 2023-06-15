@@ -27,6 +27,7 @@ export class Dictionary {
     this.#sortArrays();
   }
   /**
+   * For the beginning
    * 
    * @param {string} subject
    * @param {string} predicate
@@ -39,6 +40,8 @@ export class Dictionary {
   }
   
   /**
+   * For when the dictionary already exists
+   * 
    * Adds every element of the triple to its respective array.
    * For all elements a check is performed whether they already exist in the respective array. If not, they are added.
    * For subject[object] a check is performed whether the subject[object] exists in the object[subject] array.
@@ -69,6 +72,11 @@ export class Dictionary {
     }
   }
   
+  /**
+   * Create a map where all map values are 1 and keys are elements of array
+   * @param {*} array 
+   * @returns 
+   */
   #distinctMapFromArray(array) {
     const map = new Map();
     array.forEach(elem => {
@@ -79,6 +87,9 @@ export class Dictionary {
     return map;
   }
 
+  /**
+   * Create S O and P by first calculating disjunct maps and then adding elements to SO if both in S and O; otherwise to S [O] if coming from S [O].
+   */
   #intersectArrays() {
     const sMap = this.#distinctMapFromArray(this.S)
 
@@ -87,27 +98,24 @@ export class Dictionary {
     this.S = [];
     this.O = [];
 
+    // add to SO if also in S otherwise to O
     oMap.forEach((_, elem) => {
-      if (sMap.get(elem)) {
+      if (sMap.get(elem)) { // if element also exists in S
         this.SO.push(elem);
-        sMap.set(elem, -1);
+        sMap.set(elem, -1); // mark P element that has been added to SO
       } else {
-        this.O.push(elem);
+        this.O.push(elem); // add to O if not in S
       }
     })
 
+    // add to S if not added to SO
     sMap.forEach((val, key) => {
-      if (val == 1) {
+      if (val == 1) { // only non marked P elements are added to S because marked ones have been added to SO
         this.S.push(key);
       }
     })
 
-    const pMap = this.#distinctMapFromArray(this.P)
-    this.P = [];
-
-    pMap.forEach((_, key) => {
-      this.P.push(key);
-    })
+    this.P = [...new Set(this.P)]; // make P distinct
   }
 
   /**
@@ -180,7 +188,7 @@ export class Dictionary {
   /**
    * Get the id of `subject`
    * @param {string} subject
-   * @returns {int}
+   * @returns {number}
    */
   getIdBySubject(subject) {
     return this.getIdByElement(subject, this.S);
@@ -189,7 +197,7 @@ export class Dictionary {
   /**
    * Get the id of `object`
    * @param {string} object
-   * @returns {int}
+   * @returns {number}
    */
   getIdByObject(object) {
     const temp = this.getIdByElement(object, this.O);
@@ -200,7 +208,7 @@ export class Dictionary {
    * Get the id of the object or subject `element` out of `SO` or `array`
    * @param {string} element
    * @param {string[]} array
-   * @returns {int}
+   * @returns {number}
    */
   getIdByElement(element, array) {
     const soIndex = this.SO.findIndex((el) => el === element);
@@ -217,7 +225,7 @@ export class Dictionary {
   /**
    * Get the id of `predicate`
    * @param {string} predicate
-   * @returns {int}
+   * @returns {number}
    */
   getIdByPredicate(predicate) {
     return this.P.findIndex((el) => el === predicate) + this.SO.length + this.S.length;
@@ -225,7 +233,7 @@ export class Dictionary {
 
   /**
    * Get subject with `id`
-   * @param {int} id
+   * @param {number} id
    * @returns {string}
    */
   getSubjectById(id) {
@@ -240,7 +248,7 @@ export class Dictionary {
 
   /**
    * Get object with `id`
-   * @param {int} id
+   * @param {number} id
    * @returns {string}
    */
   getObjectById(id) {
@@ -254,7 +262,7 @@ export class Dictionary {
 
   /**
    * Get object with `id`
-   * @param {int} id
+   * @param {number} id
    * @returns {string}
    */
   getPredicateById(id) {
@@ -264,28 +272,45 @@ export class Dictionary {
     return undefined;
   }
 
+  /**
+   * Returns element (string) by id
+   * @param {number} id 
+   * @returns 
+   */
   getElementById(id) {
-    if (id < this.SO.length + this.S.length) {
+    if (id < this.SO.length + this.S.length) { // within S
       return this.getSubjectById(id);
     }
-    if (id < this.SO.length + this.S.length + this.P.length) {
+    else if (id < this.SO.length + this.S.length + this.P.length) { // within P
       return this.getPredicateById(id - (this.SO.length + this.S.length));
     }
-    if (id < this.SO.length + this.S.length + this.P.length + this.SO.length + this.O.length) {
+    else if (id < this.SO.length + this.S.length + this.P.length + this.SO.length + this.O.length) { // within O
       return this.getObjectById(id - (this.SO.length + this.S.length + this.P.length));
     }
     return undefined;
   }
 
-  isSubjectObjectByObjectId(id) {
-    if (id < this.SO.length + this.S.length + this.P.length + this.SO.length) {
-      return true;
+  /**
+   * Returns true if element by id is subject and object.
+   * Dictionary consists of SO+S+P+SO+O. Yes SO appear twice but that makes it easier to handle
+   * @param {number} id 
+   * @returns 
+   */
+  isSubjectObjectById(id) {
+    if (id < this.SO.length) {
+      return true; // is in subject area of subject object
     }
-    return false;
+    else if (id < this.SO.length + this.S.length + this.P.length) {
+      return false; // is within just subject or predicate area
+    }
+    else if (id < this.SO.length + this.S.length + this.P.length + this.SO.length) {
+      return true; // is in object area of subject object
+    }
+    return false; // is within just object area
   }
 
   /**
-   *
+   * 
    * @param {Triple} triple
    */
   decodeTriple(triple) {
@@ -295,6 +320,10 @@ export class Dictionary {
     return [subject, predicate, object];
   }
 
+  /**
+   * Get subjects in a map
+   * @returns {Map<string,number>}
+   */
   getSubjectMap() {
     const map = new Map();
     this.SO.forEach((so, index) => {
@@ -307,6 +336,10 @@ export class Dictionary {
     return map;
   }
 
+  /**
+   * Get predicates in a map
+   * @returns {Map<string,number>}
+   */
   getPredicateMap() {
     const map = new Map();
     const gap = this.SO.length + this.S.length;
@@ -316,6 +349,10 @@ export class Dictionary {
     return map;
   }
 
+  /**
+   * Get objects in a map
+   * @returns {Map<string,number>}
+   */
   getObjectMap() {
     const map = new Map();
     const gap = this.SO.length + this.S.length + this.P.length;

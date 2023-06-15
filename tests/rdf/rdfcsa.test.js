@@ -3,7 +3,7 @@ import { tripleList, resultPsi, resultGaps, resultD } from "./fixtures/rdfcsa.te
 
 describe("Rdfcsa", () => {
   test("init", () => {
-    let rdfcsa = new Rdfcsa(tripleList);
+    const rdfcsa = new Rdfcsa(tripleList);
     expect(rdfcsa.psi).toEqual(resultPsi);
     expect(rdfcsa.gaps).toEqual(resultGaps);
     expect(rdfcsa.D).toEqual(resultD);

@@ -1,3 +1,5 @@
+const reader = new FileReader();
+
 //Download the triple data in a file with the default name "myfile.bin" for download to the Windows download folder.
 function exportBinary(tripleList) {
     const link = document.createElement('a');
@@ -23,7 +25,6 @@ function exportBinaryTest() {
 //interface for the export function from the user
 //Returns false if the export function is incorrect.
 function importExportFunction() {
-    // Create a new <input> element of type "file
     const fileInput = document.createElement('input');
     fileInput.type = 'file';
 
@@ -33,13 +34,42 @@ function importExportFunction() {
         console.log("fileInputStart")
         console.log(file);
         console.log("fileInputEnd")
-        /*
-        call of the backend import missing
-            content
-            appendData
-        */
-    });
 
+        reader.onload = () => {
+            fetch(reader.result)
+              .then(response => {
+                if (!response.ok) {
+                  throw new Error('Failed to load file');
+                }
+                return response.text();
+              })
+              .then(text => {
+                try {
+                  // Evaluate the code as JavaScript
+                  eval(text);
+
+                  const tripleData = "triple data export function";
+        
+                  // Call the function from the imported text file
+                  if (typeof exportFunction === 'function') {
+                    //to export-service?
+                    console.log(externExportFunction(tripleData));
+                  } else {
+                    throw new Error('Export function is not defined or not a function');
+                  }
+                } catch (error) {
+                  console.error(error);
+                  alert('An error occurred while processing the file');
+                }
+              })
+              .catch(error => {
+                console.error(error.message || 'An error occurred');
+                alert('Failed to load file');
+              });
+          };
+          reader.readAsDataURL(file);
+    });
+  
     fileInput.click();
 
     return false;

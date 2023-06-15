@@ -1,7 +1,6 @@
 import { Writer } from "n3";
 import { RdfJsMapper } from "../rdf-js-mapper";
 import { Exporter } from "./exporter";
-import FileSaver from "file-saver";
 
 export class TurtleExporter extends Exporter {
   /**
@@ -18,8 +17,6 @@ export class TurtleExporter extends Exporter {
         throw error;
       }
       resultString = result;
-      // let blob = new Blob([result], { type: "application/turtle;charset=utf-8" });
-      // FileSaver.saveAs(blob, `export.ttl`);
     });
     return resultString;
   }

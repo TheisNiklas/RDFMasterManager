@@ -119,28 +119,6 @@ export default function Graph3DReact() {
     setOpenLinkLeft(false);
   };
 
-  const handleResizeGraph3 = (userViewPerspectiv: string) => {
-    console.log("handleResizeGraph3");
-
-    if (userViewPerspectiv === "landscape-primary") {
-      widthValue = "30%";
-    }
-    else {
-      widthValue = "100%";
-    }
-
-    const rdfOperations = new RdfOperations(database);
-    const tripleToDelete = new Triple(linkSource, linkId, linkTarget);
-    const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
-    dispatch(setDatabase(newDatabase as Rdfcsa));
-    const queryManager = new QueryManager(newDatabase);
-    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-    dispatch(setGraphData(database, currentData));
-    setToastMessage("Successfully deleted triple");
-    setToastOpen(true);
-    setOpenLinkLeft(false);
-  };
-
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -150,7 +128,7 @@ export default function Graph3DReact() {
   };
 
   return (
-    <Grid sx={{ marginTop: -5, marginLeft: -2, marginRight: -2 }}>
+    <div>
       <NoSSRForceGraph
         graphData={data}
         nodeAutoColorBy="group"
@@ -228,6 +206,6 @@ export default function Graph3DReact() {
           {toastMessage}
         </Alert>
       </Snackbar>
-    </Grid>
+    </div>
   );
 }

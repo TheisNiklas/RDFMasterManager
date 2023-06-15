@@ -25,14 +25,11 @@ import Import from "./import";
 import Export from "./export";
 import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
-import handleResizeGraph3 from "./graph3dreact";
 import { useMediaQuery } from 'react-responsive';
 import { drawerOpenWidth, isMobileDevice } from "../constants/media";
 import { WavingHandTwoTone } from "@mui/icons-material";
 
-
 let drawerWidth = 500;
-let userViewPerspective = "landscape-primary";
 
 const Main = styled("main", { shouldForwardProp: (prop) => prop !== "open" })<{
   open?: boolean;
@@ -91,9 +88,7 @@ export default function PersistentDrawerRight() {
 
   document.body.style.overflow='hidden';
 
-
   const theme = useTheme();
-
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
   const [openDialog, setOpenDialog] = React.useState(false);
   window.matchMedia("(orientation: portrait)").addEventListener("change", e => {
@@ -175,31 +170,13 @@ export default function PersistentDrawerRight() {
     };
 
     React.useEffect(() => {
-      if(window.screen.orientation.type === "landscape-primary"){
-        //setIsLandscape(true);
-        userViewPerspective = "landscape-primary";
-        
-      }else {
-        //setIsLandscape(false);
-        userViewPerspective = "portrai-primary";
+      const portrait = window.matchMedia("(orientation: portrait)").matches;
+      if (portrait){
+        setOpenDialog(true);
+      }else{
+        setOpenDialog(false);
       }
-  
-    },[])
-
-    addEventListener("resize", (event) => { 
-
-      if(userViewPerspective === "landscape-primary"){
-        userViewPerspective = "portrai-primary"
-      }
-      else
-      {
-        userViewPerspective = "landscape-primary"
-      }
-
-      //handleResizeGraph3(userViewPerspective);
-      console.log("handleResizeGraph3:");
-      console.log(userViewPerspective);
-    });
+      },[])
   
   return (
     <>
@@ -272,6 +249,18 @@ export default function PersistentDrawerRight() {
         </DialogContent>
       </Dialog>
       </Box>
+      <Dialog
+                    open={openDialog}
+                    aria-labelledby="alert-dialog-title"
+                    aria-describedby="alert-dialog-description"
+                  >
+                    <DialogTitle id="alert-dialog-title">{"Bitte drehen sie ihr Gerät."}</DialogTitle>
+                    <DialogContent>
+                      <DialogContentText id="alert-dialog-description">
+                      Die Website funktioniert nur in der Landscape-Ansicht.
+                      </DialogContentText>
+                    </DialogContent>
+                  </Dialog>
     </>
   );
 }

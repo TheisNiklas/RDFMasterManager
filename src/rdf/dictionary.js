@@ -292,7 +292,7 @@ export class Dictionary {
    * @returns {int}
    */
   getIdBySubject(subject) {
-    return this.getIdByElement(subject, this.S);
+    return this.#getIdByElementInArray(subject, this.S);
   }
 
   /**
@@ -301,7 +301,7 @@ export class Dictionary {
    * @returns {int}
    */
   getIdByObject(object) {
-    const temp = this.getIdByElement(object, this.O);
+    const temp = this.#getIdByElementInArray(object, this.O);
     if (temp === -1) {
       return temp;
     }
@@ -314,7 +314,7 @@ export class Dictionary {
    * @param {string[]} array
    * @returns {int}
    */
-  getIdByElement(element, array) {
+  #getIdByElementInArray(element, array) {
     const soIndex = this.SO.findIndex((el) => el === element);
     if (soIndex === -1) {
       const found = array.findIndex((el) => el === element);
@@ -338,6 +338,29 @@ export class Dictionary {
     }
     return temp + this.SO.length + this.S.length;
   }
+
+  /**
+   * Gets the id of the element with gaps
+   * @param {string} element 
+   * @returns {number} id of the element, -1 if not found
+   */
+  getIdByElement(element) {
+    const sId = this.getIdBySubject(element);
+    if (sId != -1) {
+      return sId;
+    }
+    const pId = this.getIdByPredicate(element);
+    if (pId != -1) {
+      return pId;
+    }
+    const oId = this.getIdByObject(element);
+    if (oId != -1) {
+      return oId;
+    }
+    return -1;
+  }
+
+
 
   /**
    * Get subject with `id`
@@ -381,7 +404,7 @@ export class Dictionary {
   }
 
   /**
-   * Returns element (string) by id
+   * Returns element (string) by id with gaps
    * @param {int} id 
    * @returns 
    */

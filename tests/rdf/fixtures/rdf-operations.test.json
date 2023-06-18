@@ -36,17 +36,21 @@
     ["L. DiCaprio", "awarded", "Oscar 2015"]
   ],
   "tripleListForDeleteInDict": [
-    ["Inception", "filmed in", "L.A."],
-    ["L.A.", "city of", "USA"],
     ["E. Page", "appears in", "Inception"],
     ["L. DiCaprio", "appears in", "Inception"],
     ["J. Gordon", "appears in", "Inception"],
     ["J. Gordon", "born in", "USA"],
+    ["E. Page", "born in", "Canada"],
+    ["L. DiCaprio", "born in", "USA"],
+    ["L. DiCaprio", "awarded", "Oscar 2015"]
+  ],
+  "tripleListForDeleteInDict1": [
+    ["L.A.", "city of", "USA"],
+    ["J. Gordon", "born in", "USA"],
     ["J. Gordon", "lives in", "L.A."],
     ["E. Page", "born in", "Canada"],
     ["L. DiCaprio", "born in", "USA"],
-    ["L. DiCaprio", "awarded", "Oscar 2015"],
-    ["J. Gordon", "hates", "Oscar 2015"]
+    ["L. DiCaprio", "awarded", "Oscar 2015"]
   ],
   "tripleListTypo": [
     ["xInception", "filmed in", "L.A."],
@@ -76,7 +80,7 @@
     18, 17, 10, 14, 11, 15, 19, 12, 13, 16, 20, 21, 22, 26, 25, 28, 29, 27, 23, 24, 2, 4, 7, 0, 6, 3, 8, 1, 5, 9
   ],
   "resultGaps": [0, 5, 11],
-  "resultD": [0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0],
+  "resultD": "0110100100100110011110010111",
   "addTripleCase1": {
     "resultDict": {
       "SO": ["Inception", "L.A."],
@@ -86,7 +90,7 @@
     },
     "resultGaps": [0, 6, 13],
     "resultPsi": [19, 18, 11, 15, 12, 16, 21, 13, 14, 17, 20, 22, 23, 24, 29, 27, 31, 32, 30, 25, 28, 26, 2, 4, 7, 0, 6, 3, 10, 8, 1, 5, 9],
-    "resultD": [0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 1, 1, 0, 0]
+    "resultD": "0110100100110011001111100101111"
   },
   "addTripleCase2": {
     "resultDict": {
@@ -97,7 +101,7 @@
     },
     "resultGaps": [0, 5, 11],
     "resultPsi": [20, 19, 11, 14, 16, 12, 17, 21, 13, 15, 18, 22, 23, 24, 28, 29, 27, 31, 32, 30, 25, 26, 2, 5, 8, 0, 7, 4, 3, 9, 1, 6, 10],
-    "resultD": [0, 1, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 1, 0, 0, 1, 1, 1, 1, 0, 0, 1, 0, 1, 1, 0, 1, 0, 0]
+    "resultD": "0110010010010010100111100101101"
   },
   "addTripleCase4": {
     "resultDict": {
@@ -108,6 +112,6 @@
     },
     "resultGaps": [0, 5, 11],
     "resultPsi": [18, 20, 11, 15, 21, 19, 12, 16, 13, 14, 17, 22, 23, 24, 29, 30, 28, 32, 25, 31, 26, 27, 2, 6, 8, 0, 1, 4, 7, 9, 3, 5, 10],
-    "resultD": [0, 0, 1, 0, 0, 1, 1, 0, 1, 0, 0, 1, 0, 0, 1, 1, 0, 0, 1, 0, 1, 1, 1, 0, 0, 1, 1, 0, 1, 1, 1, 0, 0]
+    "resultD": "0010011010010011001011100110111"
   }
 }

@@ -1,5 +1,4 @@
 import { QueryTriple } from "../../src/rdf/models/query-triple";
-import { BitvectorTools } from "./bitvector-tools";
 import { Triple } from "./models/triple";
 import { QueryElement } from "./models/query-element";
 import { Rdfcsa } from "./rdfcsa";
@@ -74,16 +73,16 @@ export class QueryManager {
   getAllTriples() {
     // TODO: return all triples
     const tripleList = [];
-    for (let i = 0; i < this.rdfcsa.D.length / 3; i++) {
+    for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
       // find the next referenced element
       const targetIndex1 = this.rdfcsa.psi[i];
       // find the next referenced element of the next referenced element
       const targetIndex2 = this.rdfcsa.psi[targetIndex1];
       const targetIndex3 = this.rdfcsa.psi[targetIndex2];
       // get id of elements
-      const target1 = BitvectorTools.rank(this.rdfcsa.D, targetIndex1);
-      const target2 = BitvectorTools.rank(this.rdfcsa.D, targetIndex2);
-      const target3 = BitvectorTools.rank(this.rdfcsa.D, targetIndex3);
+      const target1 = this.rdfcsa.D.rank(targetIndex1);
+      const target2 = this.rdfcsa.D.rank(targetIndex2);
+      const target3 = this.rdfcsa.D.rank(targetIndex3);
       // find empty triple index and add found triple to triple list
       tripleList.push([target3, target1, target2]);
     }
@@ -176,7 +175,7 @@ export class QueryManager {
         // find the next referenced element
         const targetIndex = this.rdfcsa.psi[this.rdfcsa.psi[i]];
         // get id of referenced element
-        const target = BitvectorTools.rank(this.rdfcsa.D, targetIndex);
+        const target = this.rdfcsa.D.rank(targetIndex);
         // find empty triple index and add found triple to triple list
         if (query.subject === null) {
           tripleList.push([target, query.predicate.id, query.object.id]);
@@ -200,8 +199,8 @@ export class QueryManager {
         // find the next referenced element of the next referenced element
         const targetIndex2 = this.rdfcsa.psi[targetIndex1];
         // get id of elements
-        const target1 = BitvectorTools.rank(this.rdfcsa.D, targetIndex1);
-        const target2 = BitvectorTools.rank(this.rdfcsa.D, targetIndex2);
+        const target1 = this.rdfcsa.D.rank(targetIndex1);
+        const target2 = this.rdfcsa.D.rank(targetIndex2);
         // find empty triple index and add found triple to triple list
         if (query.subject !== null) {
           tripleList.push([query.subject.id, target1, target2]);
@@ -225,8 +224,8 @@ export class QueryManager {
 
     //Calculate ranges where each pattern elements are inside the rdfcsa
     pattern.forEach((elem) => {
-      const range_start = BitvectorTools.select(this.rdfcsa.D, elem);
-      const range_end = BitvectorTools.select(this.rdfcsa.D, elem + 1) - 1;
+      const range_start = this.rdfcsa.select(elem);
+      const range_end = this.rdfcsa.select(elem + 1) - 1;
       ranges.push([range_start, range_end]);
     });
 

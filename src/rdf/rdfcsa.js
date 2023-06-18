@@ -16,6 +16,14 @@ export class Rdfcsa {
     this.psi = this.#constructPsi(aArray);
   }
 
+  select(count) {
+    let result = this.D.select(count);
+    if (result < 0) {
+      result = this.psi.length;
+    }
+    return result;
+  }
+
   /**
    * Constructs the array Tid and T from the `tipleList`
    * @param {string[][]} tripleList
@@ -94,7 +102,7 @@ export class Rdfcsa {
    * D[i]=1 if tArray[aArray[i]]!=tArray[aArray[i-1]] changes else D[i]=0
    * @param {number[]} tArray array of S,O,P IDs in S1,O1,P1,...SN,ON,PN order)
    * @param {number[]} aArray suffix array
-   * @returns {number[]}
+   * @returns {BitVector}
    */
   #constructD(tArray, aArray) {
     let dArray = new BitVector()

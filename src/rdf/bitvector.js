@@ -31,9 +31,11 @@ export class BitVector{
       for (let i = 0; i < this.arrayLength; i++){
         array.push(this.bits[i])
       }
-      array.push(0);
+      for (this.arrayLength; this.arrayLength <= element; this.arrayLength++){
+        array.push(0);
+      }
+
       this.bits = new Uint32Array(array);
-      this.arrayLength++;
     }
     this.bits[element] |= 1 << (index % (Uint32Array.BYTES_PER_ELEMENT*8));
   }
@@ -56,6 +58,9 @@ export class BitVector{
    * @returns {number} rank 1 of index
    */
   rank(index) {
+    if (Math.floor(index / (Uint32Array.BYTES_PER_ELEMENT*8)) > this.arrayLength){
+      index = (this.arrayLength-1)*(Uint32Array.BYTES_PER_ELEMENT*8)
+    }
     let result = 0;
     for (let i = 0; i <= index; i++) {
       if(this.getBit(i)){
@@ -90,22 +95,29 @@ export class BitVector{
     let length = this.toString().length - (index % (Uint32Array.BYTES_PER_ELEMENT*8));
     const mask = ((1 << length) - 1) << (index % (Uint32Array.BYTES_PER_ELEMENT*8));
     const subpart = (this.bits[element] & mask) >>> (index % (Uint32Array.BYTES_PER_ELEMENT*8));
+    //console.log(subpart)
     const shiftedSubpart = subpart << 1;
     this.bits[element] = (this.bits[element] & ~mask) | (shiftedSubpart << (index % (Uint32Array.BYTES_PER_ELEMENT*8)));
-
-    for (let i = element + 1; i < this.arrayLength; i++)
+    
+    let prelastbit = (this.bits[element] >> 31) & 1;
+    this.bits[element] = (this.bits[element] << 1)
+    let stop = false;
+    for (let i = element +1; i <= this.arrayLength; i++)
     {
       // Shift the number 31 bits to the right to keep only the last bit
-      let lastbit = this.bits[i-1] >> 31;
 
-      // Use the bitwise AND operator to isolate the first bit
-      lastbit = lastbit & 1;
+      if (i === this.arrayLength){
 
-      // Shift the number 1 bit to the left
-      var shiftedNumber = this.bits[i] << 1;
-
-      // Use the bitwise OR operator to insert the last bit
-      this.bits[i] = shiftedNumber | lastbit;
+    if (!stop && prelastbit > 0){
+      this.addNewIntElement(this.arrayLength + 1)
+      stop = true;
+    }
+    else{
+      break;
+    }
+  }
+      this.bits[i] = (this.bits[i] << 1) | prelastbit
+      prelastbit = (this.bits[i] >> 31) & 1
     }
   }
 
@@ -127,10 +139,22 @@ export class BitVector{
       // Shift the number 1 bit to the left
       this.bits[i] = this.bits[i] >> 1;
     }
-    if (this.bits[this.arrayLength-1] === 0)
+    if (this.bits[this.arrayLength-1] === 0 && this.arrayLength > 1)
     {
-        arrayLength--;
+        this.arrayLength--;
     }
+  }
+
+  addNewIntElement(newArrayLength){
+      let array = [];
+      for (let i = 0; i < this.arrayLength; i++){
+        array.push(this.bits[i]);
+      }
+      for (this.arrayLength; this.arrayLength <= newArrayLength-1; this.arrayLength++){
+        array.push(0);
+      }
+    
+      this.bits = new Uint32Array(array);
   }
   
   /**

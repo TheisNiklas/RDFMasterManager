@@ -97,10 +97,9 @@ export class BitVector{
     const subpart = (this.bits[element] & mask) >>> (index % (Uint32Array.BYTES_PER_ELEMENT*8));
     //console.log(subpart)
     const shiftedSubpart = subpart << 1;
+    let prelastbit = (this.bits[element] >> 31) & 1;
     this.bits[element] = (this.bits[element] & ~mask) | (shiftedSubpart << (index % (Uint32Array.BYTES_PER_ELEMENT*8)));
     
-    let prelastbit = (this.bits[element] >> 31) & 1;
-    this.bits[element] = (this.bits[element] << 1)
     let stop = false;
     for (let i = element +1; i <= this.arrayLength; i++)
     {

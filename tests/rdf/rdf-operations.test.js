@@ -578,7 +578,7 @@ describe("RdfOperations", () => {
   test("deleteElementInDict", () => {
     let resRef = new Rdfcsa(tripleListForDeleteInDict);
 
-    let rdfcsa = new Rdfcsa(tripleList);
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteElementInDictionary(1); // delete SO: LA
     expect(res.psi).toEqual(resRef.psi);
@@ -588,24 +588,24 @@ describe("RdfOperations", () => {
   test("deleteElementInDict - Inception", () => {
     let resRef = new Rdfcsa(tripleListForDeleteInDict1);
 
-    let rdfcsa = new Rdfcsa(tripleList);
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteElementInDictionary(0); // delete SO: Inception
+    expect(res.D.toString()).toEqual(resRef.D.toString());
     expect(res.psi).toEqual(resRef.psi);
     expect(res.gaps).toEqual(resRef.gaps);
-    expect(res.D.toString()).toEqual(resRef.D.toString());
   });
   test("changeInDictionary", () => {
-    let rdfcsa = new Rdfcsa(tripleListTypo);
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleListTypo)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.changeInDictionary(1, "Inception");
-    expect(res.gaps).toEqual(resultGaps);
     expect(res.psi).toEqual(resultPsi);
     expect(res.D.toString()).toEqual(resultD);
+    expect(res.gaps).toEqual(resultGaps);
   });
 });
 
-describe.skip("RDFOperation inserts Test", () => {
+describe("RDFOperation inserts Test", () => {
   test("test paper insert", () => {
     let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
 

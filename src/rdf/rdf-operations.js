@@ -943,7 +943,8 @@ export class RdfOperations {
     this.deleteElementInDictionary(id);
 
     originalTriples.forEach((changedTriple) => {
-      this.addTripleNew(changedTriple.subject, changedTriple.predicate, changedTriple.object);
+      // TODO: add triple does not work as exspected
+      this.addTripleNew(changedTriple[0], changedTriple[1], changedTriple[2]);
     })
 
     return this.rdfcsa;

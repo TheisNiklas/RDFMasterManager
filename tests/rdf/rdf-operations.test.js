@@ -595,13 +595,24 @@ describe("RdfOperations", () => {
     expect(res.psi).toEqual(resRef.psi);
     expect(res.gaps).toEqual(resRef.gaps);
   });
+
+  test("deleteElementInDict - xInception", () => {
+    let resRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleListForDeleteInDict)));
+
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
+    let ops = new RdfOperations(rdfcsa);
+    const res = ops.deleteElementInDictionary(1); // delete SO: xInception
+    expect(res.D.toString()).toEqual(resRef.D.toString());
+    expect(res.psi).toEqual(resRef.psi);
+    expect(res.gaps).toEqual(resRef.gaps);
+  });
   test("changeInDictionary", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleListTypo)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.changeInDictionary(1, "Inception");
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.D.toString()).toEqual(resultD);
     expect(res.gaps).toEqual(resultGaps);
+    expect(res.D.toString()).toEqual(resultD);
+    expect(res.psi).toEqual(resultPsi);
   });
 });
 

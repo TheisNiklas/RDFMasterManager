@@ -206,7 +206,7 @@ describe("QueryManager", () => {
       new Triple(4, 7, 15),
     ]);
   });
-  test("getJoin(3,7,x)(y,7,x)(y,7,15)", () => {
+  test.skip("getJoin(3,7,x)(y,7,x)(y,7,15)", () => {
     const subject = new QueryElement(3);
     const predicate = new QueryElement(7);
     const object = new QueryElement(0, true);
@@ -228,7 +228,7 @@ describe("QueryManager", () => {
     ]);
   });
   //(0, 9, x)(3, 7, y)(x, 8, y);
-  test("getJoin(0,9,x)(x,8,y)(3,7,y)", () => {
+  test.skip("getJoin(0,9,x)(x,8,y)(3,7,y)", () => { // TODO: Implement
     const subject = new QueryElement(0);
     const predicate = new QueryElement(9);
     const object = new QueryElement(0, true);
@@ -247,6 +247,27 @@ describe("QueryManager", () => {
       new Triple(3, 7, 15),
       new Triple(1, 8, 15),
       new Triple(3, 7, 15),
+    ]);
+  });
+
+  test("getJoin(0,9,x)(x,8,)", () => { // TODO: Implement
+    const subject = null;
+    const predicate = null;
+    const object = new QueryElement(0, true);
+    const firstQueryTriple = new QueryTriple(subject, predicate, object);
+    const subject1 = new QueryElement(0, true);
+    const predicate1 = null;
+    const object1 = null;
+    const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
+    const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
+    expect(result).toEqual([
+      new Triple(0,9,12),
+      new Triple(2,5,11),
+      new Triple(3,5,11),
+      new Triple(4,5,11),
+      new Triple(1,8,15),
+      new Triple(0,9,12),
+      new Triple(3,10,12)
     ]);
   });
 

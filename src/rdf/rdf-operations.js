@@ -81,7 +81,7 @@ export class RdfOperations {
   }
 
   /**
-   * Adds a new element (triple) to rdfcsa - what happens if element already exists?
+   * Adds a new element (triple) to rdfcsa
    * @param {string} subject
    * @param {string} predicate
    * @param {string} object
@@ -130,12 +130,13 @@ export class RdfOperations {
     if (metadata.subject.isNew) {
       oldObjectId -= 1;
       oldPredicateId -= 1;
-      if (metadata.soChange.subjectGotSO && subject < object) {
-        oldSubjectId -= 1;
-      }
+      
       if (metadata.soChange.objectGotSO) {
         oldObjectId -= 1;
       }
+    }
+    if (metadata.soChange.subjectGotSO && !this.rdfcsa.dictionary.isSubjectObjectById(metadata.subject.id) && subject < object) {
+      oldSubjectId -= 1;
     }
     if (metadata.predicate.isNew) {
       oldObjectId -= 1;

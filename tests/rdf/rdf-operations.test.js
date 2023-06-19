@@ -614,6 +614,37 @@ describe("RdfOperations", () => {
     expect(res.D.toString()).toEqual(resultD);
     expect(res.psi).toEqual(resultPsi);
   });
+
+
+  test.skip("bugfix test for changeInDictionary", () => {
+    const input = [
+      ["L.A.", "city of", "USA"],
+      ["J. Gordon", "born in", "USA"],
+      ["J. Gordon", "lives in", "L.A."],
+      ["E. Page", "born in", "Canada"],
+      ["L. DiCaprio", "born in", "USA"],
+      ["L. DiCaprio", "awarded", "Oscar 2015"],
+      ["Inception", "filmed in", "L.A."]
+    ]
+    const toAdd1 = ["Inception", "filmed in", "L.A."]
+    const toAdd = ["E. Page", "appears in", "Inception"]
+    const toAdd3 = ["L. DiCaprio", "appears in", "Inception"]
+    const toAdd4 = ["J. Gordon", "appears in", "Inception"]
+    let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(input)));
+    let opsRef = new RdfOperations(rdfcsaRef);
+    const resRef = opsRef.addTriple(toAdd[0], toAdd[1], toAdd[2]);
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(input)));
+    let ops = new RdfOperations(rdfcsa);
+    const res = ops.addTripleNew(toAdd[0], toAdd[1], toAdd[2]);
+    expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
+    expect(res.dictionary.S).toEqual(resRef.dictionary.S);
+    expect(res.dictionary.P).toEqual(resRef.dictionary.P);
+    expect(res.dictionary.O).toEqual(resRef.dictionary.O);
+    expect(res.gaps).toEqual(resRef.gaps);
+    expect(res.psi).toEqual(resRef.psi);
+    expect(res.D).toEqual(resRef.D);
+  });
+
 });
 
 describe("RDFOperation inserts Test", () => {

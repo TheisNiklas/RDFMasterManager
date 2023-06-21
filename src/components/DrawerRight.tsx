@@ -16,7 +16,7 @@ import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { ImportService } from "../rdf/importer/import-service";
 import { useSelector, useDispatch } from "react-redux";
-import { open, close, setCurrentData, setDatabase, setGraphData } from "./../actions";
+import { open, close, setCurrentData, setDatabase, setGraphData, setMetaData } from "./../actions";
 import AddTripleForm from "./addTriple";
 import DropDownMenue from "./dropDownMenu"
 import SortFormData from "./sort";
@@ -28,6 +28,8 @@ import Graph3DReact from "./graph3dreact";
 import { useMediaQuery } from 'react-responsive';
 import { drawerOpenWidth, isMobileDevice } from "../constants/media";
 import { WavingHandTwoTone } from "@mui/icons-material";
+import metaData from "../reducers/metaData";
+import { QueryCall } from "../interface/query-call";
 
 let drawerWidth = 500;
 
@@ -133,6 +135,11 @@ export default function PersistentDrawerRight() {
     console.log(currentData)
     dispatch(setDatabase(rdfcsa));
     dispatch(setGraphData(database,currentData));
+    let metaData = QueryCall.queryCallData([{subject:"RDFCSA:METADATA", predicate:"", object: ""}], rdfcsa);
+    if (metaData)
+    {
+      dispatch(setMetaData(metaData));
+    }
     console.log(database)
     console.log(graphData)
     setStartDialogOpen(false);
@@ -162,6 +169,11 @@ export default function PersistentDrawerRight() {
                 const queryManager = new QueryManager(rdfcsa);
                 const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
                 setCurrentData(data);
+                let metaData = QueryCall.queryCallData({subject:"RDFCSA:METADATA", predicate:"", object: ""}, database)
+                if (metaData)
+                {
+                  dispatch(setMetaData(metaData));
+                }
             }
             setStartDialogOpen(false);
           }

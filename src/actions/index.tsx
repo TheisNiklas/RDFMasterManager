@@ -85,3 +85,8 @@ export const setGraphData = (database: any, currentData: any) => ({
   type: "SET_GRAPHDATA",
   payload: load_data(database, currentData),
 });
+
+export const setMetaData = (triples: Triple[]) => ({
+  type: "SET_METADATA",
+  payload: triples,
+});

@@ -19,6 +19,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setGraphData } from "../actions";
 import load_data from "./triple2graph";
 import { Box, Hidden } from "@mui/material";
+import { useEffect } from "react";
 
 let widthValue = "30%";
 
@@ -36,6 +37,7 @@ export default function Graph3DReact() {
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
   const graphData = useSelector((state: any) => state.graphData);
+  const metaData = useSelector((state: any) => state.metaData);
 
   const dispatch = useDispatch();
   //dispatch(graphData(database, currentData))
@@ -56,8 +58,13 @@ export default function Graph3DReact() {
   const [source, setSource] = React.useState("");
   const [target, setTarget] = React.useState("");
   const [pred, setPred] = React.useState("");
+  const [arrowColor, setArrowColor] = React.useState("FFFFF");
   const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
+
+  useEffect(() => {
+    validateMetaData();
+  }, []);
 
   const handleNodeLeftClose = () => {
     setOpenNodeLeft(false);
@@ -65,6 +72,17 @@ export default function Graph3DReact() {
 
   const handleLinkLeftClose = () => {
     setOpenLinkLeft(false);
+  };
+
+  function validateMetaData(){
+    for (const item of metaData) {
+      const predicateValue = database.dictionary.getElementById(item.predicate).replace("METADATA:", "") as string;
+      if (predicateValue === 'arrowColor') {
+        const objectValue = database.dictionary.getElementById(item.object).replace("METADATA:", "") as string;
+        setArrowColor(objectValue);
+      }
+    }
+    return false;
   };
 
   //display information about the node
@@ -131,7 +149,8 @@ export default function Graph3DReact() {
     <div>
       <NoSSRForceGraph
         graphData={data}
-        nodeAutoColorBy="group"
+        nodeColor={arrowColor}
+        linkColor={arrowColor}
         linkDirectionalArrowLength={5}
         linkDirectionalArrowRelPos={1.05}
         linkWidth={1}

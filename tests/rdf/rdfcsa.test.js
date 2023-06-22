@@ -17,4 +17,9 @@ describe("Rdfcsa", () => {
     expect(rdfcsa.gaps).toEqual(dataset_1k.resultGaps);
     expect(rdfcsa.D.toString()).toEqual(dataset_1k.resultD);
   })
+
+  test("save database", () => {
+    let rdfcsa = new Rdfcsa(dataset_1k.dataset);
+    rdfcsa.saveDatabase()
+  })
 });

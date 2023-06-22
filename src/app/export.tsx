@@ -128,7 +128,7 @@ const Export = ({ database, currentData }: { database: Rdfcsa; currentData: Trip
           </SubmitButton>
         </Grid>
       </Grid>
-      <SubmitButton variant="contained" color="primary" onClick={() => exportBinaryTest()}>
+      <SubmitButton variant="contained" color="primary" onClick={() => database.saveDatabase()}>
         Save database in binary
       </SubmitButton>
     </Container>

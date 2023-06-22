@@ -102,6 +102,9 @@ export default function Graph3DReact({
     setLinkTargetName(database.dictionary.getElementById(link.target.id) as string);
     setLinkSource(link.source.id);
     setLinkTarget(link.target.originalId);
+    setSource(database.dictionary.getElementById(link.source.id) as string);
+    setPred(database.dictionary.getElementById(link.id) as string);
+    setTarget(database.dictionary.getElementById(link.target.id) as string);
     setLinkId(link.id);
     setOpenLinkRight(true);
   };
@@ -120,6 +123,12 @@ export default function Graph3DReact({
 
   //handle Submit when Triple Data is changed
   const handleSubmitLinkRight = () => {
+    const rdfOperations = new RdfOperations(database);
+    const tripleToChange = new Triple(linkSource, linkId, linkTarget);
+    const newDatabase = rdfOperations.modifyTripleNew(tripleToChange, source, pred, target);
+    setDatabase(newDatabase as Rdfcsa);
+    setToastMessage("Successfully modified triple");
+    setToastOpen(true);
     setOpenLinkRight(false);
   };
 
@@ -127,10 +136,10 @@ export default function Graph3DReact({
   const handleDeleteTriple = () => {
     const rdfOperations = new RdfOperations(database);
     const tripleToDelete = new Triple(linkSource, linkId, linkTarget);
-    const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
+    const newDatabase = rdfOperations.deleteTripleNew(tripleToDelete);
     setDatabase(newDatabase as Rdfcsa);
     const queryManager = new QueryManager(newDatabase);
-    setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)]));
+    //setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)]));
     setToastMessage("Successfully deleted triple");
     setToastOpen(true);
     setOpenLinkRight(false);

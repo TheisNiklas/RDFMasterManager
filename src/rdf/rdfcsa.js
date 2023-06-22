@@ -1,4 +1,7 @@
 import { Dictionary } from "./dictionary";
+import {BitVector} from "./bitvector";
+import { gzip } from "zlib"
+import { saveAs } from "file-saver";
 
 export class Rdfcsa {
   /**
@@ -13,6 +16,14 @@ export class Rdfcsa {
     const aArray = this.#constructA(tArray);
     this.D = this.#constructD(tArray, aArray);
     this.psi = this.#constructPsi(aArray);
+  }
+
+  select(count) {
+    let result = this.D.select(count);
+    if (result < 0) {
+      result = this.psi.length;
+    }
+    return result;
   }
 
   /**
@@ -93,18 +104,16 @@ export class Rdfcsa {
    * D[i]=1 if tArray[aArray[i]]!=tArray[aArray[i-1]] changes else D[i]=0
    * @param {number[]} tArray array of S,O,P IDs in S1,O1,P1,...SN,ON,PN order)
    * @param {number[]} aArray suffix array
-   * @returns {number[]}
+   * @returns {BitVector}
    */
   #constructD(tArray, aArray) {
-    let dArray = [];
+    let dArray = new BitVector()
     let preElement = 0; // has to be 0, due to out indexing starting from 0, results in D always starting with 0
-    aArray.forEach((element) => {
-      // every time the id in tArray changes a 1 is push, else a 0 is pushed
+    aArray.forEach((element, index) => {
+      // every time the id in tArray changes a 1 is set at the specific index in the bitvector
       if (preElement < tArray[element]) {
         // TODO: Check if != is faster (probably not)
-        dArray.push(1);
-      } else {
-        dArray.push(0);
+        dArray.setBit(index);
       }
       preElement = tArray[element];
     });
@@ -139,5 +148,14 @@ export class Rdfcsa {
       }
     });
     return psi;
+  }
+
+  saveDatabase() {
+    const serialized = JSON.stringify(this)
+    gzip(serialized, (err, data) => {
+      if (err) throw err;
+      const blob = new Blob([data]);
+      saveAs(blob, "database.rdf");
+    })
   }
 }

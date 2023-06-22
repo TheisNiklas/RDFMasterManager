@@ -52,23 +52,71 @@ export class Dictionary {
    */
   #inputTripleForAdd(subject, predicate, object) {
     // for subject and object
-    [
-      [this.S, this.O, subject],
-      [this.O, this.S, object],
-    ].forEach(([array, otherArray, element]) => {
-      if (!this.SO.includes(element)) {
-        if (otherArray.includes(element)) {
-          this.SO.push(element);
-          let pos = otherArray.indexOf(element);
-          otherArray.splice(pos, 1);
-        } else if (!array.includes(element)) {
-          array.push(element);
-        }
+    const subjectIsNew = !this.SO.includes(subject) && !this.S.includes(subject);
+    const predicateIsNew = !this.P.includes(predicate);
+    const objectIsNew = !this.SO.includes(object) && !this.O.includes(object);
+    const subjectWasSO = this.SO.includes(subject);
+    const objectWasSO = this.SO.includes(object);
+    let subjectGotSO = false;
+    let objectGotSO = false;
+
+    let oldSubjectId;
+    let oldObjectId;
+
+    if (!subjectWasSO) {
+      if (this.O.includes(subject)) {
+        let pos = this.O.indexOf(subject);
+        oldObjectId = this.SO.length + this.S.length + this.P.length + this.SO.length + pos;
+        this.O.splice(pos, 1);
+        objectGotSO = true;
+        this.SO.push(subject);
+      } else if (!this.S.includes(subject)) {
+        this.S.push(subject);
       }
-    });
+    }
+    
+    if (!objectWasSO) {
+      if (this.S.includes(object)) {
+        let pos = this.S.indexOf(object);
+        oldSubjectId = this.SO.length + pos;
+        this.S.splice(pos, 1);
+        subjectGotSO = true;
+        this.SO.push(object);
+      } else if (!this.O.includes(object)) {
+        this.O.push(object);
+      }
+    }
+
     // for predicate
-    if (!this.P.includes(predicate)) {
+    if (predicateIsNew) {
       this.P.push(predicate);
+    }
+
+    this.#sortArrays();
+
+    const subjectId = this.getIdBySubject(subject)
+    const predicateId = this.getIdByPredicate(predicate)
+    const objectId = this.getIdByObject(object)
+
+    return {
+      subject: {
+        id: subjectId,
+        isNew: subjectIsNew
+      },
+      predicate: {
+        id: predicateId,
+        isNew: predicateIsNew
+      },
+      object: {
+        id: objectId,
+        isNew: objectIsNew
+      },
+      soChange: {
+        subjectGotSO: subjectGotSO,
+        oldSubjectId: oldSubjectId,
+        objectGotSO: objectGotSO,
+        oldObjectId: oldObjectId
+      }
     }
   }
   
@@ -135,8 +183,61 @@ export class Dictionary {
    * @param {string} object
    */
   addTriple(subject, predicate, object) {
-    this.#inputTripleForAdd(subject, predicate, object);
-    this.#sortArrays();
+    const metadata = this.#inputTripleForAdd(subject, predicate, object);
+    return metadata;
+  }
+
+  /**
+   * delete one triple
+   * @param {Triple} triple
+   */
+  deleteTriple(triple, subjectDeleted, predicateDeleted, objectDeleted) {
+    const subjectWasSO = this.isSubjectObjectById(triple.subject)
+    const objectWasSO = this.isSubjectObjectById(triple.object)
+    let newObjectId = -1;
+    let newSubjectId = -1;
+    if (subjectDeleted) {
+      if (subjectWasSO){
+        const subject = this.SO.splice(triple.subject, 1)[0];
+        this.O.push(subject);
+        this.O.sort();
+        newObjectId = this.getIdByObject(subject);
+      } else {
+        const index = triple.subject - this.SO.length;
+        this.S.splice(index, 1);
+      }
+    }
+    if (predicateDeleted) {
+      let index = triple.predicate - (this.SO.length + this.S.length);
+      if (subjectDeleted) {
+        index -= 1
+      }
+      this.P.splice(index, 1);
+    }
+    if (objectDeleted) {
+      let index = triple.object - (this.SO.length + this.S.length + this.P.length + this.SO.length);
+      if (subjectDeleted) {
+        index -= 1
+      }
+      if (predicateDeleted) {
+        index -= 1
+      }
+      if (objectWasSO){
+        const object = this.SO.splice(index, 1)[0];
+        this.S.push(object);
+        this.S.sort();
+        newSubjectId = this.getIdBySubject(object);
+      } else {
+        this.O.splice(index, 1);
+      }
+    }
+
+    return {
+      subjectWasSO: subjectWasSO,
+      objectWasSO: objectWasSO,
+      newObjectId: newObjectId,
+      newSubjectId: newSubjectId
+    }
   }
 
   /**
@@ -191,7 +292,7 @@ export class Dictionary {
    * @returns {int}
    */
   getIdBySubject(subject) {
-    return this.getIdByElement(subject, this.S);
+    return this.#getIdByElementInArray(subject, this.S);
   }
 
   /**
@@ -200,7 +301,10 @@ export class Dictionary {
    * @returns {int}
    */
   getIdByObject(object) {
-    const temp = this.getIdByElement(object, this.O);
+    const temp = this.#getIdByElementInArray(object, this.O);
+    if (temp === -1) {
+      return temp;
+    }
     return temp + this.SO.length + this.S.length + this.P.length;
   }
 
@@ -210,7 +314,7 @@ export class Dictionary {
    * @param {string[]} array
    * @returns {int}
    */
-  getIdByElement(element, array) {
+  #getIdByElementInArray(element, array) {
     const soIndex = this.SO.findIndex((el) => el === element);
     if (soIndex === -1) {
       const found = array.findIndex((el) => el === element);
@@ -228,8 +332,35 @@ export class Dictionary {
    * @returns {int}
    */
   getIdByPredicate(predicate) {
-    return this.P.findIndex((el) => el === predicate) + this.SO.length + this.S.length;
+    const temp = this.P.findIndex((el) => el === predicate);
+    if (temp === -1) {
+      return temp;
+    }
+    return temp + this.SO.length + this.S.length;
   }
+
+  /**
+   * Gets the id of the element with gaps
+   * @param {string} element 
+   * @returns {number} id of the element, -1 if not found
+   */
+  getIdByElement(element) {
+    const sId = this.getIdBySubject(element);
+    if (sId != -1) {
+      return sId;
+    }
+    const pId = this.getIdByPredicate(element);
+    if (pId != -1) {
+      return pId;
+    }
+    const oId = this.getIdByObject(element);
+    if (oId != -1) {
+      return oId;
+    }
+    return -1;
+  }
+
+
 
   /**
    * Get subject with `id`
@@ -273,7 +404,7 @@ export class Dictionary {
   }
 
   /**
-   * Returns element (string) by id
+   * Returns element (string) by id with gaps
    * @param {int} id 
    * @returns 
    */

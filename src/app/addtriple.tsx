@@ -91,11 +91,11 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }: {
   const addTriple = () => {
     const rdfOperations = new RdfOperations(database);
 
-    const newDatabase = rdfOperations.addTriple(formFields.subject, formFields.predicate, formFields.object);
+    const newDatabase = rdfOperations.addTripleNew(formFields.subject, formFields.predicate, formFields.object);
     if (newDatabase !== undefined) {
       setDatabase(newDatabase);
       const queryManager = new QueryManager(newDatabase);
-      setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)]));
+      //setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)]));
       setFormFields({ subject: "", predicate: "", object: "" });
       setOpen(false);
     } else {

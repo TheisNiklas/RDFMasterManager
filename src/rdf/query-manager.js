@@ -374,17 +374,17 @@ export class QueryManager {
    */
   #getJoinVars(triple) {
     const joinVars = [];
-    if (triple.subject.isJoinVar) {
+    if (triple.subject && triple.subject.isJoinVar) {
       joinVars.push(triple.subject.id);
     } else {
       joinVars.push(-1);
     }
-    if (triple.predicate.isJoinVar) {
+    if (triple.predicate && triple.predicate.isJoinVar) {
       joinVars.push(triple.predicate.id);
     } else {
       joinVars.push(-1);
     }
-    if (triple.object.isJoinVar) {
+    if (triple.object && triple.object.isJoinVar) {
       joinVars.push(triple.object.id);
     } else {
       joinVars.push(-1);
@@ -408,10 +408,11 @@ export class QueryManager {
     console.log("Intersect\n"+ l1 + "\n" + l2 + "\nCombinations " + joinCombinations)
     l1.forEach((triple1) => {
       l2.forEach((triple2, index) => {
+        // checking isSubjectObjectById is inefficient
         if (joinCombinations.includes("S") && triple2[0] !== triple1[0] ||
             joinCombinations.includes("O") && triple2[2] !== triple1[2] ||
-            joinCombinations.includes("SO") && triple2[2] !== triple1[0] ||
-            joinCombinations.includes("OS") && triple2[0] !== triple1[2]){
+            joinCombinations.includes("SO") && (!this.rdfcsa.dictionary.isSubjectObjectById(triple1[0]) || !this.rdfcsa.dictionary.isSubjectObjectById(triple2[2]) || triple2[2] - this.rdfcsa.gaps[2] !== triple1[0]) ||
+            joinCombinations.includes("OS") && (!this.rdfcsa.dictionary.isSubjectObjectById(triple2[0]) || !this.rdfcsa.dictionary.isSubjectObjectById(triple1[2]) || triple2[0] !== triple1[2] - this.rdfcsa.gaps[2])){
           console.log("Not pushed "+ triple1 + " " + triple2)
           return;
         }
@@ -419,7 +420,8 @@ export class QueryManager {
         resultList.push(triple1, triple2);
       });
     });
-    return resultList;
+    return [...new Set(resultList)]
+    ;
   }
 
   /**

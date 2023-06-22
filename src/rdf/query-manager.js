@@ -329,41 +329,26 @@ export class QueryManager {
     console.log(queries)
     const resultList = [];
     queries.forEach((query) => {
-      resultList.push(this.#getQueryType(query));
+      const queryResult = this.#getQueryType(query)
+      const queryJoinVars = this.#getJoinVars(query)
+      console.log("QueryResults\n" + queryResult)
+      console.log("JoinVars\n" + queryJoinVars)
+      resultList.push([queryResult, queryJoinVars]);
     });
-
+    
     var mergedResults = undefined;
     if (resultList.length > 0) {
-      mergedResults = resultList[0];
+      mergedResults = resultList[0][0];
     }
-    var joinVars = [];
-    joinVars.push(this.#getJoinVars(queries[0]));
-    console.log(joinVars)
     for (var i = 1; i < resultList.length; i++) {
-      // get join variable  ((?x, p1, o1)x(?y, p2, o2)x(?x, p3, ?y),
-      //                     (?x, p1, ?y)x(?y, p2, o2)x(?x, p3, o1)x(?y, p1, o4))
-      joinVars.push(this.#getJoinVars(queries[i]));
-      const preJoinVar = joinVars[i-1]; // TODO: noch nicht richtig (Überprüfung aller vorherigen Arrays)
-      const curJoinVar = joinVars[i];
-      // compare join variable
-      var joinCombinations = [];
-      console.log("Interpret " + curJoinVar + " " + preJoinVar)
-      if (curJoinVar[0] >= 0 && curJoinVar[0] === preJoinVar[0]) {
-        joinCombinations.push("S");
-      }
-      if (curJoinVar[0] >= 0 && curJoinVar[0] === preJoinVar[2]) {
-        joinCombinations.push("SO");
-      }
-      if (curJoinVar[2] >= 0 &&curJoinVar[2] === preJoinVar[0]) {
-        joinCombinations.push("OS");
-      }
-      if (curJoinVar[2] >= 0 &&curJoinVar[2] === preJoinVar[2]) {
-        joinCombinations.push("O");
-      }
-      // get merged results
-      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], joinCombinations);
+      console.log("Which\n" + resultList[i][0])
+      const checkTriples = resultList[i][0]
+      const joinVariablesOfCheck = resultList[i][1]
+      const joinVariablesOfCurrent = resultList[0][1]
+      console.log("checkTriples", checkTriples)
+      mergedResults = this.#intersectTwoResultLists(mergedResults, checkTriples, joinVariablesOfCurrent, joinVariablesOfCheck);
     }
-    return mergedResults;
+    return mergedResults;  // set here or there [...new Set(mergedResults)]
   }
 
   /**
@@ -393,34 +378,32 @@ export class QueryManager {
 
   /**
    * Intersects two given lists with triples by the in `joinElements` element.
-   * The resulting list contains the matching triples from both lists
+   * The resulting list is a reduced list holding all triples that are present in both following the conditions
    * @param {Triple[]} l1
    * @param {Triple[]} l2
    * @param {string} joinVars:
-   *    S: Join on subject
-   *    O: Join on Object
-   *    SO: Join Subject of `l1` on Object of `l2`
-   *    OS: Join Object of `l1` on Subject of `l2`
    */
-  #intersectTwoResultLists(l1, l2, joinCombinations) {
+  #intersectTwoResultLists(currentTriples, checkTriples, joinVariablesOfCurrent, joinVariablesOfCheck) {
     const resultList = [];
-    console.log("Intersect\n"+ l1 + "\n" + l2 + "\nCombinations " + joinCombinations)
-    l1.forEach((triple1) => {
-      l2.forEach((triple2, index) => {
-        // checking isSubjectObjectById is inefficient
-        if (joinCombinations.includes("S") && triple2[0] !== triple1[0] ||
-            joinCombinations.includes("O") && triple2[2] !== triple1[2] ||
-            joinCombinations.includes("SO") && (!this.rdfcsa.dictionary.isSubjectObjectById(triple1[0]) || !this.rdfcsa.dictionary.isSubjectObjectById(triple2[2]) || triple2[2] - this.rdfcsa.gaps[2] !== triple1[0]) ||
-            joinCombinations.includes("OS") && (!this.rdfcsa.dictionary.isSubjectObjectById(triple2[0]) || !this.rdfcsa.dictionary.isSubjectObjectById(triple1[2]) || triple2[0] !== triple1[2] - this.rdfcsa.gaps[2])){
-          console.log("Not pushed "+ triple1 + " " + triple2)
+    const isSubjectJoin = joinVariablesOfCurrent[0] == joinVariablesOfCheck[0]
+    const isObjectJoin = joinVariablesOfCurrent[2] == joinVariablesOfCheck[2]
+    const isSubjectObjectJoin = this.rdfcsa.dictionary.isSubjectObjectById(joinVariablesOfCheck[2]) && joinVariablesOfCurrent[0] == joinVariablesOfCheck[2] - this.rdfcsa.gaps[2]
+    const isObjectSubjectJoin = this.rdfcsa.dictionary.isSubjectObjectById(joinVariablesOfCurrent[2]) && joinVariablesOfCurrent[2] - this.rdfcsa.gaps[2] == joinVariablesOfCheck[0]
+    currentTriples.forEach((currentTriple) => {
+      checkTriples.forEach((checkTriple) => {
+        if(isSubjectJoin && currentTriples[0] != checkTriples[0]) { // isSubjectJoin -> SatisfiesSubjectJoin
+          return;
+        } else if (isObjectJoin && currentTriples[2] != checkTriples[2]){ // is...Join -> Satisfies...Join
+          return;
+        } else if (isSubjectObjectJoin && currentTriples[0] != checkTriples[2]) {
+          return;
+        } else if (isObjectSubjectJoin && currentTriples[2] != checkTriples[0]) {
           return;
         }
-        console.log("Pushed "+ triple1 + " " + triple2)
-        resultList.push(triple1, triple2);
+        resultList.push(currentTriple, checkTriple);
       });
     });
-    return [...new Set(resultList)]
-    ;
+    return [...new Set(resultList)];  // set here or there
   }
 
   /**

@@ -25,6 +25,7 @@ import Import from "./import";
 import Export from "./export";
 import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
+import Graph2DReact from "./graph2dreact";
 import { useMediaQuery } from 'react-responsive';
 import { drawerOpenWidth, isMobileDevice } from "../constants/media";
 import { WavingHandTwoTone } from "@mui/icons-material";
@@ -116,10 +117,7 @@ export default function PersistentDrawerRight() {
     } else if (mainFrame === "3d") {
       return <Graph3DReact/>;
     } else if (mainFrame === "2d") {
-      return (
-        //<Graph2D />
-        <div />
-      );
+      return <Graph2DReact/>;
     }
   }, [database, currentData, mainFrame, graphData]);
 

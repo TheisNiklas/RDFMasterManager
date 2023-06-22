@@ -231,11 +231,14 @@ export default function TextVisualization() {
                                 <TableRow hover role="checkbox" tabIndex={-1} key={getId()}>
                                     {columns.map((column: any) => {
                                         const value = row;
-                                        return (
-                                            <TableCell key={column.id} align={column.align} style={{ fontSize: "18px" }}>
-                                                {column.format(value)}
-                                            </TableCell>
-                                        );
+                                        if(!(column.format(value).includes('METADATA'))){
+                                            return (
+                                                <TableCell key={column.id} align={column.align} style={{ fontSize: "18px" }}>
+                                                    {column.format(value)}
+                                                </TableCell>
+                                            );
+                                        }
+                                        
                                     })}
                                 </TableRow>
                             );

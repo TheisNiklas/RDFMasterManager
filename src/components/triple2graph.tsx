@@ -27,21 +27,23 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
       object = object - database.gaps![2];
       subjectOriginalId = object;
     }
+    let subjectValue = database.dictionary.getElementById(subject) as string;
+    if(!subjectValue.includes("METADATA")){
+      //collect all nodes
+      if (subjectOriginalId !== -1) {
+          arrayNodes.push({id: subject, origId: subjectOriginalId});
+      } else {
+          arrayNodes.push({id: subject, origId: triple.subject});
+      }
+      arrayNodes.push({id: object, origId: triple.object});
 
-    //collect all nodes
-    if (subjectOriginalId !== -1) {
-        arrayNodes.push({id: subject, origId: subjectOriginalId});
-    } else {
-        arrayNodes.push({id: subject, origId: triple.subject});
+      //generate links array
+      links.push({
+        source: subject,
+        target: object,
+        id: predicate
+      });
     }
-    arrayNodes.push({id: object, origId: triple.object});
-
-    //generate links array
-    links.push({
-      source: subject,
-      target: object,
-      id: predicate
-    });
   });
 
   //make a set out of all collected nodes

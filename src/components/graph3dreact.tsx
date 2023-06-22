@@ -16,10 +16,11 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentData, setDatabase, setGraphData } from "../actions";
+import { setCurrentData, setDatabase, setGraphData, setMetaData } from "../actions";
 import load_data from "./triple2graph";
 import { Box, Hidden } from "@mui/material";
 import { useEffect } from "react";
+import { QueryCall } from "../interface/query-call";
 
 let widthValue = "30%";
 
@@ -58,7 +59,8 @@ export default function Graph3DReact() {
   const [source, setSource] = React.useState("");
   const [target, setTarget] = React.useState("");
   const [pred, setPred] = React.useState("");
-  const [arrowColor, setArrowColor] = React.useState("FFFFF");
+  const [arrowColor, setArrowColor] = React.useState("FFFFFF");
+  const [nodeColor, setNodeColor] = React.useState("e69138");
   const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
 
@@ -77,10 +79,22 @@ export default function Graph3DReact() {
   function validateMetaData(){
     for (const item of metaData) {
       const predicateValue = database.dictionary.getElementById(item.predicate).replace("METADATA:", "") as string;
-      if (predicateValue === 'arrowColor') {
-        const objectValue = database.dictionary.getElementById(item.object).replace("METADATA:", "") as string;
-        setArrowColor(objectValue);
+      const objectValue = database.dictionary.getElementById(item.object).replace("METADATA:", "") as string;
+      switch (predicateValue) {
+        case 'arrowColor': {
+          setArrowColor(objectValue);
+          break;
+        }
+        case 'nodeColor': {
+          setNodeColor(objectValue);
+          break;
+        }
+        default: {
+          // Code for other cases (if needed)
+          break;
+        }
       }
+      
     }
     return false;
   };
@@ -111,6 +125,11 @@ export default function Graph3DReact() {
     const queryManager = new QueryManager(newDatabase);
     dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
     dispatch(setGraphData(database, currentData));
+    // let metaData = QueryCall.queryCallData([{subject:"RDFCSA:METADATA", predicate:"", object: ""}], newDatabase);
+    // if (metaData)
+    // {
+    //   dispatch(setMetaData(metaData));
+    // }
     setToastMessage("Successfully renamed node");
     setToastOpen(true);
     setOpenNodeLeft(false);
@@ -149,8 +168,8 @@ export default function Graph3DReact() {
     <div>
       <NoSSRForceGraph
         graphData={data}
-        nodeColor={arrowColor}
-        linkColor={arrowColor}
+        nodeColor={(node:any) => node.color = nodeColor}
+        linkColor={(link:any) => link.color = arrowColor}
         linkDirectionalArrowLength={5}
         linkDirectionalArrowRelPos={1.05}
         linkWidth={1}

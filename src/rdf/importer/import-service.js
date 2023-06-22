@@ -89,5 +89,5 @@ const sampleData = [
   ["S:J.Gordon", "P:appearsin", "SO:Inception"],
   ["S:J.Gordon", "P:bornin", "O:USA"],
   ["S:J.Gordon", "P:livesin", "SO:L.A."],
-  ["RDFCSA:METADATA", "METADATA:arrowColor", "METADATA:0000FF"]
+  ["RDFCSA:METADATA", "METADATA:arrowColor", "METADATA:#8fce00"],
 ];

@@ -30,6 +30,7 @@ import { drawerOpenWidth, isMobileDevice } from "../constants/media";
 import { WavingHandTwoTone } from "@mui/icons-material";
 import metaData from "../reducers/metaData";
 import { QueryCall } from "../interface/query-call";
+import MetaDataForm from "./metaDataForm";
 
 let drawerWidth = 500;
 
@@ -271,7 +272,7 @@ export default function PersistentDrawerRight() {
           </DrawerHeader>
           <Divider />
           <FilterForm></FilterForm>
-        <SortFormData></SortFormData>
+        <MetaDataForm></MetaDataForm>
         <AddTripleForm></AddTripleForm>
         <Import></Import>
         <Export></Export>

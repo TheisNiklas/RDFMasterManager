@@ -3,6 +3,9 @@ import { JsonldImporter } from "./jsonld-importer";
 import { NTriplesImporter } from "./ntriples-importer";
 import { TurtleImporter } from "./turtle-importer";
 import { Rdfcsa } from "../rdfcsa";
+import { RdfOperations } from "../rdf-operations";
+import { gunzip, gunzipSync } from "zlib";
+import { File } from "buffer";
 
 export class ImportService {
   /** @type {{[key: string]: Importer}} */
@@ -17,6 +20,7 @@ export class ImportService {
     this.registerImporter(new NTriplesImporter(), ["nt"]);
     this.registerImporter(new JsonldImporter(), ["json", "jsonld"]);
     this.registerImporter(new TurtleImporter(), ["ttl"]);
+    this.registerImporter(undefined, ["rdfcsa"]);
     if (rdfcsa === undefined) {
       this.#rdfcsa = new Rdfcsa([]);
     } else {
@@ -36,6 +40,10 @@ export class ImportService {
     /** @type {Importer} */
     let importer;
     const fileExtension = file.name.split(".").pop();
+    if (fileExtension === "rdfcsa") {
+      this.#rdfcsa = this.#loadNativeDatabase(file)
+      return this.#rdfcsa;
+    }
     try {
       importer = this.#importers[fileExtension];
     } catch (error) {
@@ -45,8 +53,11 @@ export class ImportService {
     if (replace) {
       this.#rdfcsa = new Rdfcsa(tripleList);
     } else {
-      // TODO: call appending to database
-      return;
+      tripleList.forEach((triple) => {
+        const rdfOperations = new RdfOperations(this.#rdfcsa)
+        rdfOperations.addTripleNew(triple)
+      })
+      return this.#rdfcsa;
     }
     return this.#rdfcsa;
   }
@@ -68,12 +79,36 @@ export class ImportService {
    * @throws {Error} When the `importer` is not based on the Importer interface class
    */
   registerImporter(importer, fileExtensions) {
-    if (!(importer instanceof Importer)) {
+    if (!(importer instanceof Importer) && importer != undefined) {
       throw new Error("The given importer is not based in the interface class Importer");
     }
     fileExtensions.forEach((fileExt) => {
       this.#importers[fileExt] = importer;
     });
+  }
+
+  /**
+   * Loads a file containing the native database format and creates a new database from it
+   * @param {File} file 
+   */
+  async #loadNativeDatabase(file) {
+    let deserialized = await new Promise(async (resolve) => {
+      const fileContent = await file.arrayBuffer();
+      const buffer = Buffer.from(fileContent);
+      const decompressed = gunzipSync(buffer)
+      resolve(JSON.parse(decompressed.toString()));
+    });
+    let rdfcsa = new Rdfcsa([]);
+    rdfcsa.D.bits = new Uint32Array(Object.values(deserialized.D.bits));
+    rdfcsa.D.arrayLength = deserialized.D.arrayLength;
+    rdfcsa.dictionary.SO = deserialized.dictionary.SO;
+    rdfcsa.dictionary.S = deserialized.dictionary.S;
+    rdfcsa.dictionary.P = deserialized.dictionary.P;
+    rdfcsa.dictionary.O = deserialized.dictionary.O;
+    rdfcsa.gaps = deserialized.gaps;
+    rdfcsa.psi = deserialized.psi;
+    rdfcsa.tripleCount = deserialized.triple;
+    return rdfcsa;
   }
 }
 

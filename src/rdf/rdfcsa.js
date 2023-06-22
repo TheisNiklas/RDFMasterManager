@@ -1,7 +1,6 @@
 import { Dictionary } from "./dictionary";
 import {BitVector} from "./bitvector";
-import { gzip } from "zlib"
-import { saveAs } from "file-saver";
+import { gzip } from "zlib";
 
 export class Rdfcsa {
   /**
@@ -154,8 +153,11 @@ export class Rdfcsa {
     const serialized = JSON.stringify(this)
     gzip(serialized, (err, data) => {
       if (err) throw err;
-      const blob = new Blob([data]);
-      saveAs(blob, "database.rdf");
+      const link = document.createElement('a');
+      const blob =  new Blob([data], { type: 'application/octet-stream' });
+      link.href =  URL.createObjectURL(blob);
+      link.download = 'database.rdfcsa';
+      link.click();
     })
   }
 }

@@ -289,7 +289,7 @@ describe("QueryManager", () => {
     const firstQueryTriple = new QueryTriple(new QueryElement(0, true), new QueryElement(5, false), new QueryElement(1, true));
     const secondQueryTriple = new QueryTriple(new QueryElement(0, true), new QueryElement(10, false), new QueryElement(2, true));
     const thirdQueryTriple = new QueryTriple(new QueryElement(1, true), new QueryElement(9, false), new QueryElement(2, true));
-    const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple, thirdQueryTriple]);
+    const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
     expect(result).toEqual([
     ]);
   });

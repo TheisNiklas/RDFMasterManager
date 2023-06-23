@@ -329,19 +329,21 @@ export class QueryManager {
     console.log(queries)
     const resultList = [];
     const varAssignmentByQuery = []
-    const allVarValues = []
     var maxJoinVar = -1;
     var resultVars = []
+    var allTriples = []
+    var allJoinVars = []
     queries.forEach((query, queryIndex) => {
       varAssignmentByQuery[queryIndex] = [];
       const queryResult = this.#getQueryTripleResult(query);
+      allTriples.push(queryResult);
       const queryJoinVars = this.#getJoinVars(query);
+      allJoinVars.push(queryJoinVars)
       queryJoinVars.forEach((joinVar, joinIndex) => {
         if(joinVar >= 0) {
           maxJoinVar = Math.max(joinVar, maxJoinVar);
           if (varAssignmentByQuery[queryIndex][joinVar] === undefined) {
             varAssignmentByQuery[queryIndex][joinVar] = new Set();
-            allVarValues[joinVar] = new Set();
           }
       }
       });
@@ -350,7 +352,6 @@ export class QueryManager {
         queryJoinVars.forEach((joinVar, joinIndex) => {
           if(joinVar >= 0) {
               varAssignmentByQuery[queryIndex][joinVar].add(triple[joinIndex]);
-              allVarValues[joinVar].add(triple[joinIndex])
           }
         });
       });
@@ -359,28 +360,28 @@ export class QueryManager {
     console.log(varAssignmentByQuery);
     console.log("MaxJoinVar: " + maxJoinVar)
     for (var i = 0; i <= maxJoinVar; i++) {
-      console.log("Indize " + i)
       var result1 = varAssignmentByQuery.map(x => x[i]).filter(element => element !== undefined)
-      console.log([...result1])
-      resultVars[i] = result1.reduce((a, b) => [...a].filter(c => [...b].includes(c)))
-    } 
+      console.log(result1);
+      resultVars[i] = new Set(result1.reduce((a, b) => [...a].filter(c => [...b].includes(c))))
+      console.log("Variable " + i + ":" + [...resultVars[i]]);
+    }
 
-  //
-    /*for (var i = 0; i < maxJoinVar; i++) {
-      const mergedSets = this.#mergeSets(varAssignmentByQuery[i])
-      console.log(i + " :mergedSets: " + mergedSets)
-      mergedSets.forEach((elem) => {
-        for(const set of varAssignmentByQuery[i]) {
-          if(set && !set.has(elem)) {
-            return;
+    const resultTriples = new Set();
+    for (var i = 0; i < allTriples.length; i++) {
+      // console.log(i + "--" + allTriples[i])
+      allTriples[i].forEach((triple) => {
+        var add = true;
+        allJoinVars[i].forEach((joinVar, joinIndex) => {
+          if(add && joinVar >= 0 && !resultVars[joinVar].has(triple[joinIndex])) {
+            add = false;
           }
+        });
+        if(add) {
+          resultTriples.add(triple);
         }
-        resultVars[i] = elem;
       });
-    }*/
-    console.log("ResultVars: " + resultVars[0] + " " + [...resultVars[1]] + " " + [...resultVars[2]])
-
-    return [];  // set here or there [...new Set(mergedResults)]
+    }
+    return [...resultTriples];
   }
 
   #getResult(listOfSets) {
@@ -417,43 +418,6 @@ export class QueryManager {
       joinVars.push(-1);
     }
     return joinVars;
-  }
-
-  /**
-   * Intersects two given lists with triples by the in `joinElements` element.
-   * The resulting list is a reduced list holding all triples that are present in both following the conditions
-   * @param {Triple[]} l1
-   * @param {Triple[]} l2
-   * @param {string} joinVars:
-   */
-  #intersectTwoResultLists(currentTriples, checkTriples, joinVariablesOfCurrent, joinVariablesOfCheck) {
-    const resultList = [];
-    const isSubjectJoin = joinVariablesOfCurrent[0] >= 0 && joinVariablesOfCurrent[0] == joinVariablesOfCheck[0]
-    const isObjectJoin = joinVariablesOfCurrent[2] >= 0 && joinVariablesOfCurrent[2] == joinVariablesOfCheck[2]
-    const isSubjectObjectJoin = joinVariablesOfCheck[2] >= 0 && joinVariablesOfCurrent[0] == joinVariablesOfCheck[2]
-    const isObjectSubjectJoin = joinVariablesOfCurrent[2] >= 0 && joinVariablesOfCurrent[2] == joinVariablesOfCheck[0]
-    console.log("Subject: " + isSubjectJoin)
-    console.log("Object: " + isObjectJoin)
-    console.log("SO: " + isSubjectObjectJoin)
-    console.log("OS: " + isObjectSubjectJoin)
-    
-    currentTriples.forEach((currentTriple) => {
-      checkTriples.forEach((checkTriple) => {
-        console.log("Triple: " + currentTriple + " " + checkTriple)
-        if(isSubjectJoin && currentTriple[0] != checkTriple[0]) { // isSubjectJoin -> SatisfiesSubjectJoin
-          return;
-        } else if (isObjectJoin && currentTriple[2] != checkTriple[2]){ // is...Join -> Satisfies...Join
-          return;
-        } else if (isSubjectObjectJoin && (!this.rdfcsa.dictionary.isSubjectObjectById(checkTriple[2]) || currentTriple[0] != checkTriple[2]  - this.rdfcsa.gaps[2])) { // subtract gap to transpose to subject array
-          return;
-        } else if (isObjectSubjectJoin && (!this.rdfcsa.dictionary.isSubjectObjectById(currentTriple[2]) || currentTriple[2]  - this.rdfcsa.gaps[2] != checkTriple[0])) {
-          return;
-        }
-        console.log("Added " + currentTriple + " " + checkTriple)
-        resultList.push(currentTriple);
-      });
-    });
-    return [...new Set(resultList)];  // set here or there
   }
 
   /**

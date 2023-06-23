@@ -191,7 +191,7 @@ describe("QueryManager", () => {
     ]);
   });
 
-  test.skip("getJoin(3,7,x)(4,7,x)", () => {
+  test("getJoin(3,7,x)(4,7,x)", () => {
     const subject = new QueryElement(3);
     const predicate = new QueryElement(7);
     const object = new QueryElement(0, true);
@@ -289,8 +289,7 @@ describe("QueryManager", () => {
     const firstQueryTriple = new QueryTriple(new QueryElement(0, true), new QueryElement(5, false), new QueryElement(1, true));
     const secondQueryTriple = new QueryTriple(new QueryElement(0, true), new QueryElement(10, false), new QueryElement(2, true));
     const thirdQueryTriple = new QueryTriple(new QueryElement(1, true), new QueryElement(9, false), new QueryElement(2, true));
-    const fourthQueryTriple = new QueryTriple(new QueryTriple(0, true), new QueryTriple(10, false), new QueryTriple(0, false))
-    const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
+    const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple, thirdQueryTriple]);
     expect(result).toEqual([
     ]);
   });

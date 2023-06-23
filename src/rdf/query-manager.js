@@ -34,7 +34,7 @@ export class QueryManager {
     if (queries.length === 1) {
       const query = queries[0];
       // get number of unbound elements
-      resultArray = this.#getQueryType(query);
+      resultArray = this.#getQueryTripleResult(query);
       // convert result array to array with triple elements
       resultArray.forEach((triple) => {
         result.push(new Triple(triple[0], triple[1], triple[2]));
@@ -259,7 +259,7 @@ export class QueryManager {
   // step 4: append all solutions for each results of step3
   leftChainingJoinTwoQueries(queries) {
     let result1;
-    result1 = this.#getQueryType(queries[0]);
+    result1 = this.#getQueryTripleResult(queries[0]);
     
     // find query var in left triple
 
@@ -328,25 +328,70 @@ export class QueryManager {
     //TODO: Check whether set is faster
     console.log(queries)
     const resultList = [];
-    queries.forEach((query) => {
-      const queryResult = this.#getQueryType(query)
-      const queryJoinVars = this.#getJoinVars(query)
+    const varAssignmentByQuery = []
+    const allVarValues = []
+    var maxJoinVar = -1;
+    var resultVars = []
+    queries.forEach((query, queryIndex) => {
+      varAssignmentByQuery[queryIndex] = [];
+      const queryResult = this.#getQueryTripleResult(query);
+      const queryJoinVars = this.#getJoinVars(query);
+      queryJoinVars.forEach((joinVar, joinIndex) => {
+        if(joinVar >= 0) {
+          maxJoinVar = Math.max(joinVar, maxJoinVar);
+          if (varAssignmentByQuery[queryIndex][joinVar] === undefined) {
+            varAssignmentByQuery[queryIndex][joinVar] = new Set();
+            allVarValues[joinVar] = new Set();
+          }
+      }
+      });
+      const mergeResult =  []
+      queryResult.forEach((triple) => {
+        queryJoinVars.forEach((joinVar, joinIndex) => {
+          if(joinVar >= 0) {
+              varAssignmentByQuery[queryIndex][joinVar].add(triple[joinIndex]);
+              allVarValues[joinVar].add(triple[joinIndex])
+          }
+        });
+      });
       resultList.push([queryResult, queryJoinVars]);
     });
-    
-    var mergedResults = undefined;
-    if (resultList.length > 0) {
-      mergedResults = resultList[0][0];
+    console.log(varAssignmentByQuery);
+    console.log("MaxJoinVar: " + maxJoinVar)
+    for (var i = 0; i <= maxJoinVar; i++) {
+      console.log("Indize " + i)
+      var result1 = varAssignmentByQuery.map(x => x[i]).filter(element => element !== undefined)
+      console.log([...result1])
+      resultVars[i] = result1.reduce((a, b) => [...a].filter(c => [...b].includes(c)))
+    } 
+
+  //
+    /*for (var i = 0; i < maxJoinVar; i++) {
+      const mergedSets = this.#mergeSets(varAssignmentByQuery[i])
+      console.log(i + " :mergedSets: " + mergedSets)
+      mergedSets.forEach((elem) => {
+        for(const set of varAssignmentByQuery[i]) {
+          if(set && !set.has(elem)) {
+            return;
+          }
+        }
+        resultVars[i] = elem;
+      });
+    }*/
+    console.log("ResultVars: " + resultVars[0] + " " + [...resultVars[1]] + " " + [...resultVars[2]])
+
+    return [];  // set here or there [...new Set(mergedResults)]
+  }
+
+  #getResult(listOfSets) {
+    if (listOfSets.length === 0) {
+      return new Set();
     }
-    for (var i = 1; i < resultList.length; i++) {
-      const checkTriples = resultList[i][0]
-      const joinVariablesOfCheck = resultList[i][1]
-      const joinVariablesOfCurrent = resultList[i-1][1]
-      mergedResults = this.#intersectTwoResultLists(mergedResults, checkTriples, joinVariablesOfCurrent, joinVariablesOfCheck);
-    }
-    console.log(mergedResults)
-    console.log("Distance: "+ this.rdfcsa.gaps[2])
-    return mergedResults;  // set here or there [...new Set(mergedResults)]
+  
+    return listOfSets.reduce((intersectionSet, currentSet) => {
+      console.log("CurrentSet:" + currentSet);
+      return new Set([...intersectionSet].filter(element => currentSet.has(element)));
+    });
   }
 
   /**
@@ -405,7 +450,7 @@ export class QueryManager {
           return;
         }
         console.log("Added " + currentTriple + " " + checkTriple)
-        resultList.push(currentTriple, checkTriple);
+        resultList.push(currentTriple);
       });
     });
     return [...new Set(resultList)];  // set here or there
@@ -420,7 +465,7 @@ export class QueryManager {
    * @param {QueryTriple} query
    * @returns {number} possible choices are 0,1,2,3
    */
-  #getQueryType(query) {
+  #getQueryTripleResult(query) {
     var countUnbound = 0;
     // evaluate subject
     if (query.subject === null || query.subject.isJoinVar) {

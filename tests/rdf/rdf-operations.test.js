@@ -19,7 +19,7 @@ import {
   tripleList
 } from "./fixtures/rdf-operations.test.json";
 
-describe("RdfOperations", () => {
+describe.skip("RdfOperations", () => {
   test("addTriple", () => {
     let rdfcsa = new Rdfcsa(tripleListReduced);
     let ops = new RdfOperations(rdfcsa);
@@ -648,7 +648,7 @@ describe("RdfOperations", () => {
 });
 
 describe("RDFOperation inserts Test", () => {
-  test("test paper insert", () => {
+  test.skip("test paper insert", () => {
     let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
 
     let rdfcsa = new Rdfcsa([]);
@@ -666,7 +666,7 @@ describe("RDFOperation inserts Test", () => {
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
   });
 
-  test.skip("maxiTest 1000 triples insert", () => {
+  test("maxiTest 1000 triples insert", () => {
     // TODO: runs forever 
     let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset)));
 

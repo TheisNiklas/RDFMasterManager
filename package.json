@@ -14,7 +14,6 @@
     "test-coverage": "jest --coverage --collectCoverageFrom='./src/rdf/**/*.js' --coverageDirectory='docs/tests/coverage'"
   },
   "dependencies": {
-    "@alenaksu/json-viewer": "^2.0.1",
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "5.11.16",

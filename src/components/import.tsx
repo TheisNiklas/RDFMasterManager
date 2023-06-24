@@ -10,6 +10,7 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
+  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -57,11 +58,18 @@ const Import = () => {
   const [toastMessage, setToastMessage] = React.useState("");
 
   let appendData = false;
+  let javascriptBitvector = false;
 
   //Receives the event with true in the checkbox for new data appended to the old
   //or false if the old data is replaced by the new one
   const handleFormChangeCheckBoxAppendData = (event: ChangeEvent<HTMLInputElement>) => {
     appendData = event.target.checked;
+  };
+
+    //Receives the event with true in the checkbox for new data appended to the old
+  //or false if the old data is replaced by the new one
+  const handleFormChangeCheckBoxBitvector = (event: ChangeEvent<HTMLInputElement>) => {
+    javascriptBitvector = event.target.checked;
   };
 
   //To start the data input for attaching to or replacing the old triple data
@@ -109,15 +117,25 @@ const Import = () => {
   return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>
       <Header variant="h6">Import / Upload Database</Header>
-      <Grid item xs={12} sm={11}>
-        <FormControlLabel
-          control={
-            <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)} />
-          }
-          label="Attach data"
-        />
+      <Grid container spacing={0} columns={13}>
+        <Grid item xs={1} sm={4}>
+          <FormControlLabel
+            control={
+              <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)} />
+            }
+            label="Attach data"
+          />
+        </Grid>
+        <Grid item xs={8} sm={8}>
+            <FormControlLabel
+              control={
+                <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxBitvector(event)} />
+              }
+              label="Use Javascript-Bitvector"
+            />
+        </Grid>
       </Grid>
-      <Grid item xs={6} sm={3}>
+      <Grid item xs={1} sm={3}>
         <SubmitButton variant="contained" color="primary" onClick={() => userImportRequest()}>
           Import
         </SubmitButton>

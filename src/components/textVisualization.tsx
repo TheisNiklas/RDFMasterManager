@@ -153,10 +153,10 @@ export default function TextVisualization() {
         }
         // Set up data for json viewer
         if (format == "JSON-LD") {
-            let data = JSON.parse(value)
-            setJsonData(data);
-            setRowsLength(data.length)
-            if (data.length < rowsLength) {
+            let jsonData = JSON.parse(value)
+            setJsonData(jsonData);
+            setRowsLength(jsonData.length)
+            if (jsonData.length < rowsLength) {
                 setPage(0);
             }
             return

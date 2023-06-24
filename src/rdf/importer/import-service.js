@@ -28,7 +28,7 @@ export class ImportService {
     }
   }
   /**
-   *
+   * Import a file to create or append to an rdfcsa database
    * @param {File} file file to be imported
    * @param {boolean} replace If `true` the database is replaced with the imported data.
    * If `false` the database is expanded with the imported data.
@@ -36,7 +36,7 @@ export class ImportService {
    * @returns {Rdfcsa} new or updated RDFCSA
    * @throws {Error} When no importer for the file type is available
    */
-  async importFile(file, replace = false) {
+  async importFile(file, replace = false, useJsBitvector = false) {
     /** @type {Importer} */
     let importer;
     const fileExtension = file.name.split(".").pop();
@@ -51,7 +51,7 @@ export class ImportService {
     }
     let tripleList = await importer.importFromFile(file);
     if (replace) {
-      this.#rdfcsa = new Rdfcsa(tripleList);
+      this.#rdfcsa = new Rdfcsa(tripleList, useJsBitvector);
     } else {
       tripleList.forEach((triple) => {
         const rdfOperations = new RdfOperations(this.#rdfcsa)
@@ -63,7 +63,7 @@ export class ImportService {
   }
 
   /**
-   * Create a pre defined sample RDFCSA
+   * Create a pre defined sample RDFCSA, the sample from the paper is used
    * @returns {Rdfcsa} RDFCSA containing the sample data
    */
   loadSample() {
@@ -112,7 +112,6 @@ export class ImportService {
   }
 }
 
-// TODO: move to better place
 const sampleData = [
   ["SO:Inception", "P:filmedin", "SO:L.A."],
   ["SO:L.A.", "P:cityof", "O:USA"],

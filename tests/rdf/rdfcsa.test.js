@@ -3,23 +3,31 @@ import { tripleList, resultPsi, resultGaps, resultD } from "./fixtures/rdfcsa.te
 import {dataset_1k} from "./fixtures/1k-dataset.json"
 
 describe("Rdfcsa", () => {
-  test("init", () => {
-    let rdfcsa = new Rdfcsa(tripleList);
+  test("Init with paper sample", () => {
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     expect(rdfcsa.psi).toEqual(resultPsi);
     expect(rdfcsa.gaps).toEqual(resultGaps);
     expect(rdfcsa.D.toString()).toEqual(resultD);
   });
 
-  test ("init big Database", () => {
-    let rdfcsa = new Rdfcsa(dataset_1k.dataset);
-    let deb = rdfcsa.D.toString();
+  test ("Init with 1k dataset", () => {
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset)));
     expect(rdfcsa.psi).toEqual(dataset_1k.resultPsi);
     expect(rdfcsa.gaps).toEqual(dataset_1k.resultGaps);
     expect(rdfcsa.D.toString()).toEqual(dataset_1k.resultD);
   })
 
-  test("save database", () => {
-    let rdfcsa = new Rdfcsa(dataset_1k.dataset);
-    rdfcsa.saveDatabase()
+  test("Init with paper sample with JsBitvector", () => {
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)), true);
+    expect(rdfcsa.psi).toEqual(resultPsi);
+    expect(rdfcsa.gaps).toEqual(resultGaps);
+    expect(rdfcsa.D.toString()).toEqual(resultD + "00");
+  });
+
+  test ("Init with 1k dataset with JsBitvector", () => {
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset)), true);
+    expect(rdfcsa.psi).toEqual(dataset_1k.resultPsi);
+    expect(rdfcsa.gaps).toEqual(dataset_1k.resultGaps);
+    expect(rdfcsa.D.toString()).toEqual(dataset_1k.resultD);
   })
 });

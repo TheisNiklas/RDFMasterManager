@@ -6,13 +6,13 @@ import { TurtleExporter } from "./turtle-exporter";
 import { JsonldExporter } from "./jsonld-exporter";
 import { saveAs } from "file-saver";
 
+/**
+ * Service for handling the exports
+ */
 export class ExportService {
   /** @type {{[key: string]: Exporter}} */
   #exporters = {};
 
-  /**
-   * Service for handling the exports
-   */
   constructor() {
     this.registerExporter(new NTriplesExporter(), ["N-Triples"], "nt", "application/n-triples");
     this.registerExporter(new JsonldExporter(), ["JSON-LD"], "jsonld", "application/ld+json", true);
@@ -110,9 +110,10 @@ export class ExportService {
   }
 
   /**
-   * 
+   * Gets the exporter for a given filetype
    * @param {string} format 
    * @returns {{instance: Exporter, extension: string, isStreamExporter: boolean, mimeType: string}}
+   * @throws {Error} if no matching exporter found
    */
   #getExporter(format) {
     let exporter = this.#exporters[format];

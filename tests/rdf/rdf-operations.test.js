@@ -666,8 +666,44 @@ describe("RDFOperation inserts Test", () => {
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
   });
 
-  test.skip("maxiTest 1000 triples insert", () => {
-    // TODO: runs forever 
+  test("maxiTest 1000 triples insert, bitvector js", () => {
+    let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset)), true);
+
+    let rdfcsa = new Rdfcsa([], true);
+    let ops = new RdfOperations(rdfcsa);
+    dataset_1k.dataset.forEach((triple) => {
+      ops.addTripleNew(triple[0], triple[1], triple[2]);
+    });
+
+    expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
+    expect(rdfcsa.dictionary.S).toEqual(rdfcsaOld.dictionary.S);
+    expect(rdfcsa.dictionary.P).toEqual(rdfcsaOld.dictionary.P);
+    expect(rdfcsa.dictionary.O).toEqual(rdfcsaOld.dictionary.O);
+    expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
+    expect(rdfcsa.D.toString()).toEqual(rdfcsaOld.D.toString());
+    expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
+  })
+
+  test("maxiTest 1000 triples insert, custom bitvector for creation, bitvector js array for insert", () => {
+    let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset)));
+
+    let rdfcsa = new Rdfcsa([], true);
+    let ops = new RdfOperations(rdfcsa);
+    dataset_1k.dataset.forEach((triple) => {
+      ops.addTripleNew(triple[0], triple[1], triple[2]);
+    });
+
+    expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
+    expect(rdfcsa.dictionary.S).toEqual(rdfcsaOld.dictionary.S);
+    expect(rdfcsa.dictionary.P).toEqual(rdfcsaOld.dictionary.P);
+    expect(rdfcsa.dictionary.O).toEqual(rdfcsaOld.dictionary.O);
+    expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
+    expect(rdfcsa.D.toString()).toEqual(rdfcsaOld.D.toString());
+    expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
+  })
+
+  test.skip("maxiTest 1000 triples insert, custom bitvector", () => {
+    // Runs forever due to bad performing custom bitvector
     let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset)));
 
     let rdfcsa = new Rdfcsa([]);

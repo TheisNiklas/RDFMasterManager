@@ -4,7 +4,7 @@ import { Exporter } from "./exporter";
 
 export class TurtleExporter extends Exporter {
   /**
-   * Export a given triple list to a file
+   * Export a given triple list to a string
    * @param {string[][]} tripleList
    */
   exportTriples(tripleList) {

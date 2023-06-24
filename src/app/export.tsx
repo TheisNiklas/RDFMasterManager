@@ -13,7 +13,6 @@ import {
   Tooltip,
 } from "@mui/material";
 import {
-  exportBinaryTest,
   exportSubgraphData,
   exportGraphData,
   importExportFunction,
@@ -64,7 +63,7 @@ const Export = ({ database, currentData }: { database: Rdfcsa; currentData: Trip
 
   //calls the interface function for the import of the export function from the user
   const userImportRequest = () => {
-    setOpen(!importExportFunction());
+    setOpen(false);
   };
 
   //calls the interface function for the export of the current selected graph data

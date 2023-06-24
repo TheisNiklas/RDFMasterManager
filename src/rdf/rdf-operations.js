@@ -63,7 +63,7 @@ export class RdfOperations {
         new QueryTriple(new QueryElement(subjectId), new QueryElement(predicateId), new QueryElement(objectId)),
       ]);
       if (result.length > 0) {
-        return this.rdfcsa; // TODO: If error message needed return undefined
+        return this.rdfcsa;
       }
     }
 

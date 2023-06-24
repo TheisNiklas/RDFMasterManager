@@ -20,7 +20,7 @@ describe("ImportService", () => {
       fail("loading fixture file failed");
     }
     expect(res).toBeInstanceOf(Rdfcsa);
-    expect(res.D).toEqual(resultD);
+    expect(res.D.toString()).toEqual(resultD);
     expect(res.psi).toEqual(resultPsi);
     expect(res.gaps).toEqual(resultGaps);
     expect(res.dictionary.SO).toEqual(["SO:Inception", "SO:L.A."]);
@@ -39,7 +39,7 @@ describe("ImportService", () => {
       fail("loading fixture file failed");
     }
     expect(res).toBeInstanceOf(Rdfcsa);
-    expect(res.D).toEqual(resultD);
+    expect(res.D.toString()).toEqual(resultD);
     expect(res.psi).toEqual(resultPsi);
     expect(res.gaps).toEqual(resultGaps);
     expect(res.dictionary.SO).toEqual(["SO:Inception", "SO:L.A."]);
@@ -58,7 +58,7 @@ describe("ImportService", () => {
       fail("loading fixture file failed");
     }
     expect(res).toBeInstanceOf(Rdfcsa);
-    expect(res.D).toEqual(resultD);
+    expect(res.D.toString()).toEqual(resultD);
     expect(res.psi).toEqual(resultPsi);
     expect(res.gaps).toEqual(resultGaps);
     expect(res.dictionary.SO).toEqual(["SO:Inception", "SO:L.A."]);
@@ -71,7 +71,7 @@ describe("ImportService", () => {
     let res = undefined;
     res = importService.loadSample();
     expect(res).toBeInstanceOf(Rdfcsa);
-    expect(res.D).toEqual(resultD);
+    expect(res.D.toString()).toEqual(resultD);
     expect(res.psi).toEqual(resultPsi);
     expect(res.gaps).toEqual(resultGaps);
     expect(res.dictionary.SO).toEqual(["SO:Inception", "SO:L.A."]);

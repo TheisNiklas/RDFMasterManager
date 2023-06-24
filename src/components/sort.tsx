@@ -1,4 +1,5 @@
-import React, { ChangeEvent, useState } from "react";
+import * as React from 'react';
+import { ChangeEvent, useState } from "react";
 import { styled } from "@mui/system";
 import {
   TextField,
@@ -13,7 +14,6 @@ import {
   Typography,
   SelectChangeEvent
 } from "@mui/material";
-import { Triple } from "../rdf/models/triple";
 import { useSelector, useDispatch } from "react-redux";
 import { setSortElement, setSortOrder, setVisualLimit } from "./../actions";
 

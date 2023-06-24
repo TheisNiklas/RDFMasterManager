@@ -1,4 +1,5 @@
-import React, { ChangeEvent } from "react";
+import * as React from 'react';
+import { ChangeEvent } from "react";
 import { styled } from "@mui/system";
 import {
   Typography,
@@ -18,8 +19,6 @@ import {
 import { ImportService } from "../rdf/importer/import-service";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
-import { Rdfcsa } from "../rdf/rdfcsa";
-import { Triple } from "../rdf/models/triple";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { useSelector, useDispatch } from "react-redux";

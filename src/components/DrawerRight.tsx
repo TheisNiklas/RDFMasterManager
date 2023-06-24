@@ -26,9 +26,6 @@ import Export from "./export";
 import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
 import Graph2DReact from "./graph2dreact";
-import { useMediaQuery } from 'react-responsive';
-import { drawerOpenWidth, isMobileDevice } from "../constants/media";
-import { WavingHandTwoTone } from "@mui/icons-material";
 
 let drawerWidth = 500;
 

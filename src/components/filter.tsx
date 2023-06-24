@@ -1,4 +1,5 @@
-import React, { ChangeEvent, useState, SyntheticEvent } from "react";
+import * as React from 'react';
+import { ChangeEvent, useState, SyntheticEvent } from "react";
 import { styled } from "@mui/system";
 import {
   Autocomplete,
@@ -25,8 +26,6 @@ import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { QueryCall } from "../interface/query-call";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Rdfcsa } from "../rdf/rdfcsa";
-import { Triple } from "../rdf/models/triple";
 import { useSelector, useDispatch } from "react-redux";
 import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData } from "./../actions";
 const Header = styled(Typography)(({ theme }) => ({

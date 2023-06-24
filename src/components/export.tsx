@@ -43,7 +43,7 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
 const Export = () => {
   const [exportFunction, setExportFunction] = useState("");
   const [exporter, setExporter] = useState(new ExportService());
-  const [availableExporters, setAvailableExporters] = useState(new Array<string>());
+  const [availableExporters, setAvailableExporters] = useState(exporter.getAvailableExporters());
   
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
@@ -57,7 +57,6 @@ const Export = () => {
 
   useEffect(() => {
     if (availableExporters.length > 0) {
-      console.log(availableExporters);
       setExportFunction(availableExporters[0]);
     }
   }, [availableExporters]);
@@ -98,7 +97,7 @@ const Export = () => {
             <InputLabel id="exportFunction">Exportfunction</InputLabel>
             <Select
               labelId="exportFunctionSelect"
-              defaultValue="binaer"
+              defaultValue="N-Triples"
               onChange={(event: SelectChangeEvent<string>) => handleFormChangeExportFunction(event)}
             >
               {availableExporters.map((element, index) => (

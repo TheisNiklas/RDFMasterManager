@@ -944,7 +944,6 @@ export class RdfOperations {
     this.deleteElementInDictionary(id);
 
     originalTriples.forEach((changedTriple) => {
-      // TODO: add triple does not work as exspected
       this.addTripleNew(changedTriple[0], changedTriple[1], changedTriple[2]);
     })
 

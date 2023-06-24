@@ -55,6 +55,25 @@ function loadDefaultFormat() {
     return export_options[0]
 }
 
+    /**
+     * Get options for dropdown menu. Use ExportService to fetch available export formats.
+     * @returns Returns a list of MenuItems that will be used in the dropdown menu
+     */
+    const getOptions = () => {
+        const exporter = new ExportService();
+        const export_options = exporter.getAvailableExporters();
+
+        let menuItems = []
+        for (let i = 0; i < export_options[0].length; i++) {
+            if (export_options[i] != undefined) {
+                menuItems.push(<MenuItem value={export_options[i]} key={export_options[i]}> {export_options[i]} </MenuItem >)
+            }
+        }
+
+        return menuItems
+    }
+
+
 export default function TextVisualization() {
 
     const [page, setPage] = React.useState(0);
@@ -62,6 +81,7 @@ export default function TextVisualization() {
     const [format, setFormat] = React.useState(loadDefaultFormat());
     const [defaultFormat, setDefaultFormat] = React.useState(loadDefaultFormat());
     const [rows, setRows] = React.useState([]);
+    const [menuitems, setMenuitems] = React.useState(getOptions())
 
     
     const database = useSelector((state: any) => state.database);
@@ -113,22 +133,6 @@ export default function TextVisualization() {
         currentId = -1;
         getRows(value, currentData);
     };
-
-    /**
-     * Get options for dropdown menu. Use ExportService to fetch available export formats.
-     * @returns Returns a list of MenuItems that will be used in the dropdown menu
-     */
-    const getOptions = () => {
-        const exporter = new ExportService();
-        const export_options = exporter.getAvailableExporters();
-
-        let menuItems = []
-        for (let i = 0; i < export_options[0].length; i++) {
-            menuItems.push(<MenuItem value={export_options[i]} key={export_options[i]}> {export_options[i]} </MenuItem >)
-        }
-
-        return menuItems
-    }
 
     /**
      * Get rows that will be displayed. Fetch data with an ExportService object.
@@ -183,7 +187,7 @@ export default function TextVisualization() {
                         }}
                         onChange={e => handleChange(e.target.value)}
                     >
-                        {getOptions()}
+                        {menuitems}
                     </Select>
                 </DropDownForm>
             </DropDownBox >

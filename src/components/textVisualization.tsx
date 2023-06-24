@@ -19,6 +19,9 @@ import { Rdfcsa } from '../rdf/rdfcsa';
 import currentData from '../reducers/currentData';
 import { useSelector, useDispatch } from "react-redux";
 import { useMediaQuery } from 'react-responsive';
+import JsonView from 'react18-json-view';
+import 'react18-json-view/src/style.css';
+
 const TextCard = styled(Card)(({ theme }) => ({
     '& .MuiTableCell-stickyHeader': {
         backgroundColor: '#1976d2'
@@ -55,23 +58,23 @@ function loadDefaultFormat() {
     return export_options[0]
 }
 
-    /**
-     * Get options for dropdown menu. Use ExportService to fetch available export formats.
-     * @returns Returns a list of MenuItems that will be used in the dropdown menu
-     */
-    const getOptions = () => {
-        const exporter = new ExportService();
-        const export_options = exporter.getAvailableExporters();
+/**
+ * Get options for dropdown menu. Use ExportService to fetch available export formats.
+ * @returns Returns a list of MenuItems that will be used in the dropdown menu
+ */
+const getOptions = () => {
+    const exporter = new ExportService();
+    const export_options = exporter.getAvailableExporters();
 
-        let menuItems = []
-        for (let i = 0; i < export_options[0].length; i++) {
-            if (export_options[i] != undefined) {
-                menuItems.push(<MenuItem value={export_options[i]} key={export_options[i]}> {export_options[i]} </MenuItem >)
-            }
+    let menuItems = []
+    for (let i = 0; i < export_options[0].length; i++) {
+        if (export_options[i] != undefined) {
+            menuItems.push(<MenuItem value={export_options[i]} key={export_options[i]}> {export_options[i]} </MenuItem >)
         }
-
-        return menuItems
     }
+
+    return menuItems
+}
 
 
 export default function TextVisualization() {
@@ -82,8 +85,10 @@ export default function TextVisualization() {
     const [defaultFormat, setDefaultFormat] = React.useState(loadDefaultFormat());
     const [rows, setRows] = React.useState([]);
     const [menuitems, setMenuitems] = React.useState(getOptions())
+    const [jsonData, setJsonData] = React.useState("")
+    const [rowsLength, setRowsLength] = React.useState(0)
 
-    
+
     const database = useSelector((state: any) => state.database);
     const currentData = useSelector((state: any) => state.currentData);
     const sortOptions = useSelector((state: any) => state.sortOptions);
@@ -150,11 +155,26 @@ export default function TextVisualization() {
             setRows([]);
             return
         }
+        // Set up data for json viewer
+        if (format == "JSON-LD") {
+            let data = JSON.parse(value)
+            setJsonData(data);
+            setRowsLength(data.length)
+            if (data.length < rowsLength) {
+                setPage(0);
+            }
+            return
+        }
+        // Set up data for turtle and ntriple
         var value_splitted = value.split(/\r?\n|\r|\n/g);
         if (value_splitted[value_splitted.length - 1] === "") {
             value_splitted.pop();
         }
         setRows(value_splitted);
+        setRowsLength(value_splitted.length)
+        if (value_splitted.length < rowsLength) {
+            setPage(0);
+        }
     }
 
     React.useEffect(() => {
@@ -165,6 +185,7 @@ export default function TextVisualization() {
 
     React.useEffect(() => {
     }, [sortOptions])
+
 
     /**
      * DropDown Menu for format.
@@ -199,15 +220,15 @@ export default function TextVisualization() {
             width: "98vw",
             ...(useMediaQuery({
                 query: "(min-device-width: 320px)",
-              }) && {
-                width:  "95vw",
-              }),
-              ...(useMediaQuery({
+            }) && {
+                width: "95vw",
+            }),
+            ...(useMediaQuery({
                 query: "(min-device-width: 1024px)",
-              }) && {
-                width:  "98vw",
-              }),
-            }}>
+            }) && {
+                width: "98vw",
+            }),
+        }}>
             <TableContainer style={{ height: "80vh" }}>
                 <Table stickyHeader aria-label="sticky table">
                     <TableHead style={{ backgroundColor: "#1976d2" }}>
@@ -229,28 +250,41 @@ export default function TextVisualization() {
                             ))}
                         </TableRow>
                     </TableHead>
-                    <TableBody>
-                        {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
-                            return (
-                                <TableRow hover role="checkbox" tabIndex={-1} key={getId()}>
-                                    {columns.map((column: any) => {
-                                        const value = row;
-                                        return (
-                                            <TableCell key={column.id} align={column.align} style={{ fontSize: "18px" }}>
-                                                {column.format(value)}
-                                            </TableCell>
-                                        );
-                                    })}
-                                </TableRow>
-                            );
-                        })}
-                    </TableBody>
+                    {
+                        format === "JSON-LD" &&
+                        <TableBody>
+                            <TableRow>
+                                <TableCell>
+                                    <JsonView src={jsonData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)} />
+                                </TableCell>
+                            </TableRow>
+                        </TableBody>
+                    }
+                    {
+                        format !== "JSON-LD" &&
+                        <TableBody>
+                            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                                return (
+                                    <TableRow hover role="checkbox" tabIndex={-1} key={getId()}>
+                                        {columns.map((column: any) => {
+                                            const value = row;
+                                            return (
+                                                <TableCell key={column.id} align={column.align} style={{ fontSize: "18px" }}>
+                                                    {column.format(value)}
+                                                </TableCell>
+                                            );
+                                        })}
+                                    </TableRow>
+                                );
+                            })}
+                        </TableBody>
+                    }
                 </Table>
             </TableContainer>
             <TablePagination
                 rowsPerPageOptions={[15, 25, 50]}
                 component="div"
-                count={rows.length}
+                count={rowsLength}
                 rowsPerPage={rowsPerPage}
                 page={page}
                 onPageChange={handleChangePage}

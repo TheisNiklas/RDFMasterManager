@@ -81,7 +81,7 @@ const Import = () => {
     // Add an event handler to get the selected file path.
     fileInput.addEventListener("change", async (event) => {
       const file = (event as any).target.files[0];
-      const rdfcsa = await importService.importFile(file, true);
+      const rdfcsa = await importService.importFile(file, appendData, javascriptBitvector);
       if (rdfcsa === undefined) {
         setOpen(true);
       } else {

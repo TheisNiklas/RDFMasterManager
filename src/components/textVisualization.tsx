@@ -1,4 +1,4 @@
-import React from 'react';
+import * as React from 'react'
 import { styled } from '@mui/system';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -14,9 +14,6 @@ import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { ExportService } from '../rdf/exporter/export-service';
-import { Triple } from '../rdf/models/triple';
-import { Rdfcsa } from '../rdf/rdfcsa';
-import currentData from '../reducers/currentData';
 import { useSelector, useDispatch } from "react-redux";
 import { useMediaQuery } from 'react-responsive';
 import JsonView from 'react18-json-view';
@@ -92,7 +89,6 @@ export default function TextVisualization() {
     const database = useSelector((state: any) => state.database);
     const currentData = useSelector((state: any) => state.currentData);
     const sortOptions = useSelector((state: any) => state.sortOptions);
-    const dispatch = useDispatch();
     let currentId = -1;
 
     const columns = [
@@ -116,7 +112,7 @@ export default function TextVisualization() {
     /**
      * Change page.
      */
-    const handleChangePage = (event: any, newPage: any) => {
+    const handleChangePage = (event: any, newPage: number) => {
         setPage(newPage);
     };
 
@@ -263,7 +259,7 @@ export default function TextVisualization() {
                     {
                         format !== "JSON-LD" &&
                         <TableBody>
-                            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => {
+                            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: string) => {
                                 return (
                                     <TableRow hover role="checkbox" tabIndex={-1} key={getId()}>
                                         {columns.map((column: any) => {

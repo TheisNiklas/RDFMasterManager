@@ -2,7 +2,7 @@ import { Triple } from "../../src/rdf/models/triple";
 import { RdfOperations } from "../../src/rdf/rdf-operations";
 import { Rdfcsa } from "../../src/rdf/rdfcsa";
 import { dataset } from "./fixtures/50k-dataset.json";
-import { dataset_1k } from "./fixtures/1k-dataset.json"
+import { dataset_1k } from "./fixtures/1k-dataset.json";
 import {
   tripleListReduced,
   resultD,
@@ -16,7 +16,7 @@ import {
   addTripleCase1,
   addTripleCase2,
   addTripleCase4,
-  tripleList
+  tripleList,
 } from "./fixtures/rdf-operations.test.json";
 
 describe("RdfOperations", () => {
@@ -127,7 +127,7 @@ describe("RdfOperations", () => {
     expect(res.dictionary.P).toEqual(addTripleCase4.resultDict.P);
     expect(res.dictionary.O).toEqual(addTripleCase4.resultDict.O);
   });
-  
+
   test("addTriple: case 1 - two triples", () => {
     const addSubject = "Klaus";
     const addPredicate = "haut";
@@ -273,7 +273,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -296,7 +296,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -319,7 +319,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -342,7 +342,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -365,7 +365,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -392,7 +392,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -419,7 +419,7 @@ describe("RdfOperations", () => {
       ["Inception", "filmed in", "L.A."],
       ["L.A.", "city of", "USA"],
       ["J. Gordon", "born in", "USA"],
-    ]
+    ];
 
     // "J. Gordon", "LA", "born in", "city" USA
 
@@ -439,7 +439,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -464,8 +464,8 @@ describe("RdfOperations", () => {
   test("deleteTriple: delete all", () => {
     const tripleList1 = [
       ["Inception", "filmed in", "L.A."],
-      ["L.A.", "city of", "USA"]
-    ]
+      ["L.A.", "city of", "USA"],
+    ];
 
     // "LA", "city", USA
 
@@ -485,13 +485,13 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
     expect(res.dictionary.O).toEqual(resRef.dictionary.O);
     expect(res.gaps).toEqual(resRef.gaps);
-    expect(res.D).toEqual(resRef.D); 
+    expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
 
     const resRef1 = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple1)));
@@ -503,15 +503,15 @@ describe("RdfOperations", () => {
     expect(res1.dictionary.P).toEqual(resRef1.dictionary.P);
     expect(res1.dictionary.O).toEqual(resRef1.dictionary.O);
     expect(res1.gaps).toEqual(resRef1.gaps);
-    expect(res1.D).toEqual(resRef1.D); 
+    expect(res1.D).toEqual(resRef1.D);
     expect(res1.psi).toEqual(resRef1.psi);
   });
 
   test("deleteTriple:delete", () => {
     const tripleList1 = [
       ["Inception", "filmed in", "L.A."],
-      ["Inception", "city of", "USA"]
-    ]
+      ["Inception", "city of", "USA"],
+    ];
 
     // Inception, city, filmed in, L.A., USA
 
@@ -527,7 +527,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
-    
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -541,23 +541,14 @@ describe("RdfOperations", () => {
     const newSubject = "J. Gordon";
     const newPredicate = "appears in";
     const newObject = "Inception";
-    const oldTriple = new Triple(3,10,12);
+    const oldTriple = new Triple(3, 10, 12);
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.modifyTriples(
-      JSON.parse(JSON.stringify(oldTriple)),
-      newSubject,
-      newPredicate,
-      newObject
-      );
+    const resRef = opsRef.modifyTriples(JSON.parse(JSON.stringify(oldTriple)), newSubject, newPredicate, newObject);
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.modifyTripleNew(
-      JSON.parse(JSON.stringify(oldTriple)),
-      newSubject,
-      newPredicate, 
-      newObject);
-    
+    const res = ops.modifyTripleNew(JSON.parse(JSON.stringify(oldTriple)), newSubject, newPredicate, newObject);
+
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -615,7 +606,6 @@ describe("RdfOperations", () => {
     expect(res.psi).toEqual(resultPsi);
   });
 
-
   test.skip("bugfix test for changeInDictionary", () => {
     const input = [
       ["L.A.", "city of", "USA"],
@@ -624,12 +614,12 @@ describe("RdfOperations", () => {
       ["E. Page", "born in", "Canada"],
       ["L. DiCaprio", "born in", "USA"],
       ["L. DiCaprio", "awarded", "Oscar 2015"],
-      ["Inception", "filmed in", "L.A."]
-    ]
-    const toAdd1 = ["Inception", "filmed in", "L.A."]
-    const toAdd = ["E. Page", "appears in", "Inception"]
-    const toAdd3 = ["L. DiCaprio", "appears in", "Inception"]
-    const toAdd4 = ["J. Gordon", "appears in", "Inception"]
+      ["Inception", "filmed in", "L.A."],
+    ];
+    const toAdd1 = ["Inception", "filmed in", "L.A."];
+    const toAdd = ["E. Page", "appears in", "Inception"];
+    const toAdd3 = ["L. DiCaprio", "appears in", "Inception"];
+    const toAdd4 = ["J. Gordon", "appears in", "Inception"];
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(input)));
     let opsRef = new RdfOperations(rdfcsaRef);
     const resRef = opsRef.addTriple(toAdd[0], toAdd[1], toAdd[2]);
@@ -644,7 +634,6 @@ describe("RdfOperations", () => {
     expect(res.psi).toEqual(resRef.psi);
     expect(res.D).toEqual(resRef.D);
   });
-
 });
 
 describe("RDFOperation inserts Test", () => {
@@ -682,7 +671,7 @@ describe("RDFOperation inserts Test", () => {
     expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
     expect(rdfcsa.D.toString()).toEqual(rdfcsaOld.D.toString());
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
-  })
+  });
 
   test("maxiTest 1000 triples insert, custom bitvector for creation, bitvector js array for insert", () => {
     let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset)));
@@ -700,7 +689,7 @@ describe("RDFOperation inserts Test", () => {
     expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
     expect(rdfcsa.D.toString()).toEqual(rdfcsaOld.D.toString());
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
-  })
+  });
 
   test.skip("maxiTest 1000 triples insert, custom bitvector", () => {
     // Runs forever due to bad performing custom bitvector
@@ -719,9 +708,8 @@ describe("RDFOperation inserts Test", () => {
     expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
     expect(rdfcsa.D).toEqual(rdfcsaOld.D);
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
-  })
+  });
 });
-
 
 describe.skip("RDFOperation MaxiTest", () => {
   // funzt
@@ -741,5 +729,5 @@ describe.skip("RDFOperation MaxiTest", () => {
     expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
     expect(rdfcsa.D).toEqual(rdfcsaOld.D);
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
-  })
+  });
 });

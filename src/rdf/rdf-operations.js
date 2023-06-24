@@ -119,48 +119,44 @@ export class RdfOperations {
     let oldPredicateId = metadata.predicate.id;
 
     // Update gaps if new elements were added to the dictionary
+    // Calculate the old ids if new elements where inserted with a lower id
     if (metadata.subject.isNew) {
       this.rdfcsa.gaps[1] += 1;
       this.rdfcsa.gaps[2] += 1;
-    }
-    if (metadata.predicate.isNew) {
-      this.rdfcsa.gaps[2] += 1;
-    }
 
-    if (metadata.subject.isNew) {
       oldObjectId -= 1;
       oldPredicateId -= 1;
-      
+
       if (metadata.soChange.objectGotSO) {
         oldObjectId -= 1;
       }
     }
-    if (metadata.soChange.subjectGotSO && !this.rdfcsa.dictionary.isSubjectObjectById(metadata.subject.id) && subject < object) {
-      oldSubjectId -= 1;
-    }
     if (metadata.predicate.isNew) {
+      this.rdfcsa.gaps[2] += 1;
       oldObjectId -= 1;
+    }
+
+    if (
+      metadata.soChange.subjectGotSO &&
+      !this.rdfcsa.dictionary.isSubjectObjectById(metadata.subject.id) &&
+      subject < object
+    ) {
+      oldSubjectId -= 1;
     }
 
     // Get the range where the existing subject is or the new subject will be
     let sRange;
     if (!metadata.subject.isNew) {
-      sRange = [
-        this.rdfcsa.select(oldSubjectId),
-        this.rdfcsa.select(oldSubjectId + 1) - 1,
-      ];
+      sRange = [this.rdfcsa.select(oldSubjectId), this.rdfcsa.select(oldSubjectId + 1) - 1];
     } else {
       sInsertIndex = this.rdfcsa.select(oldSubjectId);
       sRange = [sInsertIndex, sInsertIndex];
     }
 
     // Get the range where the existing predicate is or the new predicate will be
-    let pRange
+    let pRange;
     if (!metadata.predicate.isNew) {
-      pRange = [
-        this.rdfcsa.select(oldPredicateId),
-        this.rdfcsa.select(oldPredicateId + 1) - 1,
-      ];
+      pRange = [this.rdfcsa.select(oldPredicateId), this.rdfcsa.select(oldPredicateId + 1) - 1];
     } else {
       pInsertIndex = this.rdfcsa.select(oldPredicateId);
       pRange = [pInsertIndex, pInsertIndex];
@@ -169,15 +165,12 @@ export class RdfOperations {
     // Get the range where the existing object is or the new object will be
     let oRange;
     if (!metadata.object.isNew) {
-      oRange = [
-        this.rdfcsa.select(oldObjectId),
-        this.rdfcsa.select(oldObjectId + 1) - 1,
-      ];
+      oRange = [this.rdfcsa.select(oldObjectId), this.rdfcsa.select(oldObjectId + 1) - 1];
     } else {
       oInsertIndex = this.rdfcsa.select(oldObjectId);
       oRange = [oInsertIndex, oInsertIndex];
     }
-    
+
     // If the subject already exists, calculate the insertion position inside the range of existing triples with the subject
     if (!metadata.subject.isNew) {
       sInsertIndex = sRange[1] + 1;
@@ -242,7 +235,7 @@ export class RdfOperations {
         }
       }
     }
-    
+
     // If the object already exists, calculate the insertion position inside the range of existing triples with the object
     if (!metadata.object.isNew) {
       oInsertIndex = oRange[1] + 1;
@@ -297,10 +290,10 @@ export class RdfOperations {
     }
 
     if (metadata.subject.isNew && metadata.subject.id === 0) {
-      this.rdfcsa.D.unsetBit(0)
-      this.rdfcsa.D.setBit(1) // toggle because element got shifted by one place 
+      this.rdfcsa.D.unsetBit(0);
+      this.rdfcsa.D.setBit(1); // toggle because element got shifted by one place
     }
-    
+
     // Update existing references in psi
     for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
       const subjectArealength = this.rdfcsa.psi.length / 3;
@@ -332,160 +325,42 @@ export class RdfOperations {
 
     if (metadata.soChange.subjectGotSO) {
       if (metadata.subject.isNew && metadata.subject.id - 1 <= metadata.soChange.oldSubjectId) {
-        metadata.soChange.oldSubjectId += 1
+        metadata.soChange.oldSubjectId += 1;
       }
       const rangeToMove = [
         this.rdfcsa.select(metadata.soChange.oldSubjectId),
-        this.rdfcsa.select(metadata.soChange.oldSubjectId + 1) - 1
-      ]
+        this.rdfcsa.select(metadata.soChange.oldSubjectId + 1) - 1,
+      ];
 
       const targetIndex = this.rdfcsa.select(metadata.object.id - this.rdfcsa.gaps[2]);
 
       const distanceToMove = rangeToMove[0] - targetIndex;
 
-      const rangeToMoveOver = [
-        targetIndex,
-        rangeToMove[0] - 1
-      ]
+      const rangeToMoveOver = [targetIndex, rangeToMove[0] - 1];
 
-      const moves = [];
-      const changes = [];
-      
-      for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
-        const movePredicate = this.rdfcsa.psi[i];
-        const referencePredicateId = this.rdfcsa.D.rank(movePredicate);
-        const rangePredicate = [
-          this.rdfcsa.select(referencePredicateId),
-          this.rdfcsa.select(referencePredicateId + 1) - 1
-        ]
-        // IDEA: maybe move into second for loop to not calculate if not needed, save if calculated to not repeat for every loop iteration
-        const referenceObjectId = this.rdfcsa.D.rank(this.rdfcsa.psi[movePredicate]);
-        const rangeObject = [
-          this.rdfcsa.select(referenceObjectId),
-          this.rdfcsa.select(referenceObjectId + 1) - 1
-        ]
-        for (let j = rangeToMoveOver[0]; j <= rangeToMoveOver[1]; j++) {
-          const moveOverPredicate = this.rdfcsa.psi[j];
-          if (moveOverPredicate >= rangePredicate[0] && moveOverPredicate <= rangePredicate[1] && moveOverPredicate < movePredicate) {
-            moves.push([movePredicate, -1]);
-            changes.push([i, -1]);
-            changes.push([j, +1]);
-          }
-          const moveOverObject = this.rdfcsa.psi[moveOverPredicate]
-          if (moveOverObject >= rangeObject[0] && moveOverObject <= rangeObject[1] && moveOverObject < this.rdfcsa.psi[movePredicate]) {
-            moves.push([this.rdfcsa.psi[movePredicate], -1]);
-            changes.push([movePredicate, -1]);
-            changes.push([moveOverPredicate, +1]);
-          }
-        }
-        moves.push([i, - distanceToMove]);
-        changes.push([this.rdfcsa.psi[movePredicate], -distanceToMove]);
-      }
-
-      for (let k = rangeToMoveOver[0]; k <= rangeToMoveOver[1]; k++) {
-        const target = this.rdfcsa.psi[this.rdfcsa.psi[k]]
-        changes.push([target, rangeToMove[1] - rangeToMove[0] + 1]);
-      }
-
-
-      changes.forEach(([index, change]) => {
-        this.rdfcsa.psi[index] += change;
-      })
-
-      moves.forEach(([index, movesLength]) => {
-        for (let i = index; i > index + movesLength; i--) {   
-          const temp = this.rdfcsa.psi[i - 1];
-          this.rdfcsa.psi[i - 1] = this.rdfcsa.psi[i];
-          this.rdfcsa.psi[i] = temp;
-        }
-      })
-      
-      if (rangeToMoveOver[0] === 0) {
-        this.rdfcsa.D.setBit(0)
-        this.rdfcsa.D.unsetBit(rangeToMove[0])
-      }
-      // change D range
-      for (let index = rangeToMove[0]; index <= rangeToMove[1]; index++) {
-        const oldBit = this.rdfcsa.D.getBit(index)
-        this.rdfcsa.D.deleteBit(index)
-        this.rdfcsa.D.addBit(index - distanceToMove)
-        if (oldBit === 1) {
-          this.rdfcsa.D.setBit(index - distanceToMove);
-        }
-        /*
-        for (let i = index; i > index - distanceToMove; i--) {   
-          const temp = this.rdfcsa.D[i - 1];
-          this.rdfcsa.D[i - 1] = this.rdfcsa.D[i];
-          this.rdfcsa.D[i] = temp;
-        }
-        */
-      }
+      this.#moveSubject(rangeToMove, rangeToMoveOver, distanceToMove);
     }
-    
+
     if (metadata.soChange.objectGotSO) {
-      metadata.soChange.oldObjectId += 1 // because subject gets inserted every time
+      metadata.soChange.oldObjectId += 1; // because subject gets inserted every time
       if (metadata.predicate.isNew) {
-        metadata.soChange.oldObjectId += 1
+        metadata.soChange.oldObjectId += 1;
       }
       if (metadata.object.isNew && metadata.object.id - 1 <= metadata.soChange.oldObjectId) {
-        metadata.soChange.oldObjectId += 1
+        metadata.soChange.oldObjectId += 1;
       }
       const rangeToMove = [
         this.rdfcsa.select(metadata.soChange.oldObjectId),
-        this.rdfcsa.select(metadata.soChange.oldObjectId + 1) - 1
-      ]
+        this.rdfcsa.select(metadata.soChange.oldObjectId + 1) - 1,
+      ];
 
       const targetIndex = this.rdfcsa.select(metadata.subject.id + this.rdfcsa.gaps[2]);
 
       const distanceToMove = rangeToMove[0] - targetIndex;
 
-      const rangeToMoveOver = [
-        targetIndex,
-        rangeToMove[0] - 1
-      ]
+      const rangeToMoveOver = [targetIndex, rangeToMove[0] - 1];
 
-      const moves = [];
-      const changes = [];
-      
-      for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
-        const moveSubject = this.rdfcsa.psi[i];
-        moves.push([i, -distanceToMove]);
-        changes.push([this.rdfcsa.psi[moveSubject], -distanceToMove]);
-      }
-
-      for (let k = rangeToMoveOver[0]; k <= rangeToMoveOver[1]; k++) {
-        const target = this.rdfcsa.psi[this.rdfcsa.psi[k]]
-        changes.push([target, rangeToMove[1] - rangeToMove[0] + 1]);
-      }
-
-
-      changes.forEach(([index, change]) => {
-        this.rdfcsa.psi[index] += change;
-      })
-
-      moves.forEach(([index, movesLength]) => {
-        for (let i = index; i > index + movesLength; i--) {   
-          const temp = this.rdfcsa.psi[i - 1];
-          this.rdfcsa.psi[i - 1] = this.rdfcsa.psi[i];
-          this.rdfcsa.psi[i] = temp;
-        }
-      })
-
-      for (let index = rangeToMove[0]; index <= rangeToMove[1]; index++) {
-        const oldBit = this.rdfcsa.D.getBit(index)
-        this.rdfcsa.D.deleteBit(index)
-        this.rdfcsa.D.addBit(index - distanceToMove)
-        if (oldBit === 1) {
-          this.rdfcsa.D.setBit(index - distanceToMove);
-        }
-        /*
-        for (let i = index; i > index - distanceToMove; i--) {   
-          const temp = this.rdfcsa.D[i - 1];
-          this.rdfcsa.D[i - 1] = this.rdfcsa.D[i];
-          this.rdfcsa.D[i] = temp;
-        }
-        */
-      }
+      this.#moveObject(rangeToMove, rangeToMoveOver, distanceToMove);
     }
 
     this.rdfcsa.tripleCount += 1;
@@ -495,7 +370,7 @@ export class RdfOperations {
 
   /**
    * Delete Triple from database with new method
-   * @param {Triple} triple 
+   * @param {Triple} triple
    */
   deleteTripleNew(triple) {
     const queryManager = new QueryManager(this.rdfcsa);
@@ -511,18 +386,9 @@ export class RdfOperations {
       // elements doesnt exists in database
       return;
     }
-    const sRange = [
-      this.rdfcsa.select(triple.subject),
-      this.rdfcsa.select(triple.subject + 1) - 1,
-    ];
-    const pRange = [
-      this.rdfcsa.select(triple.predicate),
-      this.rdfcsa.select(triple.predicate + 1) - 1,
-    ];
-    const oRange = [
-      this.rdfcsa.select(triple.object),
-      this.rdfcsa.select(triple.object + 1) - 1,
-    ];
+    const sRange = [this.rdfcsa.select(triple.subject), this.rdfcsa.select(triple.subject + 1) - 1];
+    const pRange = [this.rdfcsa.select(triple.predicate), this.rdfcsa.select(triple.predicate + 1) - 1];
+    const oRange = [this.rdfcsa.select(triple.object), this.rdfcsa.select(triple.object + 1) - 1];
     let sDeleted = false;
     let pDeleted = false;
     let oDeleted = false;
@@ -550,16 +416,15 @@ export class RdfOperations {
     const pIndex = indices[1];
     const oIndex = indices[2];
 
-
     // delete those positions from D
     this.rdfcsa.D.deleteBit(sRange[1]);
     this.rdfcsa.D.deleteBit(pRange[1] - 1);
     this.rdfcsa.D.deleteBit(oRange[1] - 2);
-    
+
     this.rdfcsa.psi.splice(sIndex, 1);
     this.rdfcsa.psi.splice(pIndex - 1, 1);
     this.rdfcsa.psi.splice(oIndex - 2, 1);
-    
+
     // Update existing references in psi
     for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
       const subjectArealength = this.rdfcsa.psi.length / 3;
@@ -589,156 +454,34 @@ export class RdfOperations {
     }
 
     if (metadata.subjectWasSO && sDeleted) {
-      const oldObjectSOId =  triple.subject + this.rdfcsa.gaps[2] - objectIdDifference
+      const oldObjectSOId = triple.subject + this.rdfcsa.gaps[2] - objectIdDifference;
 
-      const rangeToMoveOver = [
-        this.rdfcsa.select(oldObjectSOId),
-        this.rdfcsa.select(oldObjectSOId + 1) - 1
-      ]
+      const rangeToMoveOver = [this.rdfcsa.select(oldObjectSOId), this.rdfcsa.select(oldObjectSOId + 1) - 1];
 
       const targetIndex = this.rdfcsa.select(metadata.newObjectId);
 
       const distanceToMove = rangeToMoveOver[1] - rangeToMoveOver[0] + 1;
 
-      const rangeToMove = [
-        rangeToMoveOver[1] + 1,
-        targetIndex - 1
-      ]
+      const rangeToMove = [rangeToMoveOver[1] + 1, targetIndex - 1];
 
-      const moves = [];
-      const changes = [];
-      
-      for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
-        const moveSubject = this.rdfcsa.psi[i];
-        moves.push([i, -distanceToMove]);
-        changes.push([this.rdfcsa.psi[moveSubject], -distanceToMove]);
-      }
-
-      for (let k = rangeToMoveOver[0]; k <= rangeToMoveOver[1]; k++) {
-        const target = this.rdfcsa.psi[this.rdfcsa.psi[k]]
-        changes.push([target, rangeToMove[1] - rangeToMove[0] + 1]);
-      }
-
-
-      changes.forEach(([index, change]) => {
-        this.rdfcsa.psi[index] += change;
-      })
-
-      moves.forEach(([index, movesLength]) => {
-        for (let i = index; i > index + movesLength; i--) {   
-          const temp = this.rdfcsa.psi[i - 1];
-          this.rdfcsa.psi[i - 1] = this.rdfcsa.psi[i];
-          this.rdfcsa.psi[i] = temp;
-        }
-      })
-      // change D range
-      for (let index = rangeToMove[0]; index <= rangeToMove[1]; index++) {
-        const oldBit = this.rdfcsa.D.getBit(index)
-        this.rdfcsa.D.deleteBit(index)
-        this.rdfcsa.D.addBit(index - distanceToMove)
-        if (oldBit === 1) {
-          this.rdfcsa.D.setBit(index - distanceToMove);
-        }
-        /*
-        for (let i = index; i > index - distanceToMove; i--) {   
-          const temp = this.rdfcsa.D[i - 1];
-          this.rdfcsa.D[i - 1] = this.rdfcsa.D[i];
-          this.rdfcsa.D[i] = temp;
-        }
-        */
-      }
+      this.#moveObject(rangeToMove, rangeToMoveOver, distanceToMove);
     }
 
     if (metadata.objectWasSO && oDeleted) {
       const rangeToMoveOver = [
         this.rdfcsa.select(triple.object - this.rdfcsa.gaps[2]), // get ID of SO from "O" ID minus gaps
-        this.rdfcsa.select(triple.object - this.rdfcsa.gaps[2] + 1) - 1
-      ]
+        this.rdfcsa.select(triple.object - this.rdfcsa.gaps[2] + 1) - 1,
+      ];
 
       // + 1 because the 1 of the range to move is also counted by the select
       const targetIndex = this.rdfcsa.select(metadata.newSubjectId + 1);
 
       if (targetIndex - 1 > rangeToMoveOver[1]) {
-
         const distanceToMove = rangeToMoveOver[1] - rangeToMoveOver[0] + 1;
 
-        const rangeToMove = [
-          rangeToMoveOver[1] + 1,
-          targetIndex - 1
-        ]
+        const rangeToMove = [rangeToMoveOver[1] + 1, targetIndex - 1];
 
-        const moves = [];
-        const changes = [];
-
-        for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
-          const movePredicate = this.rdfcsa.psi[i];
-          const referencePredicateId = this.rdfcsa.D.rank(movePredicate);
-          const rangePredicate = [
-            this.rdfcsa.select(referencePredicateId),
-            this.rdfcsa.select(referencePredicateId + 1) - 1
-          ]
-          // IDEA: maybe move into second for loop to not calculate if not needed, save if calculated to not repeat for every loop iteration
-          const referenceObjectId = this.rdfcsa.D.rank(this.rdfcsa.psi[movePredicate]);
-          const rangeObject = [
-            this.rdfcsa.select(referenceObjectId),
-            this.rdfcsa.select(referenceObjectId + 1) - 1
-          ]
-          for (let j = rangeToMoveOver[0]; j <= rangeToMoveOver[1]; j++) {
-            const moveOverPredicate = this.rdfcsa.psi[j];
-            if (moveOverPredicate >= rangePredicate[0] && moveOverPredicate <= rangePredicate[1] && moveOverPredicate < movePredicate) {
-              moves.push([movePredicate, -1]);
-              changes.push([i, -1]);
-              changes.push([j, +1]);
-            }
-            const moveOverObject = this.rdfcsa.psi[moveOverPredicate]
-            if (moveOverObject >= rangeObject[0] && moveOverObject <= rangeObject[1] && moveOverObject < this.rdfcsa.psi[movePredicate]) {
-              moves.push([this.rdfcsa.psi[movePredicate], -1]);
-              changes.push([movePredicate, -1]);
-              changes.push([moveOverPredicate, +1]);
-            }
-          }
-          moves.push([i, - distanceToMove]);
-          changes.push([this.rdfcsa.psi[movePredicate], -distanceToMove]);
-        }
-
-        for (let k = rangeToMoveOver[0]; k <= rangeToMoveOver[1]; k++) {
-          const target = this.rdfcsa.psi[this.rdfcsa.psi[k]]
-          changes.push([target, rangeToMove[1] - rangeToMove[0] + 1]);
-        }
-
-        changes.forEach(([index, change]) => {
-          this.rdfcsa.psi[index] += change;
-        })
-
-        moves.forEach(([index, movesLength]) => {
-          for (let i = index; i > index + movesLength; i--) {   
-            const temp = this.rdfcsa.psi[i - 1];
-            this.rdfcsa.psi[i - 1] = this.rdfcsa.psi[i];
-            this.rdfcsa.psi[i] = temp;
-          }
-        })
-
-        
-        if (rangeToMoveOver[0] === 0) {
-          this.rdfcsa.D.setBit(0)
-          this.rdfcsa.D.unsetBit(rangeToMove[0])
-        }
-        // change D range
-        for (let index = rangeToMove[0]; index <= rangeToMove[1]; index++) {
-          const oldBit = this.rdfcsa.D.getBit(index)
-          this.rdfcsa.D.deleteBit(index)
-          this.rdfcsa.D.addBit(index - distanceToMove)
-          if (oldBit === 1) {
-            this.rdfcsa.D.setBit(index - distanceToMove);
-          }
-          /*
-          for (let i = index; i > index - distanceToMove; i--) {   
-            const temp = this.rdfcsa.D[i - 1];
-            this.rdfcsa.D[i - 1] = this.rdfcsa.D[i];
-            this.rdfcsa.D[i] = temp;
-          }
-          */
-        }
+        this.#moveSubject(rangeToMove, rangeToMoveOver, distanceToMove);
       }
     }
 
@@ -748,6 +491,138 @@ export class RdfOperations {
     this.rdfcsa.tripleCount -= 1;
 
     return this.rdfcsa;
+  }
+
+  /**
+   * Moves a subject range in psi and D
+   * @param {number[]} rangeToMove
+   * @param {number[]} rangeToMoveOver
+   * @param {number} distanceToMove
+   */
+  #moveSubject(rangeToMove, rangeToMoveOver, distanceToMove) {
+    const moves = [];
+    const changes = [];
+
+    for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
+      const movePredicate = this.rdfcsa.psi[i];
+      const referencePredicateId = this.rdfcsa.D.rank(movePredicate);
+      const rangePredicate = [
+        this.rdfcsa.select(referencePredicateId),
+        this.rdfcsa.select(referencePredicateId + 1) - 1,
+      ];
+      // IDEA: maybe move into second for loop to not calculate if not needed, save if calculated to not repeat for every loop iteration
+      const referenceObjectId = this.rdfcsa.D.rank(this.rdfcsa.psi[movePredicate]);
+      const rangeObject = [this.rdfcsa.select(referenceObjectId), this.rdfcsa.select(referenceObjectId + 1) - 1];
+      for (let j = rangeToMoveOver[0]; j <= rangeToMoveOver[1]; j++) {
+        const moveOverPredicate = this.rdfcsa.psi[j];
+        if (
+          moveOverPredicate >= rangePredicate[0] &&
+          moveOverPredicate <= rangePredicate[1] &&
+          moveOverPredicate < movePredicate
+        ) {
+          moves.push([movePredicate, -1]);
+          changes.push([i, -1]);
+          changes.push([j, +1]);
+        }
+        const moveOverObject = this.rdfcsa.psi[moveOverPredicate];
+        if (
+          moveOverObject >= rangeObject[0] &&
+          moveOverObject <= rangeObject[1] &&
+          moveOverObject < this.rdfcsa.psi[movePredicate]
+        ) {
+          moves.push([this.rdfcsa.psi[movePredicate], -1]);
+          changes.push([movePredicate, -1]);
+          changes.push([moveOverPredicate, +1]);
+        }
+      }
+      moves.push([i, -distanceToMove]);
+      changes.push([this.rdfcsa.psi[movePredicate], -distanceToMove]);
+    }
+
+    for (let k = rangeToMoveOver[0]; k <= rangeToMoveOver[1]; k++) {
+      const target = this.rdfcsa.psi[this.rdfcsa.psi[k]];
+      changes.push([target, rangeToMove[1] - rangeToMove[0] + 1]);
+    }
+
+    this.#applyChanges(changes);
+
+    this.#applyMoves(moves);
+
+    this.#executeMoveOnBitvector(rangeToMove, rangeToMoveOver, distanceToMove);
+  }
+
+  /**
+   * Moves a subject range in psi and D
+   * @param {number[]} rangeToMove
+   * @param {number[]} rangeToMoveOver
+   * @param {number} distanceToMove
+   */
+  #moveObject(rangeToMove, rangeToMoveOver, distanceToMove) {
+    const moves = [];
+    const changes = [];
+
+    for (let i = rangeToMove[0]; i <= rangeToMove[1]; i++) {
+      const moveSubject = this.rdfcsa.psi[i];
+      moves.push([i, -distanceToMove]);
+      changes.push([this.rdfcsa.psi[moveSubject], -distanceToMove]);
+    }
+
+    for (let k = rangeToMoveOver[0]; k <= rangeToMoveOver[1]; k++) {
+      const target = this.rdfcsa.psi[this.rdfcsa.psi[k]];
+      changes.push([target, rangeToMove[1] - rangeToMove[0] + 1]);
+    }
+
+    this.#applyChanges(changes);
+
+    this.#applyMoves(moves);
+
+    this.#executeMoveOnBitvector(rangeToMove, rangeToMoveOver, distanceToMove);
+  }
+
+  /**
+   * Moves the elements in `rangeToMove` for `distanceToMove`
+   * @param {number[]} rangeToMove
+   * @param {number[]} rangeToMoveOver
+   * @param {number} distanceToMove
+   */
+  #executeMoveOnBitvector(rangeToMove, rangeToMoveOver, distanceToMove) {
+    if (rangeToMoveOver[0] === 0) {
+      this.rdfcsa.D.setBit(0);
+      this.rdfcsa.D.unsetBit(rangeToMove[0]);
+    }
+    // change D range
+    for (let index = rangeToMove[0]; index <= rangeToMove[1]; index++) {
+      const oldBit = this.rdfcsa.D.getBit(index);
+      this.rdfcsa.D.deleteBit(index);
+      this.rdfcsa.D.addBit(index - distanceToMove);
+      if (oldBit === 1) {
+        this.rdfcsa.D.setBit(index - distanceToMove);
+      }
+    }
+  }
+
+  /**
+   * Applies the cahnges to psi
+   * @param {number[][]} changes
+   */
+  #applyChanges(changes) {
+    changes.forEach(([index, change]) => {
+      this.rdfcsa.psi[index] += change;
+    });
+  }
+
+  /**
+   * Applies the moves to psi
+   * @param {number[][]} moves
+   */
+  #applyMoves(moves) {
+    moves.forEach(([index, movesLength]) => {
+      for (let i = index; i > index + movesLength; i--) {
+        const temp = this.rdfcsa.psi[i - 1];
+        this.rdfcsa.psi[i - 1] = this.rdfcsa.psi[i];
+        this.rdfcsa.psi[i] = temp;
+      }
+    });
   }
 
   #getTripleIndices(sRange, pRange, oRange) {
@@ -779,7 +654,6 @@ export class RdfOperations {
     const oIndex = this.rdfcsa.psi[pIndex];
     return [sIndex, pIndex, oIndex];
   }
-
 
   /**
    *
@@ -835,7 +709,7 @@ export class RdfOperations {
     if (!this.rdfcsa.dictionary.getElementById(id)) {
       return;
     }
-    
+
     const element = this.rdfcsa.dictionary.getElementById(id);
 
     const queryManager = new QueryManager(this.rdfcsa);
@@ -843,7 +717,7 @@ export class RdfOperations {
     let tripleToDelete = this.#getTripleToDelete(element, queryManager);
 
     while (tripleToDelete != undefined) {
-      this.deleteTripleNew(tripleToDelete)
+      this.deleteTripleNew(tripleToDelete);
       tripleToDelete = this.#getTripleToDelete(element, queryManager);
     }
 
@@ -860,8 +734,7 @@ export class RdfOperations {
     let tripleToDelete;
     if (this.rdfcsa.gaps[1] > id) {
       tripleToDelete = queryManager.getTriples([new QueryTriple(new QueryElement(id), null, null)]);
-    } else
-    if (this.rdfcsa.gaps[2] > id) {
+    } else if (this.rdfcsa.gaps[2] > id) {
       tripleToDelete = queryManager.getTriples([new QueryTriple(null, new QueryElement(id), null)]);
     } else {
       tripleToDelete = queryManager.getTriples([new QueryTriple(null, null, new QueryElement(id))]);
@@ -897,47 +770,55 @@ export class RdfOperations {
     if (id < this.rdfcsa.gaps[1]) {
       const originalTriplesNumeric = queryManager.getTriples([new QueryTriple(new QueryElement(id), null, null)]);
       originalTriplesNumeric.forEach((triple) => {
-        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple))
-      }) 
+        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+      });
       originalTriples.forEach((triple) => {
         triple[0] = text;
-      })
+      });
       if (this.rdfcsa.dictionary.isSubjectObjectById(id)) {
-        const originalObjectTriplesNumeric = queryManager.getTriples([new QueryTriple(null, null, new QueryElement(id + this.rdfcsa.gaps[2]))]);
+        const originalObjectTriplesNumeric = queryManager.getTriples([
+          new QueryTriple(null, null, new QueryElement(id + this.rdfcsa.gaps[2])),
+        ]);
         const originalObjectTriples = [];
         originalObjectTriplesNumeric.forEach((triple) => {
-          originalObjectTriples.push(this.rdfcsa.dictionary.decodeTriple(triple))
-        }) 
+          originalObjectTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+        });
         originalObjectTriples.forEach((triple) => {
           triple[2] = text;
-        })
+        });
         originalTriples.push(...originalObjectTriples);
       }
     } else if (id < this.rdfcsa.gaps[2]) {
       const originalTriplesNumeric = queryManager.getTriples([new QueryTriple(null, new QueryElement(id), null)]);
       originalTriplesNumeric.forEach((triple) => {
-        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple))
-      }) 
+        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+      });
       originalTriples.forEach((triple) => {
         triple[1] = text;
-      })
+      });
     } else {
-      const originalTriplesNumeric = queryManager.getTriples([null, null, new QueryTriple(new QueryElement(id - this.rdfcsa.gaps[2]))]);
+      const originalTriplesNumeric = queryManager.getTriples([
+        null,
+        null,
+        new QueryTriple(new QueryElement(id - this.rdfcsa.gaps[2])),
+      ]);
       originalTriplesNumeric.forEach((triple) => {
-        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple))
-      }) 
+        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+      });
       originalTriples.forEach((triple) => {
         triple[2] = text;
-      })
+      });
       if (this.rdfcsa.dictionary.isSubjectObjectById(id)) {
-        const originalSubjectTriplesNumeric = queryManager.getTriples([new QueryTriple( new QueryElement(id), null, null)]);
+        const originalSubjectTriplesNumeric = queryManager.getTriples([
+          new QueryTriple(new QueryElement(id), null, null),
+        ]);
         const originalSubjectTriples = [];
         originalSubjectTriplesNumeric.forEach((triple) => {
-          originalSubjectTriples.push(this.rdfcsa.dictionary.decodeTriple(triple))
-        }) 
+          originalSubjectTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+        });
         originalSubjectTriples.forEach((triple) => {
           triple[0] = text;
-        })
+        });
         originalTriples.push(...originalSubjectTriples);
       }
     }
@@ -945,7 +826,7 @@ export class RdfOperations {
 
     originalTriples.forEach((changedTriple) => {
       this.addTripleNew(changedTriple[0], changedTriple[1], changedTriple[2]);
-    })
+    });
 
     return this.rdfcsa;
   }

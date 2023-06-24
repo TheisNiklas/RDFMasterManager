@@ -18,6 +18,7 @@ import { useSelector, useDispatch } from "react-redux";
 import { useMediaQuery } from 'react-responsive';
 import JsonView from 'react18-json-view';
 import 'react18-json-view/src/style.css';
+import Grid from '@mui/material/Grid';
 
 const TextCard = styled(Card)(({ theme }) => ({
     '& .MuiTableCell-stickyHeader': {
@@ -73,7 +74,6 @@ const getOptions = () => {
     return menuItems
 }
 
-
 export default function TextVisualization() {
 
     const [page, setPage] = React.useState(0);
@@ -107,6 +107,20 @@ export default function TextVisualization() {
     const getId = () => {
         currentId++;
         return currentId;
+    }
+
+    /**
+     * This method is only used for turtle Format! Check if current value need intendation.
+     * @param value String value of the current row
+     * @returns Returns true if current row needs intendation. Returns false if not.
+     */
+    const needsIntendation = (value: string) => {
+        value = value.toLocaleString();
+        let value_splitted = value.split(' ');
+        if (value_splitted.length > 3) {
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -247,33 +261,45 @@ export default function TextVisualization() {
                         </TableRow>
                     </TableHead>
                     {
-                        format === "JSON-LD" &&
-                        <TableBody>
-                            <TableRow>
-                                <TableCell>
-                                    <JsonView src={jsonData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)} />
-                                </TableCell>
-                            </TableRow>
-                        </TableBody>
-                    }
-                    {
-                        format !== "JSON-LD" &&
-                        <TableBody>
-                            {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: string) => {
-                                return (
-                                    <TableRow hover role="checkbox" tabIndex={-1} key={getId()}>
-                                        {columns.map((column: any) => {
-                                            const value = row;
-                                            return (
-                                                <TableCell key={column.id} align={column.align} style={{ fontSize: "18px" }}>
-                                                    {column.format(value)}
-                                                </TableCell>
-                                            );
-                                        })}
-                                    </TableRow>
-                                );
-                            })}
-                        </TableBody>
+                        format === "JSON-LD"
+                            ?
+                            <TableBody>
+                                {/* JSON Viewer */}
+                                <TableRow>
+                                    <TableCell>
+                                        <JsonView src={jsonData.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)} />
+                                    </TableCell>
+                                </TableRow>
+                            </TableBody>
+                            :
+                            <TableBody>
+                                {/* TextView */}
+                                {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: string) => {
+                                    return (
+                                        <TableRow hover role="checkbox" tabIndex={-1} key={getId()}>
+                                            {columns.map((column: any) => {
+                                                const value = row;
+                                                return (
+                                                    <TableCell key={column.id} align={column.align} style={{ fontSize: "18px" }}>
+                                                        {
+                                                            (format === "Turtle" && needsIntendation(value))
+                                                                ?
+                                                                <Grid container spacing={0}>
+                                                                    {/* Intendation for turtle */}
+                                                                    <Grid item xs={0.25} />
+                                                                    <Grid item xs={10}>
+                                                                        {column.format(value)}
+                                                                    </Grid>
+                                                                </Grid>
+                                                                : <div>{column.format(value)}</div>
+                                                        }
+                                                    </TableCell>
+                                                );
+                                            })}
+                                        </TableRow>
+                                    );
+                                })}
+                            </TableBody>
                     }
                 </Table>
             </TableContainer>

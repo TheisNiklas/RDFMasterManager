@@ -15,7 +15,6 @@ import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import { ExportService } from '../rdf/exporter/export-service';
 import { useSelector, useDispatch } from "react-redux";
-import { useMediaQuery } from 'react-responsive';
 import JsonView from 'react18-json-view';
 import 'react18-json-view/src/style.css';
 import Grid from '@mui/material/Grid';
@@ -54,6 +53,22 @@ function loadDefaultFormat() {
     const export_options = exporter.getAvailableExporters();
 
     return export_options[0]
+}
+
+function isMobileDevice() {
+    if (window.screen.width < 1200 && window.screen.width >= 320) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+function getTableSize() {
+    if (isMobileDevice()) {
+        return 'small';
+    } else {
+        return 'medium';
+    }
 }
 
 /**
@@ -203,12 +218,16 @@ export default function TextVisualization() {
      */
     const drownDownMenu = () => {
         return (
-            <DropDownBox>
-                <DropDownForm variant="standard">
-                    <InputLabel variant="standard" style={{ color: 'white' }}>
-                        Format
-                    </InputLabel>
+            <DropDownBox >
+                <DropDownForm variant='standard'>
+                    {
+                        !isMobileDevice() &&
+                        <InputLabel id='format_chooser_label' style={{ color: 'white' }}>
+                            Format
+                        </InputLabel>
+                    }
                     <Select
+                        labelId='format_chooser_label'
                         defaultValue={defaultFormat}
                         inputProps={{
                             name: 'format',
@@ -216,6 +235,7 @@ export default function TextVisualization() {
                         style={{
                             color: 'white',
                         }}
+                        label='Format'
                         onChange={e => handleChange(e.target.value)}
                     >
                         {menuitems}
@@ -228,30 +248,38 @@ export default function TextVisualization() {
     return (
         <TextCard elevation={6} sx={{
             width: "98vw",
-            ...(useMediaQuery({
-                query: "(min-device-width: 320px)",
-            }) && {
+            ...(isMobileDevice() && {
                 width: "95vw",
             }),
-            ...(useMediaQuery({
-                query: "(min-device-width: 1024px)",
-            }) && {
+            ...(!isMobileDevice() && {
                 width: "98vw",
             }),
         }}>
-            <TableContainer style={{ height: "80vh" }}>
-                <Table stickyHeader aria-label="sticky table">
+            <TableContainer sx={{
+                height: "80vh",
+                ...(isMobileDevice() && {
+                    height: "45vh"
+                }),
+                ...(!isMobileDevice() && {
+                    height: "80vh",
+                }),
+            }}>
+                <Table stickyHeader={!isMobileDevice()} aria-label="sticky table" size={getTableSize()}>
                     <TableHead style={{ backgroundColor: "#1976d2" }}>
                         <TableRow>
                             {columns.map((column) => (
                                 <TableCell
                                     key={column.id}
                                     align='center'
-                                    style={{
+                                    sx={{
                                         minWidth: column.minWidth,
                                         fontWeight: "bold",
                                         fontSize: "22px",
                                         color: "white",
+                                        ...(isMobileDevice() && {
+                                            overflow: 'visible',
+                                            position: 'relative',
+                                        }),
                                     }}
                                 >
                                     {column.label}

@@ -166,8 +166,7 @@ export default function PersistentDrawerRight() {
     };
 
     function isMobileDevice(){
-      console.log("BEFORE IS MOBILE");
-      if(window.screen.width < 1200 && window.screen.width >= 480){
+      if(window.screen.width < 1200 && window.screen.width >= 320){
           return true;
       }else{
         return false;

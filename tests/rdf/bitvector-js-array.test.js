@@ -1,9 +1,9 @@
-import {BitVectorJsArray } from "../../src/rdf/bitvector-js-array";
+import { BitVectorJsArray } from "../../src/rdf/bitvector-js-array";
 
 describe("BitvectorJsArray", () => {
   let bitvector;
   beforeEach(() => {
-    bitvector = new BitVectorJsArray([0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1])
+    bitvector = new BitVectorJsArray([0, 1, 0, 1, 0, 0, 0, 1, 1, 0, 0, 1, 1]);
   });
   test("rank(0)", () => {
     const result = bitvector.rank(0);

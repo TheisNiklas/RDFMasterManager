@@ -23,7 +23,7 @@ describe("RdfOperations", () => {
   test("addTriple", () => {
     let rdfcsa = new Rdfcsa(tripleListReduced);
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTriple("L. DiCaprio", "awarded", "Oscar 2015");
+    const res = ops.addTripleOld("L. DiCaprio", "awarded", "Oscar 2015");
     expect(res.psi).toEqual(resultPsi);
     expect(res.gaps).toEqual(resultGaps);
     expect(res.D.toString()).toEqual(resultD);
@@ -32,7 +32,7 @@ describe("RdfOperations", () => {
   test("addTriple: case 1", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew("Peter", "has", "Home");
+    const res = ops.addTriple("Peter", "has", "Home");
     expect(res.psi).toEqual(addTripleCase1.resultPsi);
     expect(res.gaps).toEqual(addTripleCase1.resultGaps);
     expect(res.D.toString()).toEqual(addTripleCase1.resultD);
@@ -45,7 +45,7 @@ describe("RdfOperations", () => {
   test("addTriple: case 2", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew("E. Page", "awarded", "Oscar 2015");
+    const res = ops.addTriple("E. Page", "awarded", "Oscar 2015");
     expect(res.psi).toEqual(addTripleCase2.resultPsi);
     expect(res.gaps).toEqual(addTripleCase2.resultGaps);
     expect(res.D.toString()).toEqual(addTripleCase2.resultD);
@@ -61,11 +61,11 @@ describe("RdfOperations", () => {
     const addObject = "J. Gordon";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
+    const resRef = opsRef.addTripleOld(addSubject, addPredicate, addObject);
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew(addSubject, addPredicate, addObject);
+    const res = ops.addTriple(addSubject, addPredicate, addObject);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -81,11 +81,11 @@ describe("RdfOperations", () => {
     const addObject = "J. Gordon";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
+    const resRef = opsRef.addTripleOld(addSubject, addPredicate, addObject);
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew(addSubject, addPredicate, addObject);
+    const res = ops.addTriple(addSubject, addPredicate, addObject);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -101,11 +101,11 @@ describe("RdfOperations", () => {
     const addObject = "J. Gordon";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
+    const resRef = opsRef.addTripleOld(addSubject, addPredicate, addObject);
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew(addSubject, addPredicate, addObject);
+    const res = ops.addTriple(addSubject, addPredicate, addObject);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -118,7 +118,7 @@ describe("RdfOperations", () => {
   test("addTriple: case 4", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew("Inception", "city of", "J. Gordon");
+    const res = ops.addTriple("Inception", "city of", "J. Gordon");
     expect(res.psi).toEqual(addTripleCase4.resultPsi);
     expect(res.gaps).toEqual(addTripleCase4.resultGaps);
     expect(res.D.toString()).toEqual(addTripleCase4.resultD);
@@ -137,11 +137,11 @@ describe("RdfOperations", () => {
     const addObject1 = "Home";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef0 = opsRef.addTriple(addSubject, addPredicate, addObject);
+    const resRef0 = opsRef.addTripleOld(addSubject, addPredicate, addObject);
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res0 = ops.addTripleNew(addSubject, addPredicate, addObject);
+    const res0 = ops.addTriple(addSubject, addPredicate, addObject);
     expect(res0.D.toString()).toEqual(resRef0.D.toString());
     expect(res0.dictionary.SO).toEqual(resRef0.dictionary.SO);
     expect(res0.dictionary.S).toEqual(resRef0.dictionary.S);
@@ -149,8 +149,8 @@ describe("RdfOperations", () => {
     expect(res0.dictionary.O).toEqual(resRef0.dictionary.O);
     expect(res0.gaps).toEqual(resRef0.gaps);
     expect(res0.psi).toEqual(resRef0.psi);
-    const resRef = opsRef.addTriple(addSubject1, addPredicate1, addObject1);
-    const res = ops.addTripleNew(addSubject1, addPredicate1, addObject1);
+    const resRef = opsRef.addTripleOld(addSubject1, addPredicate1, addObject1);
+    const res = ops.addTriple(addSubject1, addPredicate1, addObject1);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -166,10 +166,10 @@ describe("RdfOperations", () => {
     const addObject = "Oscar 2015";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
+    const resRef = opsRef.addTripleOld(addSubject, addPredicate, addObject);
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew(addSubject, addPredicate, addObject);
+    const res = ops.addTriple(addSubject, addPredicate, addObject);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -185,10 +185,10 @@ describe("RdfOperations", () => {
     const addObject = "USB";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
+    const resRef = opsRef.addTripleOld(addSubject, addPredicate, addObject);
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew(addSubject, addPredicate, addObject);
+    const res = ops.addTriple(addSubject, addPredicate, addObject);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -204,10 +204,10 @@ describe("RdfOperations", () => {
     const addObject = "ASB";
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
+    const resRef = opsRef.addTripleOld(addSubject, addPredicate, addObject);
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew(addSubject, addPredicate, addObject);
+    const res = ops.addTriple(addSubject, addPredicate, addObject);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -226,11 +226,11 @@ describe("RdfOperations", () => {
     const addObject1 = "ASB";
     let rdfcsaRef = new Rdfcsa([]);
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.addTriple(addSubject, addPredicate, addObject);
+    const resRef = opsRef.addTripleOld(addSubject, addPredicate, addObject);
 
     let rdfcsa = new Rdfcsa([]);
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew(addSubject, addPredicate, addObject);
+    const res = ops.addTriple(addSubject, addPredicate, addObject);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -239,9 +239,9 @@ describe("RdfOperations", () => {
     expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
 
-    const resRef1 = opsRef.addTriple(addSubject1, addPredicate1, addObject1);
+    const resRef1 = opsRef.addTripleOld(addSubject1, addPredicate1, addObject1);
 
-    const res1 = ops.addTripleNew(addSubject1, addPredicate1, addObject1);
+    const res1 = ops.addTriple(addSubject1, addPredicate1, addObject1);
     expect(res1.dictionary.SO).toEqual(resRef1.dictionary.SO);
     expect(res1.dictionary.S).toEqual(resRef1.dictionary.S);
     expect(res1.dictionary.P).toEqual(resRef1.dictionary.P);
@@ -254,7 +254,7 @@ describe("RdfOperations", () => {
   test("deleteTriple", () => {
     let rdfcsa = new Rdfcsa(tripleListExtended);
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTriple(new Triple(3, 6, 14));
+    const res = ops.deleteTripleOld(new Triple(3, 6, 14));
     expect(res.psi).toEqual(resultPsi);
     expect(res.gaps).toEqual(resultGaps);
     expect(res.D.toString()).toEqual(resultD);
@@ -268,11 +268,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -291,11 +291,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -314,11 +314,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -337,11 +337,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -360,11 +360,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -387,11 +387,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -401,9 +401,9 @@ describe("RdfOperations", () => {
     expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
 
-    const resRef1 = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple1)));
+    const resRef1 = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple1)));
 
-    const res1 = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple1)));
+    const res1 = ops.deleteTriple(JSON.parse(JSON.stringify(triple1)));
 
     expect(res1.dictionary.SO).toEqual(resRef1.dictionary.SO);
     expect(res1.dictionary.S).toEqual(resRef1.dictionary.S);
@@ -434,11 +434,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -448,9 +448,9 @@ describe("RdfOperations", () => {
     expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
 
-    const resRef1 = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple1)));
+    const resRef1 = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple1)));
 
-    const res1 = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple1)));
+    const res1 = ops.deleteTriple(JSON.parse(JSON.stringify(triple1)));
 
     expect(res1.dictionary.SO).toEqual(resRef1.dictionary.SO);
     expect(res1.dictionary.S).toEqual(resRef1.dictionary.S);
@@ -480,11 +480,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -494,9 +494,9 @@ describe("RdfOperations", () => {
     expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
 
-    const resRef1 = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple1)));
+    const resRef1 = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple1)));
 
-    const res1 = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple1)));
+    const res1 = ops.deleteTriple(JSON.parse(JSON.stringify(triple1)));
 
     expect(res1.dictionary.SO).toEqual(resRef1.dictionary.SO);
     expect(res1.dictionary.S).toEqual(resRef1.dictionary.S);
@@ -522,11 +522,11 @@ describe("RdfOperations", () => {
 
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.deleteTriple(JSON.parse(JSON.stringify(triple)));
+    const resRef = opsRef.deleteTripleOld(JSON.parse(JSON.stringify(triple)));
 
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList1)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.deleteTripleNew(JSON.parse(JSON.stringify(triple)));
+    const res = ops.deleteTriple(JSON.parse(JSON.stringify(triple)));
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -544,10 +544,10 @@ describe("RdfOperations", () => {
     const oldTriple = new Triple(3, 10, 12);
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.modifyTriples(JSON.parse(JSON.stringify(oldTriple)), newSubject, newPredicate, newObject);
+    const resRef = opsRef.modifyTripleOld(JSON.parse(JSON.stringify(oldTriple)), newSubject, newPredicate, newObject);
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.modifyTripleNew(JSON.parse(JSON.stringify(oldTriple)), newSubject, newPredicate, newObject);
+    const res = ops.modifyTriple(JSON.parse(JSON.stringify(oldTriple)), newSubject, newPredicate, newObject);
 
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
@@ -561,7 +561,7 @@ describe("RdfOperations", () => {
   test("modifyTriple", () => {
     let rdfcsa = new Rdfcsa(tripleListModified);
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.modifyTriples(new Triple(3, 10, 12), "J. Gordon", "appears in", "Inception");
+    const res = ops.modifyTriple(new Triple(3, 10, 12), "J. Gordon", "appears in", "Inception");
     expect(res.psi).toEqual(resultPsi);
     expect(res.gaps).toEqual(resultGaps);
     expect(res.D.toString()).toEqual(resultD);
@@ -622,10 +622,10 @@ describe("RdfOperations", () => {
     const toAdd4 = ["J. Gordon", "appears in", "Inception"];
     let rdfcsaRef = new Rdfcsa(JSON.parse(JSON.stringify(input)));
     let opsRef = new RdfOperations(rdfcsaRef);
-    const resRef = opsRef.addTriple(toAdd[0], toAdd[1], toAdd[2]);
+    const resRef = opsRef.addTripleOld(toAdd[0], toAdd[1], toAdd[2]);
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(input)));
     let ops = new RdfOperations(rdfcsa);
-    const res = ops.addTripleNew(toAdd[0], toAdd[1], toAdd[2]);
+    const res = ops.addTriple(toAdd[0], toAdd[1], toAdd[2]);
     expect(res.dictionary.SO).toEqual(resRef.dictionary.SO);
     expect(res.dictionary.S).toEqual(resRef.dictionary.S);
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
@@ -643,7 +643,7 @@ describe("RDFOperation inserts Test", () => {
     let rdfcsa = new Rdfcsa([]);
     let ops = new RdfOperations(rdfcsa);
     tripleList.forEach((triple) => {
-      ops.addTripleNew(triple[0], triple[1], triple[2]);
+      ops.addTriple(triple[0], triple[1], triple[2]);
     });
 
     expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
@@ -661,7 +661,7 @@ describe("RDFOperation inserts Test", () => {
     let rdfcsa = new Rdfcsa([], true);
     let ops = new RdfOperations(rdfcsa);
     dataset_1k.dataset.forEach((triple) => {
-      ops.addTripleNew(triple[0], triple[1], triple[2]);
+      ops.addTriple(triple[0], triple[1], triple[2]);
     });
 
     expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
@@ -679,7 +679,7 @@ describe("RDFOperation inserts Test", () => {
     let rdfcsa = new Rdfcsa([], true);
     let ops = new RdfOperations(rdfcsa);
     dataset_1k.dataset.forEach((triple) => {
-      ops.addTripleNew(triple[0], triple[1], triple[2]);
+      ops.addTriple(triple[0], triple[1], triple[2]);
     });
 
     expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
@@ -698,7 +698,7 @@ describe("RDFOperation inserts Test", () => {
     let rdfcsa = new Rdfcsa([]);
     let ops = new RdfOperations(rdfcsa);
     dataset_1k.dataset.forEach((triple) => {
-      ops.addTripleNew(triple[0], triple[1], triple[2]);
+      ops.addTriple(triple[0], triple[1], triple[2]);
     });
 
     expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
@@ -719,7 +719,7 @@ describe.skip("RDFOperation MaxiTest", () => {
     let rdfcsa = new Rdfcsa([]);
     let ops = new RdfOperations(rdfcsa);
     dataset.forEach((triple) => {
-      ops.addTripleNew(triple[0], triple[1], triple[2]);
+      ops.addTriple(triple[0], triple[1], triple[2]);
     });
 
     expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);

@@ -125,7 +125,7 @@ export default function Graph3DReact({
   const handleSubmitLinkRight = () => {
     const rdfOperations = new RdfOperations(database);
     const tripleToChange = new Triple(linkSource, linkId, linkTarget);
-    const newDatabase = rdfOperations.modifyTripleNew(tripleToChange, source, pred, target);
+    const newDatabase = rdfOperations.modifyTriple(tripleToChange, source, pred, target);
     setDatabase(newDatabase as Rdfcsa);
     setToastMessage("Successfully modified triple");
     setToastOpen(true);
@@ -136,7 +136,7 @@ export default function Graph3DReact({
   const handleDeleteTriple = () => {
     const rdfOperations = new RdfOperations(database);
     const tripleToDelete = new Triple(linkSource, linkId, linkTarget);
-    const newDatabase = rdfOperations.deleteTripleNew(tripleToDelete);
+    const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
     setDatabase(newDatabase as Rdfcsa);
     const queryManager = new QueryManager(newDatabase);
     //setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)]));
@@ -190,9 +190,14 @@ export default function Graph3DReact({
       </Dialog>
       <Dialog open={openNodeRight} onClose={handleNodeRightClose}>
         <DialogTitle id="node-right-title">Rename</DialogTitle>
-        <DialogContent style={{paddingTop: 4}}>
+        <DialogContent style={{ paddingTop: 4 }}>
           <DialogContentText id="node-right-text">
-            <TextField label="Name" variant="outlined" defaultValue={nodeName} onChange={(event) => setFormField(event.target.value)} />
+            <TextField
+              label="Name"
+              variant="outlined"
+              defaultValue={nodeName}
+              onChange={(event) => setFormField(event.target.value)}
+            />
           </DialogContentText>
         </DialogContent>
         <DialogActions>
@@ -209,13 +214,28 @@ export default function Graph3DReact({
           <DialogContentText id="link-right-text">
             <Grid container spacing={2}>
               <Grid item xs={4}>
-                <TextField label="Subject" variant="outlined" defaultValue={linkSourceName} onChange={(event) => setSource(event.target.value)} />
+                <TextField
+                  label="Subject"
+                  variant="outlined"
+                  defaultValue={linkSourceName}
+                  onChange={(event) => setSource(event.target.value)}
+                />
               </Grid>
               <Grid item xs={4}>
-                <TextField label="Predicate" variant="outlined" defaultValue={linkName} onChange={(event) => setPred(event.target.value)} />
+                <TextField
+                  label="Predicate"
+                  variant="outlined"
+                  defaultValue={linkName}
+                  onChange={(event) => setPred(event.target.value)}
+                />
               </Grid>
               <Grid item xs={4}>
-                <TextField label="Object" variant="outlined" defaultValue={linkTargetName} onChange={(event) => setTarget(event.target.value)} />
+                <TextField
+                  label="Object"
+                  variant="outlined"
+                  defaultValue={linkTargetName}
+                  onChange={(event) => setTarget(event.target.value)}
+                />
               </Grid>
             </Grid>
           </DialogContentText>

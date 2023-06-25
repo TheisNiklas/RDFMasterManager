@@ -71,7 +71,6 @@ export class QueryManager {
    * @returns {Triple[]}
    */
   getAllTriples() {
-    // TODO: return all triples
     const tripleList = [];
     for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
       // find the next referenced element
@@ -383,7 +382,7 @@ export class QueryManager {
       // get join variable  ((?x, p1, o1)x(?y, p2, o2)x(?x, p3, ?y),
       //                     (?x, p1, ?y)x(?y, p2, o2)x(?x, p3, o1)x(?y, p1, o4))
       joinVars.push(this.#getJoinVars(queries[i]));
-      const preJoinVar = joinVars[i-1]; // TODO: noch nicht richtig (Überprüfung aller vorherigen Arrays)
+      const preJoinVar = joinVars[i - 1]; // TODO: noch nicht richtig (Überprüfung aller vorherigen Arrays)
       const curJoinVar = joinVars[i];
       // compare join variable
       var joinVar = undefined;

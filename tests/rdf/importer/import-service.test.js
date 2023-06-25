@@ -1,14 +1,14 @@
 import { readFileSync } from "fs";
 import { ImportService } from "../../../src/rdf/importer/import-service";
 import { Rdfcsa } from "../../../src/rdf/rdfcsa";
-import { resultD, resultGaps, resultPsi } from "../fixtures/rdfcsa.test.json"
+import { resultD, resultGaps, resultPsi } from "../fixtures/rdfcsa.test.json";
 
 describe("ImportService", () => {
   /** @type {ImportService} */
   let importService;
   beforeEach(() => {
-    importService = new ImportService()
-  })
+    importService = new ImportService();
+  });
   test("import N-Triples file", async () => {
     let res = undefined;
     try {
@@ -78,5 +78,5 @@ describe("ImportService", () => {
     expect(res.dictionary.S).toEqual(["S:E.Page", "S:J.Gordon", "S:L.DiCaprio"]);
     expect(res.dictionary.P).toEqual(["P:appearsin", "P:awarded", "P:bornin", "P:cityof", "P:filmedin", "P:livesin"]);
     expect(res.dictionary.O).toEqual(["O:Canada", "O:Oscar2015", "O:USA"]);
-  })
+  });
 });

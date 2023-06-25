@@ -88,7 +88,12 @@ export class ExportService {
     if (exporter.exportTriples === undefined) {
       throw Error("The given exporter is not based on the interface class Importer or StreamImporter");
     }
-    this.#exporters[exporterFormat] = {instance: exporter, extension: extension, isStreamExporter: isStreamExporter, mimeType: mimeType};
+    this.#exporters[exporterFormat] = {
+      instance: exporter,
+      extension: extension,
+      isStreamExporter: isStreamExporter,
+      mimeType: mimeType,
+    };
   }
 
   /**
@@ -111,7 +116,7 @@ export class ExportService {
 
   /**
    * Gets the exporter for a given filetype
-   * @param {string} format 
+   * @param {string} format
    * @returns {{instance: Exporter, extension: string, isStreamExporter: boolean, mimeType: string}}
    * @throws {Error} if no matching exporter found
    */

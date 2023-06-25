@@ -1,43 +1,43 @@
 /**
  * Bitvector using a js array
  */
-export class BitVectorJsArray{
+export class BitVectorJsArray {
   /**
-   * 
-   * @param {number[]} bits 
+   *
+   * @param {number[]} bits
    */
-  constructor(bits){
+  constructor(bits) {
     this.bits = bits;
   }
-  
+
   /**
    * Get value of bit at index in BitVector.
    * @param {number} index of Bit
    * @returns bit value at index
    */
   getBit(index) {
-    return this.bits[index]
+    return this.bits[index];
   }
 
   /**
    * Set value of bit at index in BitVector
-   * @param {number} index 
+   * @param {number} index
    */
   setBit(index) {
-    this.bits[index] = 1
+    this.bits[index] = 1;
   }
 
   /**
    * Unset value of bit at index in BitVector
-   * @param {number} index 
+   * @param {number} index
    */
   unsetBit(index) {
-    this.bits[index] = 0
+    this.bits[index] = 0;
   }
 
   /**
    * Counts all ones up to `index`
-   * @param {number} index 
+   * @param {number} index
    * @returns {number} rank 1 of index
    */
   rank(index) {
@@ -50,7 +50,7 @@ export class BitVectorJsArray{
 
   /**
    * Gets the index `count`th 1
-   * @param {number} count 
+   * @param {number} count
    * @returns {number}
    */
   select(count) {
@@ -65,15 +65,15 @@ export class BitVectorJsArray{
 
   /**
    * Add 0 bit at index.
-   * @param {number} index 
+   * @param {number} index
    */
-  addBit(index){
+  addBit(index) {
     this.bits.splice(index, 0, 0);
   }
 
   /**
    * Appends a new bit to the bitVector
-   * @param {number} value 
+   * @param {number} value
    */
   pushBit(value) {
     this.bits.push(value);
@@ -81,9 +81,9 @@ export class BitVectorJsArray{
 
   /**
    * Delete bit at index.
-   * @param {number} index 
+   * @param {number} index
    */
-  deleteBit(index){
+  deleteBit(index) {
     this.bits.splice(index, 1);
   }
 
@@ -93,8 +93,8 @@ export class BitVectorJsArray{
    */
   toString() {
     let output = "";
-    this.bits.forEach(bit => {
-      output += bit
+    this.bits.forEach((bit) => {
+      output += bit;
     });
     return output;
   }

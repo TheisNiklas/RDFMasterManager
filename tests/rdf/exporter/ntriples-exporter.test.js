@@ -6,6 +6,6 @@ describe("NTriplesExporter", () => {
   test("exportTriples", () => {
     let exporter = new NTriplesExporter();
     const result = exporter.exportTriples(tripleList);
-    expect(result).toEqual(expectedResult)
+    expect(result).toEqual(expectedResult);
   });
 });

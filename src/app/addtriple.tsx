@@ -11,7 +11,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogActions,
-  Tooltip
+  Tooltip,
 } from "@mui/material";
 import { RdfOperations } from "@/rdf/rdf-operations";
 import { QueryManager } from "@/rdf/query-manager";
@@ -37,16 +37,26 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }: { database: Rdfcsa, setDatabase: React.Dispatch<React.SetStateAction<Rdfcsa>>, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) => {
+const AddTripleForm = ({
+  database,
+  setDatabase,
+  currentData,
+  setCurrentData,
+}: {
+  database: Rdfcsa;
+  setDatabase: React.Dispatch<React.SetStateAction<Rdfcsa>>;
+  currentData: Triple[];
+  setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>>;
+}) => {
   const [formFields, setFormFields] = useState({ subject: "", predicate: "", object: "" });
 
   const [subjectValid, setSubjectValid] = useState(false);
   const [predicateValid, setPredicateValid] = useState(false);
   const [objectValid, setObjectValid] = useState(false);
 
-
   const handleIRIValidation = (input: string, type: string) => {
-    const iriRegex = /((([A-Za-z]{1,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
+    const iriRegex =
+      /((([A-Za-z]{1,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
     switch (type) {
       case "s":
         // Code for the case "s"
@@ -91,7 +101,7 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }: {
   const addTriple = () => {
     const rdfOperations = new RdfOperations(database);
 
-    const newDatabase = rdfOperations.addTripleNew(formFields.subject, formFields.predicate, formFields.object);
+    const newDatabase = rdfOperations.addTriple(formFields.subject, formFields.predicate, formFields.object);
     if (newDatabase !== undefined) {
       setDatabase(newDatabase);
       const queryManager = new QueryManager(newDatabase);
@@ -146,7 +156,12 @@ const AddTripleForm = ({ database, setDatabase, currentData, setCurrentData }: {
             </Tooltip>
           </Grid>
           <Grid item xs={12}>
-            <SubmitButton variant="contained" color="primary" onClick={() => addTriple()} disabled={!subjectValid || !predicateValid || !objectValid}>
+            <SubmitButton
+              variant="contained"
+              color="primary"
+              onClick={() => addTriple()}
+              disabled={!subjectValid || !predicateValid || !objectValid}
+            >
               Submit
             </SubmitButton>
           </Grid>

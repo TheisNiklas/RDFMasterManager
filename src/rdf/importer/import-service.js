@@ -41,7 +41,7 @@ export class ImportService {
     let importer;
     const fileExtension = file.name.split(".").pop();
     if (fileExtension === "rdfcsa") {
-      this.#rdfcsa = this.#loadNativeDatabase(file)
+      this.#rdfcsa = this.#loadNativeDatabase(file);
       return this.#rdfcsa;
     }
     try {
@@ -54,9 +54,9 @@ export class ImportService {
       this.#rdfcsa = new Rdfcsa(tripleList, useJsBitvector);
     } else {
       tripleList.forEach((triple) => {
-        const rdfOperations = new RdfOperations(this.#rdfcsa)
-        rdfOperations.addTripleNew(triple)
-      })
+        const rdfOperations = new RdfOperations(this.#rdfcsa);
+        rdfOperations.addTriple(triple);
+      });
       return this.#rdfcsa;
     }
     return this.#rdfcsa;
@@ -89,13 +89,13 @@ export class ImportService {
 
   /**
    * Loads a file containing the native database format and creates a new database from it
-   * @param {File} file 
+   * @param {File} file
    */
   async #loadNativeDatabase(file) {
     let deserialized = await new Promise(async (resolve) => {
       const fileContent = await file.arrayBuffer();
       const buffer = Buffer.from(fileContent);
-      const decompressed = gunzipSync(buffer)
+      const decompressed = gunzipSync(buffer);
       resolve(JSON.parse(decompressed.toString()));
     });
     let rdfcsa = new Rdfcsa([]);

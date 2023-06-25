@@ -137,7 +137,6 @@ export class Rdfcsa {
     aArray.forEach((element, index) => {
       // every time the id in tArray changes a 1 is set at the specific index in the bitvector
       if (preElement < tArray[element]) {
-        // TODO: Check if != is faster (probably not)
         dArray.setBit(index);
       }
       preElement = tArray[element];

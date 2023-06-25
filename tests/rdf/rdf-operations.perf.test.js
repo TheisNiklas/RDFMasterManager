@@ -25,11 +25,10 @@ describe.skip("Rdfcsa Performance", () => {
       const start = performance.now();
       ops.addTriple("Peter", "has", "Home");
       const end = performance.now();
-      times.push(end-start)
+      times.push(end - start);
     }
-    expect(times).toEqual([])
+    expect(times).toEqual([]);
   });
-
 
   // Result:
   // 16.54770803451538,
@@ -45,14 +44,13 @@ describe.skip("Rdfcsa Performance", () => {
       const start = performance.now();
       ops.addTripleNew("Peter", "has", "Home");
       const end = performance.now();
-      times.push(end-start)
+      times.push(end - start);
     }
-    expect(times).toEqual([])
+    expect(times).toEqual([]);
   });
 });
 
 describe.skip("Rdfcsa Performance ", () => {
-
   // Result: 185941.39262497425,
   test("newVersion", () => {
     let times = [];
@@ -62,11 +60,10 @@ describe.skip("Rdfcsa Performance ", () => {
       let ops = new RdfOperations(rdfcsa);
       dataset.forEach((triple) => {
         ops.addTripleNew(triple[0], triple[1], triple[2]);
-      })
+      });
       const end = performance.now();
-      times.push(end-start)
+      times.push(end - start);
     }
-    expect(times).toEqual([])
+    expect(times).toEqual([]);
   });
 });
-

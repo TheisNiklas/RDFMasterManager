@@ -4,89 +4,27 @@ import { Triple } from "./models/triple";
 import { QueryManager } from "./query-manager";
 import { Rdfcsa } from "./rdfcsa";
 
+/**
+ * Handles all RDFCSA modifications
+ */
 export class RdfOperations {
   /**
-   * Handles all RDFCSA modifications
    * @param {Rdfcsa} rdfcsa
    */
-
   constructor(rdfcsa) {
     /** @type {Rdfcsa} */
     this.rdfcsa = rdfcsa;
   }
 
   /**
-   *
-   * @param {Triple} oldTriple
-   * @param {string} newSubject
-   * @param {string} newPredicate
-   * @param {string} newObject
-   * @returns
-   */
-  modifyTriples(oldTriple, newSubject, newPredicate, newObject) {
-    this.deleteTriple(oldTriple);
-    this.addTriple(newSubject, newPredicate, newObject);
-    return this.rdfcsa;
-  }
-
-  /**
-   *
-   * @param {Triple} oldTriple
-   * @param {string} newSubject
-   * @param {string} newPredicate
-   * @param {string} newObject
-   * @returns
-   */
-  modifyTripleNew(oldTriple, newSubject, newPredicate, newObject) {
-    this.deleteTripleNew(oldTriple);
-    this.addTripleNew(newSubject, newPredicate, newObject);
-    return this.rdfcsa;
-  }
-
-  /**
-   * Adds a new element (triple) to rdfcsa - what happens if element already exists?
+   * Adds a new triple to the rdfcsa
+   * If the triple already exists nothing is changed
    * @param {string} subject
    * @param {string} predicate
    * @param {string} object
+   * @returns {Rdfcsa} the updates rdfcsa
    */
   addTriple(subject, predicate, object) {
-    // query first whether the object already exists
-    // if not export rdfcsa in triple pattern, add pattern at bottom, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
-    const queryManager = new QueryManager(this.rdfcsa);
-    const subjectId = this.rdfcsa.dictionary.getIdBySubject(subject);
-    const predicateId = this.rdfcsa.dictionary.getIdByPredicate(predicate);
-    const objectId = this.rdfcsa.dictionary.getIdByObject(object);
-
-    if (subjectId !== -1 && objectId !== -1 && predicateId !== -1) {
-      // check if triple exists
-      const result = queryManager.getTriples([
-        new QueryTriple(new QueryElement(subjectId), new QueryElement(predicateId), new QueryElement(objectId)),
-      ]);
-      if (result.length > 0) {
-        return this.rdfcsa;
-      }
-    }
-
-    const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
-    const stringTriples = [];
-    oldTriples.forEach((oldTriple) => {
-      stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
-    });
-    stringTriples.push([subject, predicate, object]);
-    this.rdfcsa = new Rdfcsa(stringTriples);
-
-    this.rdfcsa.tripleCount += 1;
-
-    return this.rdfcsa;
-  }
-
-  /**
-   * Adds a new element (triple) to rdfcsa
-   * @param {string} subject
-   * @param {string} predicate
-   * @param {string} object
-   */
-  addTripleNew(subject, predicate, object) {
     // add new triple to dic†ionary and re†urn the id of the elements after insert
     // Step 1 and 2 of insert concept (for the first case)
     const metadata = this.rdfcsa.dictionary.addTriple(subject, predicate, object);
@@ -370,9 +308,11 @@ export class RdfOperations {
 
   /**
    * Delete Triple from database with new method
+   * If the passed `triple` doesn't exist nothing is changed
    * @param {Triple} triple
+   * @returns {Rdfcsa} the updated rdfcsa
    */
-  deleteTripleNew(triple) {
+  deleteTriple(triple) {
     const queryManager = new QueryManager(this.rdfcsa);
 
     const result = queryManager.getTriples([
@@ -384,7 +324,7 @@ export class RdfOperations {
     ]);
     if (result.length !== 1) {
       // elements doesnt exists in database
-      return;
+      return this.rdfcsa;
     }
     const sRange = [this.rdfcsa.select(triple.subject), this.rdfcsa.select(triple.subject + 1) - 1];
     const pRange = [this.rdfcsa.select(triple.predicate), this.rdfcsa.select(triple.predicate + 1) - 1];
@@ -494,6 +434,220 @@ export class RdfOperations {
   }
 
   /**
+   * Modifies a specific triple with new names for subject, predicate and/or object
+   * @param {Triple} oldTriple
+   * @param {string} newSubject
+   * @param {string} newPredicate
+   * @param {string} newObject
+   * @returns
+   */
+  modifyTriple(oldTriple, newSubject, newPredicate, newObject) {
+    this.deleteTriple(oldTriple);
+    this.addTriple(newSubject, newPredicate, newObject);
+    return this.rdfcsa;
+  }
+
+  /**
+   * Deletes all triples containing an element.
+   * If the element in a SO, the appearances as S **and** O are deleted.
+   * If no element for the id exists nothing is changed
+   * @param {int} id with gaps
+   * @returns {Rdfcsa} the updated rdfcsa
+   */
+  deleteElementInDictionary(id) {
+    // Check if id exists
+    // if so, export rdfcsa in triple pattern, remove every line where id related string is included at the correct position via regex, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
+    if (!this.rdfcsa.dictionary.getElementById(id)) {
+      return this.rdfcsa;
+    }
+
+    const element = this.rdfcsa.dictionary.getElementById(id);
+
+    const queryManager = new QueryManager(this.rdfcsa);
+
+    let tripleToDelete = this.#getTripleToDelete(element, queryManager);
+
+    while (tripleToDelete != undefined) {
+      this.deleteTriple(tripleToDelete);
+      tripleToDelete = this.#getTripleToDelete(element, queryManager);
+    }
+
+    return this.rdfcsa;
+  }
+
+  /**
+   * Renames an element in the dictionary
+   * @param {int} id with gaps
+   * @param {string} text
+   */
+  changeInDictionary(id, text) {
+    const queryManager = new QueryManager(this.rdfcsa);
+
+    const originalTriples = [];
+
+    if (id < this.rdfcsa.gaps[1]) {
+      const originalTriplesNumeric = queryManager.getTriples([new QueryTriple(new QueryElement(id), null, null)]);
+      originalTriplesNumeric.forEach((triple) => {
+        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+      });
+      originalTriples.forEach((triple) => {
+        triple[0] = text;
+      });
+      if (this.rdfcsa.dictionary.isSubjectObjectById(id)) {
+        const originalObjectTriplesNumeric = queryManager.getTriples([
+          new QueryTriple(null, null, new QueryElement(id + this.rdfcsa.gaps[2])),
+        ]);
+        const originalObjectTriples = [];
+        originalObjectTriplesNumeric.forEach((triple) => {
+          originalObjectTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+        });
+        originalObjectTriples.forEach((triple) => {
+          triple[2] = text;
+        });
+        originalTriples.push(...originalObjectTriples);
+      }
+    } else if (id < this.rdfcsa.gaps[2]) {
+      const originalTriplesNumeric = queryManager.getTriples([new QueryTriple(null, new QueryElement(id), null)]);
+      originalTriplesNumeric.forEach((triple) => {
+        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+      });
+      originalTriples.forEach((triple) => {
+        triple[1] = text;
+      });
+    } else {
+      const originalTriplesNumeric = queryManager.getTriples([
+        null,
+        null,
+        new QueryTriple(new QueryElement(id - this.rdfcsa.gaps[2])),
+      ]);
+      originalTriplesNumeric.forEach((triple) => {
+        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+      });
+      originalTriples.forEach((triple) => {
+        triple[2] = text;
+      });
+      if (this.rdfcsa.dictionary.isSubjectObjectById(id)) {
+        const originalSubjectTriplesNumeric = queryManager.getTriples([
+          new QueryTriple(new QueryElement(id), null, null),
+        ]);
+        const originalSubjectTriples = [];
+        originalSubjectTriplesNumeric.forEach((triple) => {
+          originalSubjectTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
+        });
+        originalSubjectTriples.forEach((triple) => {
+          triple[0] = text;
+        });
+        originalTriples.push(...originalSubjectTriples);
+      }
+    }
+    this.deleteElementInDictionary(id);
+
+    originalTriples.forEach((changedTriple) => {
+      this.addTriple(changedTriple[0], changedTriple[1], changedTriple[2]);
+    });
+
+    return this.rdfcsa;
+  }
+
+  /**
+   * @deprecated
+   * Old slow implementation of `modifyTriple`, only intended for testing
+   * @param {string} subject
+   * @param {string} predicate
+   * @param {string} object
+   */
+  addTripleOld(subject, predicate, object) {
+    // query first whether the object already exists
+    // if not export rdfcsa in triple pattern, add pattern at bottom, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
+    const queryManager = new QueryManager(this.rdfcsa);
+    const subjectId = this.rdfcsa.dictionary.getIdBySubject(subject);
+    const predicateId = this.rdfcsa.dictionary.getIdByPredicate(predicate);
+    const objectId = this.rdfcsa.dictionary.getIdByObject(object);
+
+    if (subjectId !== -1 && objectId !== -1 && predicateId !== -1) {
+      // check if triple exists
+      const result = queryManager.getTriples([
+        new QueryTriple(new QueryElement(subjectId), new QueryElement(predicateId), new QueryElement(objectId)),
+      ]);
+      if (result.length > 0) {
+        return this.rdfcsa;
+      }
+    }
+
+    const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
+    const stringTriples = [];
+    oldTriples.forEach((oldTriple) => {
+      stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
+    });
+    stringTriples.push([subject, predicate, object]);
+    this.rdfcsa = new Rdfcsa(stringTriples);
+
+    this.rdfcsa.tripleCount += 1;
+
+    return this.rdfcsa;
+  }
+
+  /**
+   * @deprecated
+   * Old slow implementation of `deleteTriple`, only intended for testing.
+   * @param {Triple} triple
+   */
+  deleteTripleOld(triple) {
+    // query first whether the object already exists
+    // if not export rdfcsa in triple pattern, add pattern at bottom, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
+    const queryManager = new QueryManager(this.rdfcsa);
+
+    const result = queryManager.getTriples([
+      new QueryTriple(
+        new QueryElement(triple.subject),
+        new QueryElement(triple.predicate),
+        new QueryElement(triple.object)
+      ),
+    ]);
+    if (result.length !== 1) {
+      return;
+    }
+
+    const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
+    let foundIndex = -1;
+    oldTriples.forEach((oldTriple, index) => {
+      if (
+        triple.subject === oldTriple.subject &&
+        triple.predicate === oldTriple.predicate &&
+        triple.object === oldTriple.object
+      ) {
+        foundIndex = index;
+        return;
+      }
+    });
+    oldTriples.splice(foundIndex, 1);
+    const stringTriples = [];
+    oldTriples.forEach((oldTriple) => {
+      stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
+    });
+    this.rdfcsa = new Rdfcsa(stringTriples);
+
+    this.rdfcsa.tripleCount -= 1;
+
+    return this.rdfcsa;
+  }
+
+  /**
+   * @deprecated
+   * Old slow implementation of `modifyTriple`, only intended for testing
+   * @param {Triple} oldTriple
+   * @param {string} newSubject
+   * @param {string} newPredicate
+   * @param {string} newObject
+   * @returns
+   */
+  modifyTripleOld(oldTriple, newSubject, newPredicate, newObject) {
+    this.deleteTripleOld(oldTriple);
+    this.addTripleOld(newSubject, newPredicate, newObject);
+    return this.rdfcsa;
+  }
+
+  /**
    * Moves a subject range in psi and D
    * @param {number[]} rangeToMove
    * @param {number[]} rangeToMoveOver
@@ -510,7 +664,6 @@ export class RdfOperations {
         this.rdfcsa.select(referencePredicateId),
         this.rdfcsa.select(referencePredicateId + 1) - 1,
       ];
-      // IDEA: maybe move into second for loop to not calculate if not needed, save if calculated to not repeat for every loop iteration
       const referenceObjectId = this.rdfcsa.D.rank(this.rdfcsa.psi[movePredicate]);
       const rangeObject = [this.rdfcsa.select(referenceObjectId), this.rdfcsa.select(referenceObjectId + 1) - 1];
       for (let j = rangeToMoveOver[0]; j <= rangeToMoveOver[1]; j++) {
@@ -626,7 +779,7 @@ export class RdfOperations {
   }
 
   /**
-   * get the indices in psi or d where the triple is located, that has an element in every range
+   * Get the indices in psi or d where the triple is located, that has an element in every range.
    * @param {number[]} sRange
    * @param {number[]} pRange
    * @param {number[]} oRange
@@ -663,74 +816,11 @@ export class RdfOperations {
   }
 
   /**
-   *
-   * @param {Triple} triple
+   * Gets the first triple containing the given element
+   * @param {string} element
+   * @param {QueryManager} queryManager
+   * @returns {Triple}
    */
-  deleteTriple(triple) {
-    // query first whether the object already exists
-    // if not export rdfcsa in triple pattern, add pattern at bottom, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
-    const queryManager = new QueryManager(this.rdfcsa);
-
-    const result = queryManager.getTriples([
-      new QueryTriple(
-        new QueryElement(triple.subject),
-        new QueryElement(triple.predicate),
-        new QueryElement(triple.object)
-      ),
-    ]);
-    if (result.length !== 1) {
-      return;
-    }
-
-    const oldTriples = queryManager.getTriples([new QueryTriple(null, null, null)]);
-    let foundIndex = -1;
-    oldTriples.forEach((oldTriple, index) => {
-      if (
-        triple.subject === oldTriple.subject &&
-        triple.predicate === oldTriple.predicate &&
-        triple.object === oldTriple.object
-      ) {
-        foundIndex = index;
-        return;
-      }
-    });
-    oldTriples.splice(foundIndex, 1);
-    const stringTriples = [];
-    oldTriples.forEach((oldTriple) => {
-      stringTriples.push(this.rdfcsa.dictionary.decodeTriple(oldTriple));
-    });
-    this.rdfcsa = new Rdfcsa(stringTriples);
-
-    this.rdfcsa.tripleCount -= 1;
-
-    return this.rdfcsa;
-  }
-
-  /**
-   *
-   * @param {int} id with gaps
-   */
-  deleteElementInDictionary(id) {
-    // Check if id exists
-    // if so, export rdfcsa in triple pattern, remove every line where id related string is included at the correct position via regex, create new rdfcsa, replace this.rdfcsa with generated rdfcsa
-    if (!this.rdfcsa.dictionary.getElementById(id)) {
-      return;
-    }
-
-    const element = this.rdfcsa.dictionary.getElementById(id);
-
-    const queryManager = new QueryManager(this.rdfcsa);
-
-    let tripleToDelete = this.#getTripleToDelete(element, queryManager);
-
-    while (tripleToDelete != undefined) {
-      this.deleteTripleNew(tripleToDelete);
-      tripleToDelete = this.#getTripleToDelete(element, queryManager);
-    }
-
-    return this.rdfcsa;
-  }
-
   #getTripleToDelete(element, queryManager) {
     const id = this.rdfcsa.dictionary.getIdByElement(element);
 
@@ -751,90 +841,5 @@ export class RdfOperations {
       return undefined;
     }
     return tripleToDelete[0];
-  }
-
-  /**
-   * Deletes all triples from RDFCSA.
-   */
-  deleteAll() {
-    this.dictionary = new Dictionary();
-    this.rdfcsa.tArray = [];
-    this.rdfcsa.aArray = [];
-    this.rdfcsa.D = []; // TODO: Make vector
-    this.rdfcsa.psi = [];
-  }
-
-  /**
-   *
-   * @param {int} id with gaps
-   * @param {string} text
-   */
-  changeInDictionary(id, text) {
-    const queryManager = new QueryManager(this.rdfcsa);
-
-    const originalTriples = [];
-
-    if (id < this.rdfcsa.gaps[1]) {
-      const originalTriplesNumeric = queryManager.getTriples([new QueryTriple(new QueryElement(id), null, null)]);
-      originalTriplesNumeric.forEach((triple) => {
-        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
-      });
-      originalTriples.forEach((triple) => {
-        triple[0] = text;
-      });
-      if (this.rdfcsa.dictionary.isSubjectObjectById(id)) {
-        const originalObjectTriplesNumeric = queryManager.getTriples([
-          new QueryTriple(null, null, new QueryElement(id + this.rdfcsa.gaps[2])),
-        ]);
-        const originalObjectTriples = [];
-        originalObjectTriplesNumeric.forEach((triple) => {
-          originalObjectTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
-        });
-        originalObjectTriples.forEach((triple) => {
-          triple[2] = text;
-        });
-        originalTriples.push(...originalObjectTriples);
-      }
-    } else if (id < this.rdfcsa.gaps[2]) {
-      const originalTriplesNumeric = queryManager.getTriples([new QueryTriple(null, new QueryElement(id), null)]);
-      originalTriplesNumeric.forEach((triple) => {
-        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
-      });
-      originalTriples.forEach((triple) => {
-        triple[1] = text;
-      });
-    } else {
-      const originalTriplesNumeric = queryManager.getTriples([
-        null,
-        null,
-        new QueryTriple(new QueryElement(id - this.rdfcsa.gaps[2])),
-      ]);
-      originalTriplesNumeric.forEach((triple) => {
-        originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
-      });
-      originalTriples.forEach((triple) => {
-        triple[2] = text;
-      });
-      if (this.rdfcsa.dictionary.isSubjectObjectById(id)) {
-        const originalSubjectTriplesNumeric = queryManager.getTriples([
-          new QueryTriple(new QueryElement(id), null, null),
-        ]);
-        const originalSubjectTriples = [];
-        originalSubjectTriplesNumeric.forEach((triple) => {
-          originalSubjectTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
-        });
-        originalSubjectTriples.forEach((triple) => {
-          triple[0] = text;
-        });
-        originalTriples.push(...originalSubjectTriples);
-      }
-    }
-    this.deleteElementInDictionary(id);
-
-    originalTriples.forEach((changedTriple) => {
-      this.addTripleNew(changedTriple[0], changedTriple[1], changedTriple[2]);
-    });
-
-    return this.rdfcsa;
   }
 }

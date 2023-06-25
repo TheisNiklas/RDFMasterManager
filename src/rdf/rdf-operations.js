@@ -552,7 +552,7 @@ export class RdfOperations {
   }
 
   /**
-   * Moves a subject range in psi and D
+   * Moves a object range in psi and D
    * @param {number[]} rangeToMove
    * @param {number[]} rangeToMoveOver
    * @param {number} distanceToMove
@@ -602,7 +602,7 @@ export class RdfOperations {
   }
 
   /**
-   * Applies the cahnges to psi
+   * Applies the changes to psi
    * @param {number[][]} changes
    */
   #applyChanges(changes) {
@@ -625,6 +625,13 @@ export class RdfOperations {
     });
   }
 
+  /**
+   * get the indices in psi or d where the triple is located, that has an element in every range
+   * @param {number[]} sRange
+   * @param {number[]} pRange
+   * @param {number[]} oRange
+   * @returns
+   */
   #getTripleIndices(sRange, pRange, oRange) {
     const ranges = [sRange, pRange, oRange];
     //Take the first range

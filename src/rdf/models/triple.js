@@ -1,9 +1,9 @@
 export class Triple {
   /**
-   * 
-   * @param {number} subject 
-   * @param {number} predicate 
-   * @param {number} object 
+   *
+   * @param {number} subject
+   * @param {number} predicate
+   * @param {number} object
    */
   constructor(subject, predicate, object) {
     this.subject = subject;

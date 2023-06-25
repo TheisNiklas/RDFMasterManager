@@ -43,6 +43,15 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
     maxWidth: 120,
 }));
 
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+    '&:nth-of-type(odd)': {
+      backgroundColor: "white",
+    },
+    '&:nth-of-type(even)': {
+      backgroundColor: "#f0f0f5",
+    },
+  }));
+
 
 /**
  * Load default format. Use ExportService to fetch data. Set first format as default.
@@ -304,7 +313,7 @@ export default function TextVisualization() {
                                 {/* TextView */}
                                 {rows.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row: string) => {
                                     return (
-                                        <TableRow hover role="checkbox" tabIndex={-1} key={getId()}>
+                                        <StyledTableRow role="checkbox" tabIndex={-1} key={getId()}>
                                             {columns.map((column: any) => {
                                                 const value = row;
                                                 return (
@@ -324,7 +333,7 @@ export default function TextVisualization() {
                                                     </TableCell>
                                                 );
                                             })}
-                                        </TableRow>
+                                        </StyledTableRow>
                                     );
                                 })}
                             </TableBody>

@@ -5,6 +5,7 @@ import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
+import TableFooter from '@mui/material/TableFooter';
 import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import Card from '@mui/material/Card';
@@ -45,12 +46,12 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
 
 const StyledTableRow = styled(TableRow)(({ theme }) => ({
     '&:nth-of-type(odd)': {
-      backgroundColor: "white",
+        backgroundColor: "white",
     },
     '&:nth-of-type(even)': {
-      backgroundColor: "#f0f0f5",
+        backgroundColor: "#f0f0f5",
     },
-  }));
+}));
 
 
 /**
@@ -64,14 +65,34 @@ function loadDefaultFormat() {
     return export_options[0]
 }
 
+/**
+ * Checks if current device is a mobile device
+ * @returns Returns true if current device is a mobile device
+ */
 function isMobileDevice() {
-    if (window.screen.width < 1200 && window.screen.width >= 320) {
+    if (window.screen.width <= 930 && window.screen.width >= 320) {
         return true;
     } else {
         return false;
     }
 }
 
+/**
+ * Checks if current device is a tablet
+ * @returns Returns true if current device is a tablet
+ */
+function isTabletDevice() {
+    if (window.screen.width < 1300 && window.screen.width > 930) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+/**
+ * Get the table size for the current device
+ * @returns Returns small for mobile devices. Returns medium for others.
+ */
 function getTableSize() {
     if (isMobileDevice()) {
         return 'small';
@@ -260,17 +281,14 @@ export default function TextVisualization() {
             ...(isMobileDevice() && {
                 width: "95vw",
             }),
-            ...(!isMobileDevice() && {
-                width: "98vw",
-            }),
         }}>
             <TableContainer sx={{
                 height: "80vh",
                 ...(isMobileDevice() && {
                     height: "45vh"
                 }),
-                ...(!isMobileDevice() && {
-                    height: "80vh",
+                ...(isTabletDevice() && {
+                    height: "65vh"
                 }),
             }}>
                 <Table stickyHeader={!isMobileDevice()} aria-label="sticky table" size={getTableSize()}>
@@ -337,6 +355,7 @@ export default function TextVisualization() {
                                     );
                                 })}
                             </TableBody>
+
                     }
                 </Table>
             </TableContainer>

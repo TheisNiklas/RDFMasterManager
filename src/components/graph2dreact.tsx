@@ -53,10 +53,8 @@ export default function Graph2DReact() {
   const [linkSourceName, setLinkSourceName] = React.useState("");
   const [linkTargetName, setLinkTargetName] = React.useState("");
   const [formField, setFormField] = React.useState("");
-  const [source, setSource] = React.useState("");
-  const [target, setTarget] = React.useState("");
-  const [pred, setPred] = React.useState("");
-  const [toastOpen, setToastOpen] = React.useState(false);
+  const [successToastOpen, setSuccessToastOpen] = React.useState(false);
+  const [errorToastOpen, setErrorToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
 
   const handleNodeLeftClose = () => {
@@ -71,6 +69,7 @@ export default function Graph2DReact() {
   const handleNodeLeftClick = (node: any) => {
     setNodeId(node.id);
     setNodeName(node.content);
+    setFormField(node.content);
     setOpenNodeLeft(true);
   };
 
@@ -87,22 +86,35 @@ export default function Graph2DReact() {
 
   //handle Submit when Node Data is changed
   const handleSubmitNode = () => {
-    const rdfOperations = new RdfOperations(database);
-    const newDatabase = rdfOperations.changeInDictionary(nodeId, formField);
-    dispatch(setDatabase(newDatabase as Rdfcsa));
-    const queryManager = new QueryManager(newDatabase);
-    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-    dispatch(setGraphData(database, currentData));
-    setToastMessage("Successfully renamed node");
-    setToastOpen(true);
-    setOpenNodeLeft(false);
+    if(formField != ""){
+      const rdfOperations = new RdfOperations(database);
+      const newDatabase = rdfOperations.changeInDictionary(nodeId, formField);
+      dispatch(setDatabase(newDatabase as Rdfcsa));
+      const queryManager = new QueryManager(newDatabase);
+      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      dispatch(setGraphData(database, currentData));
+      setToastMessage("Successfully renamed node");
+      setSuccessToastOpen(true);
+      setOpenNodeLeft(false);
+    }else{
+      setToastMessage("Can not rename Node with empty String");
+      setErrorToastOpen(true);
+      setOpenNodeLeft(false);
+    }
   };
 
   //handle Submit when Triple Data is changed
   const handleSubmitLink = () => {
-    setToastMessage("Successfully renamed triple");
-    setToastOpen(true);
-    setOpenLinkLeft(false);
+    if(linkSourceName != "" && linkName != "" && linkTargetName != ""){
+      //TODO: rename Triple in Dictionary
+      setToastMessage("Successfully renamed triple");
+      setSuccessToastOpen(true);
+      setOpenLinkLeft(false);
+    }else{
+      setToastMessage("Can't rename Elements with empty String");
+      setErrorToastOpen(true);
+      setOpenLinkLeft(false);
+    }
   };
 
   //handle Delete of Triple
@@ -115,7 +127,7 @@ export default function Graph2DReact() {
     dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
     dispatch(setGraphData(database, currentData));
     setToastMessage("Successfully deleted triple");
-    setToastOpen(true);
+    setSuccessToastOpen(true);
     setOpenLinkLeft(false);
   };
 
@@ -123,8 +135,8 @@ export default function Graph2DReact() {
     if (reason === "clickaway") {
       return;
     }
-
-    setToastOpen(false);
+    setSuccessToastOpen(false);
+    setErrorToastOpen(false);
   };
 
   return (
@@ -165,7 +177,7 @@ export default function Graph2DReact() {
                   label="Subject"
                   variant="outlined"
                   defaultValue={linkSourceName}
-                  onChange={(event) => setSource(event.target.value)}
+                  onChange={(event) => setLinkSourceName(event.target.value)}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -173,7 +185,7 @@ export default function Graph2DReact() {
                   label="Predicate"
                   variant="outlined"
                   defaultValue={linkName}
-                  onChange={(event) => setPred(event.target.value)}
+                  onChange={(event) => setLinkName(event.target.value)}
                 />
               </Grid>
               <Grid item xs={4}>
@@ -181,7 +193,7 @@ export default function Graph2DReact() {
                   label="Object"
                   variant="outlined"
                   defaultValue={linkTargetName}
-                  onChange={(event) => setTarget(event.target.value)}
+                  onChange={(event) => setLinkTargetName(event.target.value)}
                 />
               </Grid>
             </Grid>
@@ -199,8 +211,13 @@ export default function Graph2DReact() {
           <Button onClick={handleSubmitLink}>Submit</Button>
         </DialogActions>
       </Dialog>
-      <Snackbar open={toastOpen} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={successToastOpen} autoHideDuration={6000} onClose={handleClose}>
         <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
+          {toastMessage}
+        </Alert>
+      </Snackbar>
+      <Snackbar open={errorToastOpen} autoHideDuration={6000} onClose={handleClose}>
+        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
           {toastMessage}
         </Alert>
       </Snackbar>

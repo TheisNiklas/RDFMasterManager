@@ -161,17 +161,35 @@ export class BitVector {
         this.superblocks[element] -= 1;
       }
 
+      let shiftedSubpart = 0;
+      let mask = 0;
+      if (index % (Uint32Array.BYTES_PER_ELEMENT*8) !== this.toString().length % (Uint32Array.BYTES_PER_ELEMENT*8) && element !== this.arrayLength-1){
       let length = Uint32Array.BYTES_PER_ELEMENT * 8 - 1 - (index % (Uint32Array.BYTES_PER_ELEMENT * 8));
-      const mask = ((1 << length) - 1) << index % (Uint32Array.BYTES_PER_ELEMENT * 8);
+      mask = ((1 << length) - 1) << (index % (Uint32Array.BYTES_PER_ELEMENT * 8)) +1;
       const subpart = (this.bits[element] & mask) >>> index % (Uint32Array.BYTES_PER_ELEMENT * 8);
-      const shiftedSubpart = subpart >> 1;
+      shiftedSubpart = subpart >> 1;
+      }
+      else if (index % (Uint32Array.BYTES_PER_ELEMENT*8) !== this.toString().length % (Uint32Array.BYTES_PER_ELEMENT*8) && element === this.arrayLength-1){
+        let length = Uint32Array.BYTES_PER_ELEMENT * 8 -1 - (index % (Uint32Array.BYTES_PER_ELEMENT * 8));
+        mask = ((1 << length) - 1) << (index % (Uint32Array.BYTES_PER_ELEMENT * 8));
+        const subpart = (this.bits[element] & mask) >>> index % (Uint32Array.BYTES_PER_ELEMENT * 8);
+        shiftedSubpart = subpart >> 1;
+      }
+      
 
       let bit = 0;
       if (element < this.arrayLength - 1) {
         bit = this.bits[element + 1] & 1;
       }
+      
+      let shift = 31
+        // Shift the number 1 bit to the left
+        if (element === this.arrayLength -1){
+          shift = (index % (Uint32Array.BYTES_PER_ELEMENT * 8)) - 1;
+        }
+
       this.bits[element] =
-        (this.bits[element] & ~mask) | (shiftedSubpart << index % (Uint32Array.BYTES_PER_ELEMENT * 8)) | (bit << 31);
+        (this.bits[element] & ~mask) | (shiftedSubpart << index % (Uint32Array.BYTES_PER_ELEMENT * 8)) | (bit << shift);
 
       for (let i = element + 1; i < this.arrayLength; i++) {
         let prefirstbit = 0;
@@ -182,9 +200,14 @@ export class BitVector {
             this.superblocks[i + 1] -= 1;
           }
         }
+        
+        let shift = 31
         // Shift the number 1 bit to the left
-        this.bits[i] = (prefirstbit << 31) | (this.bits[i] >> 1);
-      }
+        if (i === this.arrayLength -1){
+          shift = (index % (Uint32Array.BYTES_PER_ELEMENT * 8)) - 1;
+        }
+        this.bits[i] = (prefirstbit << shift) | (this.bits[i] >> 1);
+    }
 
       if (this.bits[this.arrayLength - 1] === 0 && this.arrayLength > 1) {
         this.arrayLength--;

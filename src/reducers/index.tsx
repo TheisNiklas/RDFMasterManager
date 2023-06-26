@@ -6,6 +6,7 @@ import currentDataReducer from "./currentData";
 import databaseReducer from "./database";
 import mainFrameReducer from "./mainFrame";
 import graphDataReducer from "./graph";
+import metaDataReducer from "./metaData";
 
 // root reducer to combine all reducers
 const rootReducer = combineReducers({
@@ -15,7 +16,8 @@ const rootReducer = combineReducers({
   currentData: currentDataReducer,
   database: databaseReducer,
   mainFrame: mainFrameReducer,
-  graphData: graphDataReducer
+  graphData: graphDataReducer,
+  metaData: metaDataReducer
 });
 
 export default rootReducer;

@@ -17,7 +17,8 @@ import { RdfOperations } from "../rdf/rdf-operations";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentData, setDatabase } from "../actions";
+import { setCurrentData, setDatabase, setMetaData } from "../actions";
+import { QueryCall } from "../interface/query-call";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",

@@ -16,9 +16,11 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentData, setDatabase, setGraphData } from "../actions";
+import { setCurrentData, setDatabase, setGraphData, setMetaData } from "../actions";
 import load_data from "./triple2graph";
 import { Box, Hidden } from "@mui/material";
+import { useEffect } from "react";
+import { QueryCall } from "../interface/query-call";
 
 let widthValue = "30%";
 
@@ -36,10 +38,11 @@ export default function Graph3DReact() {
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
   const graphData = useSelector((state: any) => state.graphData);
+  const metaData = useSelector((state: any) => state.metaData);
 
   const dispatch = useDispatch();
   //dispatch(graphData(database, currentData))
-  const initial_data = load_data(database, currentData)
+  const initial_data = load_data(database, currentData);
   const [data, setData] = React.useState(initial_data);
 
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
@@ -55,7 +58,17 @@ export default function Graph3DReact() {
   const [formField, setFormField] = React.useState("");
   const [successToastOpen, setSuccessToastOpen] = React.useState(false);
   const [errorToastOpen, setErrorToastOpen] = React.useState(false);
+  const [source, setSource] = React.useState("");
+  const [target, setTarget] = React.useState("");
+  const [pred, setPred] = React.useState("");
+  const [arrowColor, setArrowColor] = React.useState("FFFFFF");
+  const [nodeColor, setNodeColor] = React.useState("e69138");
+  const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
+
+  useEffect(() => {
+    validateMetaData();
+  }, []);
 
   const handleNodeLeftClose = () => {
     setOpenNodeLeft(false);
@@ -64,6 +77,28 @@ export default function Graph3DReact() {
   const handleLinkLeftClose = () => {
     setOpenLinkLeft(false);
   };
+
+  function validateMetaData() {
+    for (const item of metaData) {
+      const predicateValue = database.dictionary.getElementById(item.predicate).replace("METADATA:", "") as string;
+      const objectValue = database.dictionary.getElementById(item.object).replace("METADATA:", "") as string;
+      switch (predicateValue) {
+        case "arrowColor": {
+          setArrowColor(objectValue);
+          break;
+        }
+        case "nodeColor": {
+          setNodeColor(objectValue);
+          break;
+        }
+        default: {
+          // Code for other cases (if needed)
+          break;
+        }
+      }
+    }
+    return false;
+  }
 
   //display information about the node
   const handleNodeLeftClick = (node: any) => {
@@ -86,17 +121,22 @@ export default function Graph3DReact() {
 
   //handle Submit when Node Data is changed
   const handleSubmitNode = () => {
-    if(formField != ""){
+    if (formField != "") {
       const rdfOperations = new RdfOperations(database);
       const newDatabase = rdfOperations.changeInDictionary(nodeId, formField);
       dispatch(setDatabase(newDatabase as Rdfcsa));
       const queryManager = new QueryManager(newDatabase);
       dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
       dispatch(setGraphData(database, currentData));
+      // let metaData = QueryCall.queryCallData([{subject:"RDFCSA:METADATA", predicate:"", object: ""}], newDatabase);
+      // if (metaData)
+      // {
+      //   dispatch(setMetaData(metaData));
+      // }
       setToastMessage("Successfully renamed node");
       setSuccessToastOpen(true);
       setOpenNodeLeft(false);
-    }else{
+    } else {
       setToastMessage("Can not rename Node with empty String");
       setErrorToastOpen(true);
       setOpenNodeLeft(false);
@@ -105,17 +145,16 @@ export default function Graph3DReact() {
 
   //handle Submit when Triple Data is changed
   const handleSubmitLink = () => {
-    if(linkSourceName != "" && linkName != "" && linkTargetName != ""){
+    if (linkSourceName != "" && linkName != "" && linkTargetName != "") {
       //TODO: rename Triple in Dictionary
       setToastMessage("Successfully renamed triple");
       setSuccessToastOpen(true);
       setOpenLinkLeft(false);
-    }else{
+    } else {
       setToastMessage("Can't rename Elements with empty String");
       setErrorToastOpen(true);
       setOpenLinkLeft(false);
     }
-    
   };
 
   //handle Delete of Triple
@@ -144,7 +183,8 @@ export default function Graph3DReact() {
     <div>
       <NoSSRForceGraph
         graphData={data}
-        nodeAutoColorBy="group"
+        nodeColor={(node: any) => (node.color = nodeColor)}
+        linkColor={(link: any) => (link.color = arrowColor)}
         linkDirectionalArrowLength={5}
         linkDirectionalArrowRelPos={1.05}
         linkWidth={1}

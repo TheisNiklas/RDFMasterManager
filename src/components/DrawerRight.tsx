@@ -11,14 +11,14 @@ import IconButton from "@mui/material/IconButton";
 import MenuIcon from "@mui/icons-material/Menu";
 import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
 import ChevronRightIcon from "@mui/icons-material/ChevronRight";
-import { Dialog, DialogTitle, Button, DialogContent, DialogContentText} from "@mui/material";
+import { Dialog, DialogTitle, Button, DialogContent, DialogContentText } from "@mui/material";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { ImportService } from "../rdf/importer/import-service";
 import { useSelector, useDispatch } from "react-redux";
-import { open, close, setCurrentData, setDatabase, setGraphData } from "./../actions";
+import { open, close, setCurrentData, setDatabase, setGraphData, setMetaData } from "./../actions";
 import AddTripleForm from "./addTriple";
-import DropDownMenue from "./dropDownMenu"
+import DropDownMenue from "./dropDownMenu";
 import SortFormData from "./sort";
 import FilterForm from "./filter";
 import Import from "./import";
@@ -26,6 +26,12 @@ import Export from "./export";
 import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
 import Graph2DReact from "./graph2dreact";
+import { useMediaQuery } from "react-responsive";
+import { drawerOpenWidth, isMobileDevice } from "../constants/media";
+import { WavingHandTwoTone } from "@mui/icons-material";
+import metaData from "../reducers/metaData";
+import { QueryCall } from "../interface/query-call";
+import MetaDataForm from "./metaDataForm";
 
 let drawerWidth = 500;
 
@@ -79,130 +85,133 @@ const DrawerHeader = styled("div")(({ theme }) => ({
 }));
 
 const DialogButton = styled(Button)(({ theme }) => ({
-  marginTop: "16px"
-}))
+  marginTop: "16px",
+}));
 
 export default function PersistentDrawerRight() {
-
-  document.body.style.overflow='hidden';
+  document.body.style.overflow = "hidden";
 
   const theme = useTheme();
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
   const [openDialog, setOpenDialog] = React.useState(true);
   const [drawerWidth, setDrawerWidth] = React.useState(500);
-  window.matchMedia("(orientation: portrait)").addEventListener("change", e => {
+  window.matchMedia("(orientation: portrait)").addEventListener("change", (e) => {
     const portrait = e.matches;
-    if (portrait){
+    if (portrait) {
       setOpenDialog(true);
-    }else{
+    } else {
       setOpenDialog(false);
     }
-  })
+  });
 
   //Redux
   const drawerOpen = useSelector((state: any) => state.isDrawerOpen);
   const mainFrame = useSelector((state: any) => state.mainFrame);
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
-  const graphData = useSelector((state:any) => state.graphData);
+  const graphData = useSelector((state: any) => state.graphData);
   const dispatch = useDispatch();
-  
-  
+
   const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
-      return <TextVisualization/>;
+      return <TextVisualization />;
     } else if (mainFrame === "3d") {
-      return <Graph3DReact/>;
+      return <Graph3DReact />;
     } else if (mainFrame === "2d") {
-      return <Graph2DReact/>;
+      return <Graph2DReact />;
     }
   }, [database, currentData, mainFrame, graphData]);
 
   const handleFromFromExample = () => {
-
-    const rdfcsa = new ImportService().loadSample()
+    const rdfcsa = new ImportService().loadSample();
     const queryManager = new QueryManager(rdfcsa);
     const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
     //const data = queryManager.getAllTriples()
     dispatch(setCurrentData(data));
-    console.log(currentData)
+    console.log(currentData);
     dispatch(setDatabase(rdfcsa));
-    dispatch(setGraphData(database,currentData));
-    console.log(database)
-    console.log(graphData)
+    dispatch(setGraphData(database, currentData));
+    let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], rdfcsa);
+    if (metaData) {
+      dispatch(setMetaData(metaData));
+    }
+    console.log(database);
+    console.log(graphData);
     setStartDialogOpen(false);
   };
 
   const handleFromScratch = () => {
-
     setStartDialogOpen(false);
-  
-  }
+  };
 
   const handleImportRequest = () => {
-   
-    const fileInput = document.createElement('input');
-    fileInput.type = 'file';
+    const fileInput = document.createElement("input");
+    fileInput.type = "file";
     const importService = new ImportService();
 
-      // Add an event handler to get the selected file path.
-      fileInput.addEventListener('change', async event => {
-          const file = (event as any).target.files[0];
-          const rdfcsa = await importService.importFile(file, true);
-          if (rdfcsa === undefined) {
-            setStartDialogOpen(true);
-          } else {
-            setDatabase(rdfcsa);
-            if (rdfcsa.tripleCount < 10000) { // TODO: include in config
-                const queryManager = new QueryManager(rdfcsa);
-                const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-                setCurrentData(data);
-            }
-            setStartDialogOpen(false);
+    // Add an event handler to get the selected file path.
+    fileInput.addEventListener("change", async (event) => {
+      const file = (event as any).target.files[0];
+      const rdfcsa = await importService.importFile(file, true);
+      if (rdfcsa === undefined) {
+        setStartDialogOpen(true);
+      } else {
+        setDatabase(rdfcsa);
+        if (rdfcsa.tripleCount < 10000) {
+          // TODO: include in config
+          const queryManager = new QueryManager(rdfcsa);
+          const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+          setCurrentData(data);
+          let metaData = QueryCall.queryCallData({ subject: "RDFCSA:METADATA", predicate: "", object: "" }, database);
+          if (metaData) {
+            dispatch(setMetaData(metaData));
           }
-      });
-  
-      fileInput.click();
-    };
-
-    function isMobileDevice(){
-      if(window.screen.width < 1200 && window.screen.width >= 320){
-          return true;
-      }else{
-        return false;
+        }
+        setStartDialogOpen(false);
       }
+    });
+
+    fileInput.click();
+  };
+
+  function isMobileDevice() {
+    if (window.screen.width < 1200 && window.screen.width >= 320) {
+      return true;
+    } else {
+      return false;
     }
+  }
 
-    const handleDrawerOpen = () => {
-      if(isMobileDevice()){
-        setDrawerWidth(400);
-      }else{
-        setDrawerWidth(500);
-      }
-      dispatch(open());
+  const handleDrawerOpen = () => {
+    if (isMobileDevice()) {
+      setDrawerWidth(400);
+    } else {
+      setDrawerWidth(500);
     }
+    dispatch(open());
+  };
 
-    const handleDrawerClose = () => {
-      if(isMobileDevice()){
-        setDrawerWidth(500);
-      }else{
-        setDrawerWidth(400);
-      }
-      dispatch(close());
+  const handleDrawerClose = () => {
+    if (isMobileDevice()) {
+      setDrawerWidth(500);
+    } else {
+      setDrawerWidth(400);
     }
+    dispatch(close());
+  };
 
-    React.useEffect(() => {
-      const portrait = window.matchMedia("(orientation: portrait)").matches;
-      if (portrait){
-        setOpenDialog(true);
-      }else{
-        setOpenDialog(false);
-      }
-      },[])
-  
+  React.useEffect(() => {
+    const portrait = window.matchMedia("(orientation: portrait)").matches;
+    if (portrait) {
+      setOpenDialog(true);
+    } else {
+      setOpenDialog(false);
+    }
+  }, []);
+
   return (
     <>
-      <Box sx={{ display: "flex", overflow: 'hidden'}}>
+      <Box sx={{ display: "flex", overflow: "hidden" }}>
         <CssBaseline />
         <AppBar position="fixed" open={drawerOpen}>
           <Toolbar>
@@ -233,10 +242,10 @@ export default function PersistentDrawerRight() {
             flexShrink: 0,
             "& .MuiDrawer-paper": {
               width: drawerWidth,
-              ...( isMobileDevice() && {
-                width: '100%'
+              ...(isMobileDevice() && {
+                width: "100%",
               }),
-            }
+            },
           }}
           variant="persistent"
           anchor="right"
@@ -253,35 +262,41 @@ export default function PersistentDrawerRight() {
           </DrawerHeader>
           <Divider />
           <FilterForm></FilterForm>
-        <SortFormData></SortFormData>
-        <AddTripleForm></AddTripleForm>
-        <Import></Import>
-        <Export></Export>
+          <MetaDataForm></MetaDataForm>
+          <AddTripleForm></AddTripleForm>
+          <Import></Import>
+          <Export></Export>
         </Drawer>
         <Dialog open={startDialogOpen}>
-        <DialogTitle>Open Database / Import</DialogTitle>
-        <DialogContent>
-          <Box display="flex" flexDirection="column" alignItems="center">
-            <DialogButton variant="contained" color="primary" onClick={handleImportRequest} fullWidth>Import</DialogButton>
-            <DialogButton variant="contained" color="primary" onClick={handleFromScratch} fullWidth>Start from Scratch</DialogButton>
-            <DialogButton variant="contained" color="primary" onClick={handleFromFromExample} fullWidth>Start from Example</DialogButton>
-          </Box>
-        </DialogContent>
-      </Dialog>
+          <DialogTitle>Open Database / Import</DialogTitle>
+          <DialogContent>
+            <Box display="flex" flexDirection="column" alignItems="center">
+              <DialogButton variant="contained" color="primary" onClick={handleImportRequest} fullWidth>
+                Import
+              </DialogButton>
+              <DialogButton variant="contained" color="primary" onClick={handleFromScratch} fullWidth>
+                Start from Scratch
+              </DialogButton>
+              <DialogButton variant="contained" color="primary" onClick={handleFromFromExample} fullWidth>
+                Start from Example
+              </DialogButton>
+            </Box>
+          </DialogContent>
+        </Dialog>
       </Box>
       <Dialog
-                    open={openDialog}
-                    aria-labelledby="alert-dialog-title"
-                    aria-describedby="alert-dialog-description"
-                    fullScreen={true}
-                  >
-                    <DialogTitle id="alert-dialog-title">{"Bitte drehen sie ihr Gerät."}</DialogTitle>
-                    <DialogContent>
-                      <DialogContentText id="alert-dialog-description">
-                      Die Website funktioniert nur in der Landscape-Ansicht.
-                      </DialogContentText>
-                    </DialogContent>
-                  </Dialog>
+        open={openDialog}
+        aria-labelledby="alert-dialog-title"
+        aria-describedby="alert-dialog-description"
+        fullScreen={true}
+      >
+        <DialogTitle id="alert-dialog-title">{"Bitte drehen sie ihr Gerät."}</DialogTitle>
+        <DialogContent>
+          <DialogContentText id="alert-dialog-description">
+            Die Website funktioniert nur in der Landscape-Ansicht.
+          </DialogContentText>
+        </DialogContent>
+      </Dialog>
     </>
   );
 }

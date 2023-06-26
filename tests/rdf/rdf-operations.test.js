@@ -194,7 +194,7 @@ describe("RdfOperations", () => {
     expect(res.dictionary.P).toEqual(resRef.dictionary.P);
     expect(res.dictionary.O).toEqual(resRef.dictionary.O);
     expect(res.gaps).toEqual(resRef.gaps);
-    expect(res.D.toString()).toEqual(resRef.D.toString());
+    expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
   });
 
@@ -572,7 +572,7 @@ describe("RdfOperations", () => {
     const res = ops.deleteElementInDictionary(1); // delete SO: LA
     expect(res.psi).toEqual(resRef.psi);
     expect(res.gaps).toEqual(resRef.gaps);
-    expect(res.D.toString()).toEqual(resRef.D.toString());
+    expect(res.D).toEqual(resRef.D);
   });
 
   test("deleteElementInDict: SO: Inception", () => {
@@ -581,7 +581,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteElementInDictionary(0); // delete SO: Inception
-    expect(res.D.toString()).toEqual(resRef.D.toString());
+    expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
     expect(res.gaps).toEqual(resRef.gaps);
   });
@@ -592,7 +592,7 @@ describe("RdfOperations", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
     let ops = new RdfOperations(rdfcsa);
     const res = ops.deleteElementInDictionary(1); // delete SO: xInception
-    expect(res.D.toString()).toEqual(resRef.D.toString());
+    expect(res.D).toEqual(resRef.D);
     expect(res.psi).toEqual(resRef.psi);
     expect(res.gaps).toEqual(resRef.gaps);
   });
@@ -749,7 +749,7 @@ describe("RDFOperation inserts Test", () => {
     expect(rdfcsa.dictionary.P).toEqual(rdfcsaOld.dictionary.P);
     expect(rdfcsa.dictionary.O).toEqual(rdfcsaOld.dictionary.O);
     expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
-    expect(rdfcsa.D).toEqual(rdfcsaOld.D);
+    expect(rdfcsa.D.toString()).toEqual(rdfcsaOld.D.toString());
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
   });
 
@@ -804,7 +804,7 @@ describe("RDFOperation inserts Test", () => {
     expect(rdfcsa.dictionary.P).toEqual(rdfcsaOld.dictionary.P);
     expect(rdfcsa.dictionary.O).toEqual(rdfcsaOld.dictionary.O);
     expect(rdfcsa.gaps).toEqual(rdfcsaOld.gaps);
-    expect(rdfcsa.D).toEqual(rdfcsaOld.D);
+    expect(rdfcsa.D.toString()).toEqual(rdfcsaOld.D.toString());
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
   });
 });

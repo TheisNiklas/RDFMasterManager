@@ -16,8 +16,10 @@ import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentData, setDatabase, setGraphData } from "../actions";
+import { setCurrentData, setDatabase, setGraphData, setMainFrame, setMetaData } from "../actions";
 import load_data from "./triple2graph";
+import { QueryCall } from "../interface/query-call";
+import { useEffect } from "react";
 
 let widthValue = "30%";
 
@@ -35,6 +37,7 @@ export default function Graph2DReact() {
   const database = useSelector((state: any) => state.database);
   const currentData = useSelector((state: any) => state.currentData);
   const graphData = useSelector((state: any) => state.graphData);
+  const metaData = useSelector((state: any) => state.metaData);
 
   const dispatch = useDispatch();
   //dispatch(graphData(database, currentData))
@@ -54,7 +57,18 @@ export default function Graph2DReact() {
   const [formField, setFormField] = React.useState("");
   const [successToastOpen, setSuccessToastOpen] = React.useState(false);
   const [errorToastOpen, setErrorToastOpen] = React.useState(false);
+  const [arrowColor, setArrowColor] = React.useState("FFFFFF");
+  const [nodeColor, setNodeColor] = React.useState("e69138");
   const [toastMessage, setToastMessage] = React.useState("");
+
+  useEffect(() => {
+    const initial_data = load_data(database, currentData);
+    setData(initial_data);
+  }, [currentData]);
+
+  useEffect(() => {
+    validateMetaData();
+  }, [metaData]);
 
   const handleNodeLeftClose = () => {
     setOpenNodeLeft(false);
@@ -71,6 +85,28 @@ export default function Graph2DReact() {
     setFormField(node.content);
     setOpenNodeLeft(true);
   };
+
+  function validateMetaData() {
+    for (const item of metaData) {
+      const predicateValue = database.dictionary.getElementById(item.predicate).replace("METADATA:", "") as string;
+      const objectValue = database.dictionary.getElementById(item.object).replace("METADATA:", "") as string;
+      switch (predicateValue) {
+        case "arrowColor": {
+          setArrowColor(objectValue);
+          break;
+        }
+        case "nodeColor": {
+          setNodeColor(objectValue);
+          break;
+        }
+        default: {
+          // Code for other cases (if needed)
+          break;
+        }
+      }
+    }
+    return false;
+  }
 
   //display information about the link
   const handleLinkLeftClick = (link: any) => {
@@ -91,7 +127,7 @@ export default function Graph2DReact() {
       dispatch(setDatabase(newDatabase as Rdfcsa));
       const queryManager = new QueryManager(newDatabase);
       dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-      dispatch(setGraphData(database, currentData));
+      dispatch(setGraphData(newDatabase, currentData));
       setToastMessage("Successfully renamed node");
       setSuccessToastOpen(true);
       setOpenNodeLeft(false);
@@ -105,10 +141,33 @@ export default function Graph2DReact() {
   //handle Submit when Triple Data is changed
   const handleSubmitLink = () => {
     if (linkSourceName != "" && linkName != "" && linkTargetName != "") {
-      //TODO: rename Triple in Dictionary
+      const rdfOperations = new RdfOperations(database);
+      const tripleToModify = new Triple(+linkSource, +linkId, +linkTarget);
+      const newDatabase = rdfOperations.modifyTriple(tripleToModify, linkSourceName, linkName, linkTargetName);
+      dispatch(setDatabase(newDatabase));
+      // TODO: Query with the currently set filter
+
+      const queryManager = new QueryManager(newDatabase);
+      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      dispatch(setGraphData(database, currentData));
       setToastMessage("Successfully renamed triple");
       setSuccessToastOpen(true);
       setOpenLinkLeft(false);
+
+      if (linkSourceName === "RDFCSA:METADATA") {
+        let metaData = QueryCall.queryCallData(
+          [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+          newDatabase
+        );
+        if (metaData) {
+          dispatch(setMetaData(metaData));
+        }
+
+        dispatch(setMainFrame("blank"));
+        setTimeout(function () {
+          dispatch(setMainFrame("2d"));
+        }, 1);
+      }
     } else {
       setToastMessage("Can't rename Elements with empty String");
       setErrorToastOpen(true);
@@ -127,7 +186,22 @@ export default function Graph2DReact() {
     dispatch(setGraphData(database, currentData));
     setToastMessage("Successfully deleted triple");
     setSuccessToastOpen(true);
+
     setOpenLinkLeft(false);
+    if (linkSourceName === "RDFCSA:METADATA") {
+      let metaData = QueryCall.queryCallData(
+        [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+        newDatabase
+      );
+      if (metaData) {
+        dispatch(setMetaData(metaData));
+      }
+
+      dispatch(setMainFrame("blank"));
+      setTimeout(function () {
+        dispatch(setMainFrame("2d"));
+      }, 1);
+    }
   };
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -138,11 +212,38 @@ export default function Graph2DReact() {
     setErrorToastOpen(false);
   };
 
+  const handleDeleteNode = () => {
+    const rdfOperations = new RdfOperations(database);
+    const newDatabase = rdfOperations.deleteElementInDictionary(nodeId);
+    dispatch(setDatabase(newDatabase as Rdfcsa));
+    const queryManager = new QueryManager(newDatabase);
+    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+    dispatch(setGraphData(newDatabase, currentData));
+    
+    setToastMessage("Successfully deleted node");
+    setSuccessToastOpen(true);
+    setOpenNodeLeft(false);
+    
+    let metaData = QueryCall.queryCallData(
+      [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+      newDatabase
+    );
+    if (metaData) {
+      dispatch(setMetaData(metaData));
+    }
+
+    dispatch(setMainFrame("blank"));
+    setTimeout(function () {
+      dispatch(setMainFrame("2d"));
+    }, 1);
+    
+  };
   return (
     <div>
       <NoSSRForceGraph2D
         graphData={data}
-        nodeAutoColorBy="group"
+        nodeColor={(node: any) => (node.color = nodeColor)}
+        linkColor={(link: any) => (link.color = arrowColor)}
         linkDirectionalArrowLength={5}
         linkDirectionalArrowRelPos={1.05}
         linkWidth={1}
@@ -161,6 +262,7 @@ export default function Graph2DReact() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleNodeLeftClose}>Cancel</Button>
+          <Button onClick={handleDeleteNode}>Delete Node</Button>
           <Button onClick={handleSubmitNode}>Rename Node</Button>
         </DialogActions>
       </Dialog>

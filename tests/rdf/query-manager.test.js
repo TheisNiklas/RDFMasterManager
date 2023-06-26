@@ -191,6 +191,11 @@ describe("QueryManager", () => {
     ]);
   });
 
+  /**
+   * J. Gordon born in ?x
+   * L. DiCaprio born in ?x
+   * x=USA
+   */
   test("getJoin(3,7,x)(4,7,x)", () => {
     const subject = new QueryElement(3);
     const predicate = new QueryElement(7);
@@ -207,7 +212,10 @@ describe("QueryManager", () => {
     ]));
   });
 
-  test.skip("getJoin(,,x)(x,,)", () => {
+  /**
+   * Get all subjects that are also objects
+   */
+  test("getJoin(,,x)(x,,)", () => {
     const subject = null;
     const predicate = null;
     const object = new QueryElement(0, true);
@@ -227,7 +235,9 @@ describe("QueryManager", () => {
       new Triple(4,5,11)
     ]);
   });
-
+  /**
+   * Return all subjects that have a relation to an object that is also a subject that has a relation to the initial subject
+   */
   test("getJoin(x,,y)(y,,x)", () => {
     const subject = new QueryElement(0, true);
     const predicate = null;
@@ -243,7 +253,8 @@ describe("QueryManager", () => {
     ]);
   });
 
-  /*
+  /**
+  * Testing more complex joins with three variables
   * ?x appears in ?y
   * ?x lives in ?z
   * ?y filmed in ?z
@@ -263,6 +274,12 @@ describe("QueryManager", () => {
     ]));
   });
 
+  /**
+   * Testing UNION for constant query
+   * E. Page appears in ?
+   * Inception filmed in L.A.
+   * RESULT: [(E. Page appears in Inception), (Inception filmed in L.A.)]
+   */
   test("getJoin(4,5,)(0,9,12)", () => {
     const firstQueryTriple = new QueryTriple(new QueryElement(4, false), new QueryElement(5, false), null);
     const secondQueryTriple = new QueryTriple(new QueryElement(0, false), new QueryElement(9, false), new QueryElement(12, false));
@@ -273,7 +290,8 @@ describe("QueryManager", () => {
     ]));
   });
 
-  /*
+  /**
+  * Testing UNION
   * ?x appears in Inception
   * ?x awarded Oscar 2015
   * ?y appears in Inception

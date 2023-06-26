@@ -34,12 +34,11 @@ export class BitVector {
         }
         for (this.arrayLength; this.arrayLength <= element; this.arrayLength++) {
           array.push(0);
-          this.superblocks.push(1);
+          this.superblocks.push(0);
         }
         this.bits = new Uint32Array(array);
-      } else {
-        this.superblocks[element]++;
       }
+      this.superblocks[element]+=1;
       this.bits[element] |= 1 << index % (Uint32Array.BYTES_PER_ELEMENT * 8);
     }
   }
@@ -120,7 +119,7 @@ export class BitVector {
     if (index < this.toString().length) {
       let element = Math.floor(index / (Uint32Array.BYTES_PER_ELEMENT * 8));
 
-      let length = Uint32Array.BYTES_PER_ELEMENT * 8 - 1 - (index % (Uint32Array.BYTES_PER_ELEMENT * 8));
+      let length = Uint32Array.BYTES_PER_ELEMENT * 8 - 1-  (index % (Uint32Array.BYTES_PER_ELEMENT * 8)); // -1
       const mask = ((1 << length) - 1) << index % (Uint32Array.BYTES_PER_ELEMENT * 8);
       const subpart = (this.bits[element] & mask) >>> index % (Uint32Array.BYTES_PER_ELEMENT * 8);
       const shiftedSubpart = subpart << 1;
@@ -161,25 +160,22 @@ export class BitVector {
         this.superblocks[element] -= 1;
       }
 
-      let shiftedSubpart = 0;
       let mask = 0;
-      if (index % (Uint32Array.BYTES_PER_ELEMENT*8) !== this.toString().length % (Uint32Array.BYTES_PER_ELEMENT*8) && element !== this.arrayLength-1){
-      let length = Uint32Array.BYTES_PER_ELEMENT * 8 - 1 - (index % (Uint32Array.BYTES_PER_ELEMENT * 8));
-      mask = ((1 << length) - 1) << (index % (Uint32Array.BYTES_PER_ELEMENT * 8)) +1;
-      const subpart = (this.bits[element] & mask) >>> index % (Uint32Array.BYTES_PER_ELEMENT * 8);
-      shiftedSubpart = subpart >> 1;
-      }
-      else if (index % (Uint32Array.BYTES_PER_ELEMENT*8) !== this.toString().length % (Uint32Array.BYTES_PER_ELEMENT*8) && element === this.arrayLength-1){
-        let length = Uint32Array.BYTES_PER_ELEMENT * 8 -1 - (index % (Uint32Array.BYTES_PER_ELEMENT * 8));
+      let length = Uint32Array.BYTES_PER_ELEMENT * 8 -1 - (index % (Uint32Array.BYTES_PER_ELEMENT * 8));
+      if (element === this.arrayLength-1 && this.bits[element] < 2**32-2**31){
         mask = ((1 << length) - 1) << (index % (Uint32Array.BYTES_PER_ELEMENT * 8));
-        const subpart = (this.bits[element] & mask) >>> index % (Uint32Array.BYTES_PER_ELEMENT * 8);
-        shiftedSubpart = subpart >> 1;
       }
-      
+      else {
+        mask = ((1 << length) - 1) << (index % (Uint32Array.BYTES_PER_ELEMENT * 8)) + 1;
+      }
+      const subpart = (this.bits[element] & mask) >>> index % (Uint32Array.BYTES_PER_ELEMENT * 8);
+      let shiftedSubpart = subpart >> 1;
 
       let bit = 0;
       if (element < this.arrayLength - 1) {
         bit = this.bits[element + 1] & 1;
+        this.superblocks[element] += bit;
+        this.superblocks[element + 1] -= bit;
       }
       
       let shift = 31
@@ -210,8 +206,8 @@ export class BitVector {
     }
 
       if (this.bits[this.arrayLength - 1] === 0 && this.arrayLength > 1) {
-        this.arrayLength--;
         this.superblocks.pop();
+        this.deleteIntElement(this.arrayLength-1);
       }
     }
   }
@@ -224,9 +220,21 @@ export class BitVector {
     for (this.arrayLength; this.arrayLength <= newArrayLength - 1; this.arrayLength++) {
       array.push(0);
     }
-
+    this.arrayLength = newArrayLength;
     this.bits = new Uint32Array(array);
   }
+
+  deleteIntElement(newArrayLength){
+    let array = [];
+    if (newArrayLength < this.arrayLength){
+    for (let i = 0; i < newArrayLength; i++)
+    {
+      array.push(this.bits[i]);
+    }
+    this.arrayLength = newArrayLength;
+    this.bits = new Uint32Array(array);
+      }
+    }
 
   /**
    *

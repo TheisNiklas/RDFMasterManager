@@ -227,7 +227,7 @@ export class RdfOperations {
       this.rdfcsa.D.addBit(oRange[0] + 3);
     }
 
-    if (metadata.subject.isNew && metadata.subject.id === 0) {
+    if (metadata.subject.isNew && sInsertIndex === 0) {
       this.rdfcsa.D.unsetBit(0);
       this.rdfcsa.D.setBit(1); // toggle because element got shifted by one place
     }

@@ -145,9 +145,12 @@ export class Dictionary {
     const objectWasSO = this.isSubjectObjectById(triple.object);
     let newObjectId = -1;
     let newSubjectId = -1;
+    let subject;
+    let object;
     if (subjectDeleted) {
       if (subjectWasSO) {
-        const subject = this.SO.splice(triple.subject, 1)[0];
+        object = this.getElementById(triple.object);
+        subject = this.SO.splice(triple.subject, 1)[0];
         this.O.push(subject);
         this.O.sort();
         newObjectId = this.getIdByObject(subject);
@@ -169,6 +172,9 @@ export class Dictionary {
         index -= 1;
       }
       if (predicateDeleted) {
+        index -= 1;
+      }
+      if (subjectWasSO && subject > object) {
         index -= 1;
       }
       if (objectWasSO) {

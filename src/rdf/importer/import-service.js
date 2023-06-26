@@ -68,10 +68,11 @@ export class ImportService {
 
   /**
    * Create a pre defined sample RDFCSA, the sample from the paper is used
+   * @param {boolean} useJsBitvector
    * @returns {Rdfcsa} RDFCSA containing the sample data
    */
-  loadSample() {
-    this.#rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(sampleData)));
+  loadSample(useJsBitvector) {
+    this.#rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(sampleData)), useJsBitvector);
     return this.#rdfcsa;
   }
 

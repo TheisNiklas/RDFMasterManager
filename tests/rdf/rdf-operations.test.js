@@ -597,6 +597,82 @@ describe("RdfOperations", () => {
     expect(res.gaps).toEqual(resRef.gaps);
   });
 
+  test("deleteElementInDict: Bugfix deleting SO:Inception, Custom Bitvector", () => {
+    const input = [
+      ["SO:Inception", "P:filmedin", "SO:L.A."],
+      ["SO:L.A.", "P:cityof", "O:USA"],
+      ["S:E.Page", "P:appearsin", "SO:Inception"],
+      ["S:E.Page", "P:bornin", "O:Canada"],
+      ["S:L.DiCaprio", "P:appearsin", "SO:Inception"],
+      ["S:L.DiCaprio", "P:bornin", "O:USA"],
+      ["S:L.DiCaprio", "P:awarded", "O:Oscar2015"],
+      ["S:J.Gordon", "P:appearsin", "SO:Inception"],
+      ["S:J.Gordon", "P:bornin", "O:USA"],
+      ["S:J.Gordon", "P:livesin", "SO:L.A."],
+      ["RDFCSA:METADATA", "METADATA:arrowColor", "METADATA:#8fce00"],
+      ["O:Haus", "P:liegtim", "O:Gruenen"],
+    ];
+    const result = [
+      ["SO:L.A.", "P:cityof", "O:USA"],
+      ["S:E.Page", "P:bornin", "O:Canada"],
+      ["S:L.DiCaprio", "P:bornin", "O:USA"],
+      ["S:L.DiCaprio", "P:awarded", "O:Oscar2015"],
+      ["S:J.Gordon", "P:bornin", "O:USA"],
+      ["S:J.Gordon", "P:livesin", "SO:L.A."],
+      ["RDFCSA:METADATA", "METADATA:arrowColor", "METADATA:#8fce00"],
+      ["O:Haus", "P:liegtim", "O:Gruenen"],
+    ];
+    let refRdfcsa = new Rdfcsa(result);
+    let rdfcsa = new Rdfcsa(input);
+    let ops = new RdfOperations(rdfcsa);
+    const res = ops.deleteElementInDictionary(0);
+    expect(res.dictionary.SO).toEqual(refRdfcsa.dictionary.SO);
+    expect(res.dictionary.S).toEqual(refRdfcsa.dictionary.S);
+    expect(res.dictionary.P).toEqual(refRdfcsa.dictionary.P);
+    expect(res.dictionary.O).toEqual(refRdfcsa.dictionary.O);
+    expect(res.gaps).toEqual(refRdfcsa.gaps);
+    expect(res.D.toString()).toEqual(refRdfcsa.D.toString());
+    expect(res.psi).toEqual(refRdfcsa.psi);
+  });
+
+  test("deleteElementInDict: Bugfix deleting SO:Inception, JSBitvector", () => {
+    const input = [
+      ["SO:Inception", "P:filmedin", "SO:L.A."],
+      ["SO:L.A.", "P:cityof", "O:USA"],
+      ["S:E.Page", "P:appearsin", "SO:Inception"],
+      ["S:E.Page", "P:bornin", "O:Canada"],
+      ["S:L.DiCaprio", "P:appearsin", "SO:Inception"],
+      ["S:L.DiCaprio", "P:bornin", "O:USA"],
+      ["S:L.DiCaprio", "P:awarded", "O:Oscar2015"],
+      ["S:J.Gordon", "P:appearsin", "SO:Inception"],
+      ["S:J.Gordon", "P:bornin", "O:USA"],
+      ["S:J.Gordon", "P:livesin", "SO:L.A."],
+      ["RDFCSA:METADATA", "METADATA:arrowColor", "METADATA:#8fce00"],
+      ["O:Haus", "P:liegtim", "O:Gruenen"],
+    ];
+    const result = [
+      ["SO:L.A.", "P:cityof", "O:USA"],
+      ["S:E.Page", "P:bornin", "O:Canada"],
+      ["S:L.DiCaprio", "P:bornin", "O:USA"],
+      ["S:L.DiCaprio", "P:awarded", "O:Oscar2015"],
+      ["S:J.Gordon", "P:bornin", "O:USA"],
+      ["S:J.Gordon", "P:livesin", "SO:L.A."],
+      ["RDFCSA:METADATA", "METADATA:arrowColor", "METADATA:#8fce00"],
+      ["O:Haus", "P:liegtim", "O:Gruenen"],
+    ];
+    let refRdfcsa = new Rdfcsa(result, true);
+    let rdfcsa = new Rdfcsa(input, true);
+    let ops = new RdfOperations(rdfcsa);
+    const res = ops.deleteElementInDictionary(0);
+    expect(res.dictionary.SO).toEqual(refRdfcsa.dictionary.SO);
+    expect(res.dictionary.S).toEqual(refRdfcsa.dictionary.S);
+    expect(res.dictionary.P).toEqual(refRdfcsa.dictionary.P);
+    expect(res.dictionary.O).toEqual(refRdfcsa.dictionary.O);
+    expect(res.gaps).toEqual(refRdfcsa.gaps);
+    expect(res.D.toString()).toEqual(refRdfcsa.D.toString());
+    expect(res.psi).toEqual(refRdfcsa.psi);
+  });
+
   test("changeInDictionary: change SO: xInception to Inception", () => {
     let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleListTypo)));
     let ops = new RdfOperations(rdfcsa);
@@ -604,6 +680,28 @@ describe("RdfOperations", () => {
     expect(res.gaps).toEqual(resultGaps);
     expect(res.D.toString()).toEqual(resultD);
     expect(res.psi).toEqual(resultPsi);
+  });
+
+  test("changeInDictionary: Bugfix if deleteting subject that is SO", () => {
+    const input = [
+      ["S:Hans", "P:hat", "O:Haus"],
+      ["O:Haus", "p:liegtim", "O:Gruenen"],
+    ];
+    const result = [
+      ["S:Hans", "P:hat", "SO:Haus"],
+      ["SO:Haus", "p:liegtim", "O:Gruenen"],
+    ];
+    let refRdfcsa = new Rdfcsa(result, true);
+    let rdfcsa = new Rdfcsa(input, true);
+    let ops = new RdfOperations(rdfcsa);
+    const res = ops.changeInDictionary(0, "SO:Haus");
+    expect(res.dictionary.SO).toEqual(refRdfcsa.dictionary.SO);
+    expect(res.dictionary.S).toEqual(refRdfcsa.dictionary.S);
+    expect(res.dictionary.P).toEqual(refRdfcsa.dictionary.P);
+    expect(res.dictionary.O).toEqual(refRdfcsa.dictionary.O);
+    expect(res.gaps).toEqual(refRdfcsa.gaps);
+    expect(res.D.toString()).toEqual(refRdfcsa.D.toString());
+    expect(res.psi).toEqual(refRdfcsa.psi);
   });
 
   test.skip("changeInDictionary: bugfix test", () => {

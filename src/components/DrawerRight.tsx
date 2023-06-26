@@ -16,6 +16,8 @@ import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { ImportService } from "../rdf/importer/import-service";
 import { useSelector, useDispatch } from "react-redux";
+import { FormControlLabel, Checkbox } from "@mui/material";
+import { ChangeEvent } from "react";
 import { open, close, setCurrentData, setDatabase, setGraphData, setMetaData } from "./../actions";
 import AddTripleForm from "./addTriple";
 import DropDownMenue from "./dropDownMenu";
@@ -32,6 +34,7 @@ import { WavingHandTwoTone } from "@mui/icons-material";
 import metaData from "../reducers/metaData";
 import { QueryCall } from "../interface/query-call";
 import MetaDataForm from "./metaDataForm";
+import { Rdfcsa } from "../rdf/rdfcsa";
 
 let drawerWidth = 500;
 
@@ -112,6 +115,12 @@ export default function PersistentDrawerRight() {
   const graphData = useSelector((state: any) => state.graphData);
   const dispatch = useDispatch();
 
+  const [useJsBitvector, setUseJsBitvector] = React.useState(true);
+
+  const handleFormChangeCheckBoxBitvector = (event: ChangeEvent<HTMLInputElement>) => {
+    setUseJsBitvector(event.target.checked);
+  };
+
   const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
       return <TextVisualization />;
@@ -123,24 +132,23 @@ export default function PersistentDrawerRight() {
   }, [database, currentData, mainFrame, graphData]);
 
   const handleFromFromExample = () => {
-    const rdfcsa = new ImportService().loadSample();
+    const rdfcsa = new ImportService().loadSample(useJsBitvector);
     const queryManager = new QueryManager(rdfcsa);
     const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
     //const data = queryManager.getAllTriples()
     dispatch(setCurrentData(data));
-    console.log(currentData);
     dispatch(setDatabase(rdfcsa));
     dispatch(setGraphData(database, currentData));
     let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], rdfcsa);
     if (metaData) {
       dispatch(setMetaData(metaData));
     }
-    console.log(database);
-    console.log(graphData);
     setStartDialogOpen(false);
   };
 
   const handleFromScratch = () => {
+    const rdfcsa = new Rdfcsa([], useJsBitvector);
+    dispatch(setDatabase(rdfcsa));
     setStartDialogOpen(false);
   };
 
@@ -152,7 +160,7 @@ export default function PersistentDrawerRight() {
     // Add an event handler to get the selected file path.
     fileInput.addEventListener("change", async (event) => {
       const file = (event as any).target.files[0];
-      const rdfcsa = await importService.importFile(file, true);
+      const rdfcsa = await importService.importFile(file, true, useJsBitvector);
       if (rdfcsa === undefined) {
         setStartDialogOpen(true);
       } else {
@@ -271,6 +279,15 @@ export default function PersistentDrawerRight() {
           <DialogTitle>Open Database / Import</DialogTitle>
           <DialogContent>
             <Box display="flex" flexDirection="column" alignItems="center">
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={useJsBitvector}
+                    onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxBitvector(event)}
+                  />
+                }
+                label="Use Javascript-Bitvector"
+              />
               <DialogButton variant="contained" color="primary" onClick={handleImportRequest} fullWidth>
                 Import
               </DialogButton>

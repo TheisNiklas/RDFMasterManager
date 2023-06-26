@@ -5,7 +5,7 @@ import { TurtleImporter } from "./turtle-importer";
 import { Rdfcsa } from "../rdfcsa";
 import { RdfOperations } from "../rdf-operations";
 import { gunzip, gunzipSync } from "zlib";
-import { File } from "buffer";
+import { File, Buffer } from "buffer";
 
 export class ImportService {
   /** @type {{[key: string]: Importer}} */

@@ -1,4 +1,5 @@
-import React, { ChangeEvent, useState, SyntheticEvent } from "react";
+import * as React from 'react';
+import { ChangeEvent, useState, SyntheticEvent } from "react";
 import { styled } from "@mui/system";
 import {
   Autocomplete,
@@ -23,11 +24,10 @@ import {
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
-import { QueryCall } from "@/interface/query-call";
+import { QueryCall } from "../interface/query-call";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import { Rdfcsa } from "@/rdf/rdfcsa";
-import { Triple } from "@/rdf/models/triple";
-
+import { useSelector, useDispatch } from "react-redux";
+import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData } from "./../actions";
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
   marginBottom: theme.spacing(2),
@@ -56,7 +56,12 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcsa, currentData: Triple[], setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>> }) => {
+const FilterForm = () => {
+  //Redux
+  const filterTriples = useSelector((state: any) => state.filterTriples);
+  const database = useSelector((state: any) => state.database);
+  const currentData = useSelector((state: any) => state.currentData);
+  const dispatch = useDispatch();
   //Adds a SPO triple to the previous formField of the filter triple
   //true as default value for the checkboxes
   const addFilterTriple = () => {
@@ -66,38 +71,38 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
       object: "",
     };
 
-    setFormFields([...formFields, object]);
+    dispatch(addQueryTriple(object));
   };
 
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
+  //check if the query is correct
   const handleSubmit = () => {
-    setOpen(!QueryCall.queryCallData(formFields, database, currentData, setCurrentData));
+    let queryResult = QueryCall.queryCallData(filterTriples, database)
+    if (queryResult)
+    {
+      dispatch(setCurrentData(queryResult));
+    }  
+    else
+    {
+      //change popup
+      setOpen(true);
+    }
   };
-
-  //Definition of the datastructure for the data tranfer to the interface of the filter elements
-  //true as default value for the checkboxes
-  const [formFields, setFormFields] = useState([{ subject: "", predicate: "", object: "" }]);
 
   //Adaptation of the subject filter
   const handleFormChangeSubject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
-    let data = [...formFields];
-    data[index]["subject"] = ("" + newValue);
-    setFormFields(data);
+    dispatch(updateSubject(index, ("" + newValue)));
   };
 
   //Adaptation of the predicat filter
   const handleFormChangePredicate = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
-    let data = [...formFields];
-    data[index]["predicate"] = ("" + newValue);
-    setFormFields(data);
+    dispatch(updatePredicate(index, ("" + newValue)));
   };
 
   //Adaptation of the object filter
   const handleFormChangeObject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
-    let data = [...formFields];
-    data[index]["object"] = ("" + newValue);
-    setFormFields(data);
+    dispatch(updateObject(index, ("" + newValue)));
   };
 
   //Removes a triple pair of SPO filter elements with the corresponding join variables
@@ -105,9 +110,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
     if (index === 0) {
         return;
     }
-    let data = [...formFields];
-    data.splice(index, 1);
-    setFormFields(data);
+    dispatch(removeQueryTriple(index));
   };
 
   //State for the Dialog to open
@@ -116,6 +119,8 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
   const handleClose = () => {
     setOpen(false);
   };
+
+  
   return (
     <Accordion defaultExpanded={true}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
@@ -130,7 +135,7 @@ const FilterForm = ({ database, currentData, setCurrentData }: { database: Rdfcs
               <FormControl sx={{ marginBottom: -3 }}>
                 <FormLabel>Join variables names</FormLabel>
               </FormControl>
-              {formFields.map((form, index) => {
+              {filterTriples.map((form: any, index: number) => {
                 return (
                   <Grid container spacing={2} key={index} columns={13}>
                     <Grid item xs={12} sm={7} sx={{ marginTop: 2 }}>

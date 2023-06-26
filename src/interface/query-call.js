@@ -1,8 +1,8 @@
-import { QueryElement } from "@/rdf/models/query-element";
-import { QueryTriple } from "@/rdf/models/query-triple";
-import { Triple } from "@/rdf/models/triple";
-import { QueryManager } from "@/rdf/query-manager";
-import { Rdfcsa } from "@/rdf/rdfcsa";
+import { QueryElement } from "../rdf/models/query-element";
+import { QueryTriple } from "../rdf/models/query-triple";
+import { Triple } from "../rdf/models/triple";
+import { QueryManager } from "../rdf/query-manager";
+import { Rdfcsa } from "../rdf/rdfcsa";
 
 //Formats the user query for the rdf backend.
 //The same query variables marked with a "?" are stored in a list.
@@ -54,7 +54,7 @@ export class QueryCall {
    * @param {React.Dispatch<React.SetStateAction<Triple[]>>} setCurrentData 
    * @returns 
    */
-  static queryCallData(queryData, database, currentData, setCurrentData) {
+  static queryCallData(queryData, database) {
     const queryManager = new QueryManager(database);
 
     const query = [];
@@ -135,8 +135,7 @@ export class QueryCall {
     });
 
     const result = queryManager.getTriples(query);
-    setCurrentData(result);
 
-    return true;
+    return result;
   }
 }

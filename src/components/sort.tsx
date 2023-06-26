@@ -1,4 +1,5 @@
-import React, { ChangeEvent, useState } from "react";
+import * as React from 'react';
+import { ChangeEvent, useState } from "react";
 import { styled } from "@mui/system";
 import {
   TextField,
@@ -13,7 +14,8 @@ import {
   Typography,
   SelectChangeEvent
 } from "@mui/material";
-import { Triple } from "@/rdf/models/triple";
+import { useSelector, useDispatch } from "react-redux";
+import { setSortElement, setSortOrder, setVisualLimit } from "./../actions";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -36,7 +38,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
-const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: any }) => {
+const SortFormData = () => {
 
     let sortElement = 'sortSubject';
     let sortOrder = 'ascending';
@@ -45,12 +47,9 @@ const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: a
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   const handleSubmit = () => {
-
-    let data = JSON.parse(JSON.stringify(sortData));
-    data.sortOrder = sortOrder;
-    data.sortElement = sortElement;
-    data.visualLimit = visualLimit;
-    setSortData(data);
+    dispatch(setSortOrder(sortOrder));
+    dispatch(setSortElement(sortElement));
+    dispatch(setVisualLimit(visualLimit));
   };
 
   //Adaptation of the selected sorting order (ascending, descending) the user picked
@@ -74,6 +73,10 @@ const SortFormData = ({ sortData, setSortData }: { sortData: any, setSortData: a
   const handleClose = () => {
     setOpen(false);
   };
+
+   //Redux
+   const sortOptions = useSelector((state: any) => state.sortOptions);
+   const dispatch = useDispatch();
   return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>
       <div>

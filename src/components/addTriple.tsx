@@ -13,41 +13,26 @@ import {
   DialogActions,
   Tooltip,
 } from "@mui/material";
-import { RdfOperations } from "@/rdf/rdf-operations";
-import { QueryManager } from "@/rdf/query-manager";
-import { QueryTriple } from "@/rdf/models/query-triple";
-import { Rdfcsa } from "@/rdf/rdfcsa";
-import { Triple } from "@/rdf/models/triple";
+import { RdfOperations } from "../rdf/rdf-operations";
+import { QueryManager } from "../rdf/query-manager";
+import { QueryTriple } from "../rdf/models/query-triple";
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentData, setDatabase } from "../actions";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
   marginBottom: theme.spacing(2),
 }));
 
-const StyledTextField = styled(TextField)(({ theme }) => ({
+const StyledTextField = styled(TextField)(() => ({
   width: "100%",
 }));
 
-const AddButton = styled(Button)(({ theme }) => ({
-  marginTop: theme.spacing(2),
+const SubmitButton = styled(Button)(() => ({
   width: "100%",
 }));
 
-const SubmitButton = styled(Button)(({ theme }) => ({
-  width: "100%",
-}));
-
-const AddTripleForm = ({
-  database,
-  setDatabase,
-  currentData,
-  setCurrentData,
-}: {
-  database: Rdfcsa;
-  setDatabase: React.Dispatch<React.SetStateAction<Rdfcsa>>;
-  currentData: Triple[];
-  setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>>;
-}) => {
+const AddTripleForm = () => {
   const [formFields, setFormFields] = useState({ subject: "", predicate: "", object: "" });
 
   const [subjectValid, setSubjectValid] = useState(false);
@@ -73,6 +58,7 @@ const AddTripleForm = ({
       default:
     }
   };
+
   //user input for the additional triple subject
   const handleFormChangeAddSubject = (event: ChangeEvent<HTMLInputElement>) => {
     let data = JSON.parse(JSON.stringify(formFields));
@@ -103,9 +89,9 @@ const AddTripleForm = ({
 
     const newDatabase = rdfOperations.addTriple(formFields.subject, formFields.predicate, formFields.object);
     if (newDatabase !== undefined) {
-      setDatabase(newDatabase);
+      dispatch(setDatabase(newDatabase));
       const queryManager = new QueryManager(newDatabase);
-      //setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)]));
+      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
       setFormFields({ subject: "", predicate: "", object: "" });
       setOpen(false);
     } else {
@@ -119,6 +105,9 @@ const AddTripleForm = ({
   const handleClose = () => {
     setOpen(false);
   };
+
+  const database = useSelector((state: any) => state.database);
+  const dispatch = useDispatch();
 
   return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>

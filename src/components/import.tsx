@@ -1,4 +1,5 @@
-import React, { ChangeEvent } from "react";
+import * as React from 'react';
+import { ChangeEvent } from "react";
 import { styled } from "@mui/system";
 import {
   Typography,
@@ -9,19 +10,20 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
+  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
   DialogContentText,
   DialogActions,
 } from "@mui/material";
-import { ImportService } from "@/rdf/importer/import-service";
-import { QueryManager } from "@/rdf/query-manager";
-import { QueryTriple } from "@/rdf/models/query-triple";
-import { Rdfcsa } from "@/rdf/rdfcsa";
-import { Triple } from "@/rdf/models/triple";
+import { ImportService } from "../rdf/importer/import-service";
+import { QueryManager } from "../rdf/query-manager";
+import { QueryTriple } from "../rdf/models/query-triple";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import { useSelector, useDispatch } from "react-redux";
+import { setCurrentData, setDatabase } from "../actions";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -50,26 +52,24 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
   },
 }));
 
-const Import = ({
-  database,
-  setDatabase,
-  currentData,
-  setCurrentData,
-}: {
-  database: Rdfcsa;
-  setDatabase: React.Dispatch<React.SetStateAction<Rdfcsa>>;
-  currentData: Triple[];
-  setCurrentData: React.Dispatch<React.SetStateAction<Triple[]>>;
-}) => {
+const Import = () => {
+  const dispatch = useDispatch();
   const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
 
   let appendData = false;
+  let javascriptBitvector = false;
 
   //Receives the event with true in the checkbox for new data appended to the old
   //or false if the old data is replaced by the new one
   const handleFormChangeCheckBoxAppendData = (event: ChangeEvent<HTMLInputElement>) => {
     appendData = event.target.checked;
+  };
+
+    //Receives the event with true in the checkbox for new data appended to the old
+  //or false if the old data is replaced by the new one
+  const handleFormChangeCheckBoxBitvector = (event: ChangeEvent<HTMLInputElement>) => {
+    javascriptBitvector = event.target.checked;
   };
 
   //To start the data input for attaching to or replacing the old triple data
@@ -81,20 +81,20 @@ const Import = ({
     // Add an event handler to get the selected file path.
     fileInput.addEventListener("change", async (event) => {
       const file = (event as any).target.files[0];
-      const rdfcsa = await importService.importFile(file, true);
+      const rdfcsa = await importService.importFile(file, appendData, javascriptBitvector);
       if (rdfcsa === undefined) {
         setOpen(true);
       } else {
-        setDatabase(rdfcsa);
+        dispatch(setDatabase(rdfcsa))
         if (rdfcsa.tripleCount < 10000) {
           // TODO: include in config
           const queryManager = new QueryManager(rdfcsa);
           const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-          setCurrentData(data);
+          dispatch(setCurrentData(data));
         } else if (!appendData) {
-          setToastMessage("Data not displayed. Exceeds configured maximum.")
+          setToastMessage("Data not displayed. Exceeds configured maximum.");
           setToastOpen(true);
-          setCurrentData([]);
+          dispatch(setCurrentData([]));
         }
         setOpen(false);
       }
@@ -117,15 +117,25 @@ const Import = ({
   return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>
       <Header variant="h6">Import / Upload Database</Header>
-      <Grid item xs={12} sm={11}>
-        <FormControlLabel
-          control={
-            <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)} />
-          }
-          label="Attach data"
-        />
+      <Grid container spacing={0} columns={13}>
+        <Grid item xs={1} sm={4}>
+          <FormControlLabel
+            control={
+              <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)} />
+            }
+            label="Attach data"
+          />
+        </Grid>
+        <Grid item xs={8} sm={8}>
+            <FormControlLabel
+              control={
+                <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxBitvector(event)} />
+              }
+              label="Use Javascript-Bitvector"
+            />
+        </Grid>
       </Grid>
-      <Grid item xs={6} sm={3}>
+      <Grid item xs={1} sm={3}>
         <SubmitButton variant="contained" color="primary" onClick={() => userImportRequest()}>
           Import
         </SubmitButton>

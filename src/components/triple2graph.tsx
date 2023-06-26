@@ -1,7 +1,7 @@
-import { QueryManager } from "@/rdf/query-manager";
-import { Rdfcsa } from "@/rdf/rdfcsa";
-import { QueryTriple } from "@/rdf/models/query-triple";
-import { Triple } from "@/rdf/models/triple";
+import { QueryManager } from "../rdf/query-manager";
+import { Rdfcsa } from "../rdf/rdfcsa";
+import { QueryTriple } from "../rdf/models/query-triple";
+import { Triple } from "../rdf/models/triple";
 
 /**
  * Transform the RDF-Dictionary into an input format for the
@@ -18,10 +18,10 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
   const arrayNodes: any = [];
 
   data.forEach((triple) => {
-    var subject = triple.subject;
-    var predicate = triple.predicate;
-    var object = triple.object;
-    var subjectOriginalId = -1;
+    const subject = triple.subject;
+    const predicate = triple.predicate;
+    let object = triple.object;
+    let subjectOriginalId = -1;
 
     if (database.dictionary.isSubjectObjectById(object)) {
       object = object - database.gaps![2];

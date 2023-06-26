@@ -1,6 +1,3 @@
-import { Dictionary } from "../dictionary";
-import { Exporter } from "./exporter";
-import { Triple } from "../models/triple";
 import { NTriplesExporter } from "./ntriples-exporter";
 import { TurtleExporter } from "./turtle-exporter";
 import { JsonldExporter } from "./jsonld-exporter";
@@ -124,7 +121,7 @@ export class ExportService {
     let exporter = this.#exporters[format];
     if (exporter === undefined) {
       throw Error(
-        `No exporter available for format ${format} in category ${isStreamExporter ? "normal" : "streaming"}`
+        `No exporter available for format ${format} in category ${exporter.isStreamExporter ? "normal" : "streaming"}`
       );
     }
     return exporter;

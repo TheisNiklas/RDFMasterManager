@@ -60,12 +60,8 @@ export default function Graph3DReact() {
   const [formField, setFormField] = React.useState("");
   const [successToastOpen, setSuccessToastOpen] = React.useState(false);
   const [errorToastOpen, setErrorToastOpen] = React.useState(false);
-  const [source, setSource] = React.useState("");
-  const [target, setTarget] = React.useState("");
-  const [pred, setPred] = React.useState("");
   const [arrowColor, setArrowColor] = React.useState("FFFFFF");
   const [nodeColor, setNodeColor] = React.useState("e69138");
-  const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
 
   useEffect(() => {
@@ -75,7 +71,7 @@ export default function Graph3DReact() {
 
   useEffect(() => {
     validateMetaData();
-  }, []);
+  }, [metaData]);
 
   const handleNodeLeftClose = () => {
     setOpenNodeLeft(false);
@@ -135,11 +131,6 @@ export default function Graph3DReact() {
       const queryManager = new QueryManager(newDatabase);
       dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
       dispatch(setGraphData(newDatabase, currentData));
-      // let metaData = QueryCall.queryCallData([{subject:"RDFCSA:METADATA", predicate:"", object: ""}], newDatabase);
-      // if (metaData)
-      // {
-      //   dispatch(setMetaData(metaData));
-      // }
       setToastMessage("Successfully renamed node");
       setSuccessToastOpen(true);
       setOpenNodeLeft(false);

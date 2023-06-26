@@ -23,7 +23,9 @@
     "@types/react": "18.2.6",
     "@types/react-dom": "18.2.4",
     "3d-force-graph": "^1.71.4",
+    "assert-browserify": "^2.0.0",
     "autoprefixer": "10.4.14",
+    "browserify-zlib": "^0.2.0",
     "eslint": "8.40.0",
     "eslint-config-next": "13.4.1",
     "file-saver": "^2.0.5",
@@ -31,6 +33,7 @@
     "jsonld-streaming-serializer": "^2.1.0",
     "n3": "^1.16.4",
     "next": "^13.4.4",
+    "process": "^0.11.10",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-force-graph": "^1.43.0",
@@ -40,11 +43,13 @@
     "react-responsive": "^9.0.2",
     "react18-json-view": "^0.0.8",
     "redux": "^4.2.1",
+    "stream-browserify": "^3.0.0",
     "streamsaver": "^2.0.6",
     "tailwindcss": "3.3.2",
     "three-render-objects": "^1.28.4",
     "ts-jest": "^29.1.0",
-    "tween.js": "^16.6.0"
+    "tween.js": "^16.6.0",
+    "util": "^0.12.5"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^5.16.5",

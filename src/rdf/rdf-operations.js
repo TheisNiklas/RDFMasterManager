@@ -515,11 +515,7 @@ export class RdfOperations {
         triple[1] = text;
       });
     } else {
-      const originalTriplesNumeric = queryManager.getTriples([
-        null,
-        null,
-        new QueryTriple(new QueryElement(id - this.rdfcsa.gaps[2])),
-      ]);
+      const originalTriplesNumeric = queryManager.getTriples([new QueryTriple(null, null, new QueryElement(id))]);
       originalTriplesNumeric.forEach((triple) => {
         originalTriples.push(this.rdfcsa.dictionary.decodeTriple(triple));
       });
@@ -528,7 +524,7 @@ export class RdfOperations {
       });
       if (this.rdfcsa.dictionary.isSubjectObjectById(id)) {
         const originalSubjectTriplesNumeric = queryManager.getTriples([
-          new QueryTriple(new QueryElement(id), null, null),
+          new QueryTriple(new QueryElement(id) - this.rdfcsa.gaps[2], null, null),
         ]);
         const originalSubjectTriples = [];
         originalSubjectTriplesNumeric.forEach((triple) => {

@@ -19,7 +19,6 @@ import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setGraphData } from "../actions";
 import load_data from "./triple2graph";
 
-
 let widthValue = "30%";
 
 //No-SSR import because react-force-graph does not support SSR
@@ -39,7 +38,7 @@ export default function Graph2DReact() {
 
   const dispatch = useDispatch();
   //dispatch(graphData(database, currentData))
-  const initial_data = load_data(database, currentData)
+  const initial_data = load_data(database, currentData);
   const [data, setData] = React.useState(initial_data);
 
   const [openNodeLeft, setOpenNodeLeft] = React.useState(false);
@@ -86,7 +85,7 @@ export default function Graph2DReact() {
 
   //handle Submit when Node Data is changed
   const handleSubmitNode = () => {
-    if(formField != ""){
+    if (formField != "") {
       const rdfOperations = new RdfOperations(database);
       const newDatabase = rdfOperations.changeInDictionary(nodeId, formField);
       dispatch(setDatabase(newDatabase as Rdfcsa));
@@ -96,7 +95,7 @@ export default function Graph2DReact() {
       setToastMessage("Successfully renamed node");
       setSuccessToastOpen(true);
       setOpenNodeLeft(false);
-    }else{
+    } else {
       setToastMessage("Can not rename Node with empty String");
       setErrorToastOpen(true);
       setOpenNodeLeft(false);
@@ -105,12 +104,12 @@ export default function Graph2DReact() {
 
   //handle Submit when Triple Data is changed
   const handleSubmitLink = () => {
-    if(linkSourceName != "" && linkName != "" && linkTargetName != ""){
+    if (linkSourceName != "" && linkName != "" && linkTargetName != "") {
       //TODO: rename Triple in Dictionary
       setToastMessage("Successfully renamed triple");
       setSuccessToastOpen(true);
       setOpenLinkLeft(false);
-    }else{
+    } else {
       setToastMessage("Can't rename Elements with empty String");
       setErrorToastOpen(true);
       setOpenLinkLeft(false);
@@ -120,7 +119,7 @@ export default function Graph2DReact() {
   //handle Delete of Triple
   const handleDeleteTriple = () => {
     const rdfOperations = new RdfOperations(database);
-    const tripleToDelete = new Triple(linkSource, linkId, linkTarget);
+    const tripleToDelete = new Triple(+linkSource, +linkId, +linkTarget);
     const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
     dispatch(setDatabase(newDatabase as Rdfcsa));
     const queryManager = new QueryManager(newDatabase);
@@ -147,8 +146,6 @@ export default function Graph2DReact() {
         linkDirectionalArrowLength={5}
         linkDirectionalArrowRelPos={1.05}
         linkWidth={1}
-        linkOpacity={1}
-        nodeOpacity={1}
         onNodeClick={(node: any) => handleNodeLeftClick(node)}
         onLinkClick={(link: any) => handleLinkLeftClick(link)}
       ></NoSSRForceGraph2D>
@@ -164,7 +161,7 @@ export default function Graph2DReact() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleNodeLeftClose}>Cancel</Button>
-          <Button onClick={handleSubmitNode}>Rename Triple</Button>
+          <Button onClick={handleSubmitNode}>Rename Node</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={openLinkLeft} onClose={handleLinkLeftClose}>

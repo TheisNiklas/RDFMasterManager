@@ -156,13 +156,13 @@ export default function PersistentDrawerRight() {
       if (rdfcsa === undefined) {
         setStartDialogOpen(true);
       } else {
-        setDatabase(rdfcsa);
+        dispatch(setDatabase(rdfcsa));
         if (rdfcsa.tripleCount < 10000) {
           // TODO: include in config
           const queryManager = new QueryManager(rdfcsa);
           const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-          setCurrentData(data);
-          let metaData = QueryCall.queryCallData({ subject: "RDFCSA:METADATA", predicate: "", object: "" }, database);
+          dispatch(setCurrentData(data));
+          let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], database);
           if (metaData) {
             dispatch(setMetaData(metaData));
           }

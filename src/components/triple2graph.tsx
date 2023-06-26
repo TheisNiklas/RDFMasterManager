@@ -21,33 +21,31 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     const subject = triple.subject;
     const predicate = triple.predicate;
     let object = triple.object;
-    let subjectOriginalId = -1;
+    let objectOriginalId = -1;
 
     if (database.dictionary.isSubjectObjectById(object)) {
+      objectOriginalId = object;
       object = object - database.gaps![2];
-      subjectOriginalId = object;
     }
     let subjectValue = database.dictionary.getElementById(subject) as string;
-    if(!subjectValue.includes("METADATA")){
-      //collect all nodes
-      if (subjectOriginalId !== -1) {
-          arrayNodes.push({id: subject, origId: subjectOriginalId});
-      } else {
-          arrayNodes.push({id: subject, origId: triple.subject});
-      }
-      arrayNodes.push({id: object, origId: triple.object});
-
-      //generate links array
-      links.push({
-        source: subject,
-        target: object,
-        id: predicate
-      });
+    //collect all nodes
+    if (objectOriginalId !== -1) {
+      arrayNodes.push({ id: object, origId: objectOriginalId });
+    } else {
+      arrayNodes.push({ id: object, origId: triple.object });
     }
+    arrayNodes.push({ id: subject, origId: triple.subject });
+
+    //generate links array
+    links.push({
+      source: subject,
+      target: object,
+      id: predicate,
+    });
   });
 
   //make a set out of all collected nodes
-  const resultNodes = [...new Map(arrayNodes.map((item: { id: string, origId: string }) => [item.id, item])).values()]
+  const resultNodes = [...new Map(arrayNodes.map((item: { id: string; origId: string }) => [item.id, item])).values()];
 
   resultNodes.forEach((node, index) => {
     const content = database.dictionary.getElementById((node as any).origId);
@@ -57,7 +55,7 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
       group: index,
       content: content,
     });
-  })
+  });
 
   //concatenate nodes and links array
   const result = { nodes: nodes, links: links };

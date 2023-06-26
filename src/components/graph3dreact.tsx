@@ -67,6 +67,11 @@ export default function Graph3DReact() {
   const [toastMessage, setToastMessage] = React.useState("");
 
   useEffect(() => {
+    const initial_data = load_data(database, currentData);
+    setData(initial_data);
+  }, [currentData]);
+
+  useEffect(() => {
     validateMetaData();
   }, []);
 
@@ -127,7 +132,7 @@ export default function Graph3DReact() {
       dispatch(setDatabase(newDatabase as Rdfcsa));
       const queryManager = new QueryManager(newDatabase);
       dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-      dispatch(setGraphData(database, currentData));
+      dispatch(setGraphData(newDatabase, currentData));
       // let metaData = QueryCall.queryCallData([{subject:"RDFCSA:METADATA", predicate:"", object: ""}], newDatabase);
       // if (metaData)
       // {
@@ -146,7 +151,15 @@ export default function Graph3DReact() {
   //handle Submit when Triple Data is changed
   const handleSubmitLink = () => {
     if (linkSourceName != "" && linkName != "" && linkTargetName != "") {
-      //TODO: rename Triple in Dictionary
+      const rdfOperations = new RdfOperations(database);
+      const tripleToModify = new Triple(+linkSource, +linkId, +linkTarget);
+      const newDatabase = rdfOperations.modifyTriple(tripleToModify, linkSourceName, linkName, linkTargetName);
+      dispatch(setDatabase(newDatabase));
+      // TODO: Query with the currently set filter
+
+      // const queryManager = new QueryManager(newDatabase);
+      // dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      // dispatch(setGraphData(database, currentData));
       setToastMessage("Successfully renamed triple");
       setSuccessToastOpen(true);
       setOpenLinkLeft(false);
@@ -160,7 +173,7 @@ export default function Graph3DReact() {
   //handle Delete of Triple
   const handleDeleteTriple = () => {
     const rdfOperations = new RdfOperations(database);
-    const tripleToDelete = new Triple(linkSource, linkId, linkTarget);
+    const tripleToDelete = new Triple(+linkSource, +linkId, +linkTarget);
     const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
     dispatch(setDatabase(newDatabase as Rdfcsa));
     const queryManager = new QueryManager(newDatabase);
@@ -169,6 +182,23 @@ export default function Graph3DReact() {
     setToastMessage("Successfully deleted triple");
     setSuccessToastOpen(true);
     setOpenLinkLeft(false);
+  };
+
+  const handleDeleteNode = () => {
+    const rdfOperations = new RdfOperations(database);
+    const newDatabase = rdfOperations.deleteElementInDictionary(nodeId);
+    dispatch(setDatabase(newDatabase as Rdfcsa));
+    const queryManager = new QueryManager(newDatabase);
+    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+    dispatch(setGraphData(newDatabase, currentData));
+    // let metaData = QueryCall.queryCallData([{subject:"RDFCSA:METADATA", predicate:"", object: ""}], newDatabase);
+    // if (metaData)
+    // {
+    //   dispatch(setMetaData(metaData));
+    // }
+    setToastMessage("Successfully renamed node");
+    setSuccessToastOpen(true);
+    setOpenNodeLeft(false);
   };
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -205,7 +235,8 @@ export default function Graph3DReact() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleNodeLeftClose}>Cancel</Button>
-          <Button onClick={handleSubmitNode}>Rename Triple</Button>
+          <Button onClick={handleDeleteNode}>Delete Node</Button>
+          <Button onClick={handleSubmitNode}>Rename Node</Button>
         </DialogActions>
       </Dialog>
       <Dialog open={openLinkLeft} onClose={handleLinkLeftClose}>

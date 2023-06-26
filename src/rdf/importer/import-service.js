@@ -36,7 +36,7 @@ export class ImportService {
    * @returns {Rdfcsa} new or updated RDFCSA
    * @throws {Error} When no importer for the file type is available
    */
-  async importFile(file, replace = false, useJsBitvector = false) {
+  async importFile(file, replace = false, useJsBitvector = true) {
     /** @type {Importer} */
     let importer;
     const fileExtension = file.name.split(".").pop();

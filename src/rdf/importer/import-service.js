@@ -102,8 +102,13 @@ export class ImportService {
       const decompressed = gunzipSync(buffer);
       resolve(JSON.parse(decompressed.toString()));
     });
-    let rdfcsa = new Rdfcsa([]);
-    rdfcsa.D.bits = new Uint32Array(Object.values(deserialized.D.bits));
+    let isJsBitvector = Array.isArray(deserialized.D.bits);
+    let rdfcsa = new Rdfcsa([], isJsBitvector);
+    if (isJsBitvector) {
+      rdfcsa.D.bits = deserialized.D.bits;
+    } else {
+      rdfcsa.D.bits = new Uint32Array(Object.values(deserialized.D.bits));
+    }
     rdfcsa.D.arrayLength = deserialized.D.arrayLength;
     rdfcsa.dictionary.SO = deserialized.dictionary.SO;
     rdfcsa.dictionary.S = deserialized.dictionary.S;

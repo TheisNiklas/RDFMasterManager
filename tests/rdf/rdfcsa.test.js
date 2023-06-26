@@ -1,13 +1,13 @@
 import { Rdfcsa } from "../../src/rdf/rdfcsa";
-import { tripleList, resultPsi, resultGaps, resultD } from "./fixtures/rdfcsa.test.json";
+import { paperSample } from "./fixtures/rdfcsa.test.json";
 import { dataset_1k } from "./fixtures/1k-dataset.json";
 
 describe("Rdfcsa", () => {
   test("Init with paper sample", () => {
-    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
-    expect(rdfcsa.psi).toEqual(resultPsi);
-    expect(rdfcsa.gaps).toEqual(resultGaps);
-    expect(rdfcsa.D.toString()).toEqual(resultD);
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(paperSample.tripleList)));
+    expect(rdfcsa.psi).toEqual(paperSample.resultPsi);
+    expect(rdfcsa.gaps).toEqual(paperSample.resultGaps);
+    expect(rdfcsa.D.toString()).toEqual(paperSample.resultD.slice(0, -2));
   });
 
   test("Init with 1k dataset", () => {
@@ -18,10 +18,10 @@ describe("Rdfcsa", () => {
   });
 
   test("Init with paper sample with JsBitvector", () => {
-    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)), true);
-    expect(rdfcsa.psi).toEqual(resultPsi);
-    expect(rdfcsa.gaps).toEqual(resultGaps);
-    expect(rdfcsa.D.toString()).toEqual(resultD + "00");
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(paperSample.tripleList)), true);
+    expect(rdfcsa.psi).toEqual(paperSample.resultPsi);
+    expect(rdfcsa.gaps).toEqual(paperSample.resultGaps);
+    expect(rdfcsa.D.toString()).toEqual(paperSample.resultD);
   });
 
   test("Init with 1k dataset with JsBitvector", () => {

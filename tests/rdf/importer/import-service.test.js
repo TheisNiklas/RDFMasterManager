@@ -1,7 +1,7 @@
 import { readFileSync } from "fs";
 import { ImportService } from "../../../src/rdf/importer/import-service";
 import { Rdfcsa } from "../../../src/rdf/rdfcsa";
-import { resultD, resultGaps, resultPsi } from "../fixtures/rdfcsa.test.json";
+import { ourSample, paperSample } from "../fixtures/rdfcsa.test.json";
 
 describe("ImportService", () => {
   /** @type {ImportService} */
@@ -20,9 +20,9 @@ describe("ImportService", () => {
       fail("loading fixture file failed");
     }
     expect(res).toBeInstanceOf(Rdfcsa);
-    expect(res.D.toString()).toEqual(resultD);
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.gaps).toEqual(resultGaps);
+    expect(res.D.toString()).toEqual(paperSample.resultD);
+    expect(res.psi).toEqual(paperSample.resultPsi);
+    expect(res.gaps).toEqual(paperSample.resultGaps);
     expect(res.dictionary.SO).toEqual(["SO:Inception", "SO:L.A."]);
     expect(res.dictionary.S).toEqual(["S:E.Page", "S:J.Gordon", "S:L.DiCaprio"]);
     expect(res.dictionary.P).toEqual(["P:appearsin", "P:awarded", "P:bornin", "P:cityof", "P:filmedin", "P:livesin"]);
@@ -39,9 +39,9 @@ describe("ImportService", () => {
       fail("loading fixture file failed");
     }
     expect(res).toBeInstanceOf(Rdfcsa);
-    expect(res.D.toString()).toEqual(resultD);
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.gaps).toEqual(resultGaps);
+    expect(res.D.toString()).toEqual(paperSample.resultD);
+    expect(res.psi).toEqual(paperSample.resultPsi);
+    expect(res.gaps).toEqual(paperSample.resultGaps);
     expect(res.dictionary.SO).toEqual(["SO:Inception", "SO:L.A."]);
     expect(res.dictionary.S).toEqual(["S:E.Page", "S:J.Gordon", "S:L.DiCaprio"]);
     expect(res.dictionary.P).toEqual(["P:appearsin", "P:awarded", "P:bornin", "P:cityof", "P:filmedin", "P:livesin"]);
@@ -58,9 +58,9 @@ describe("ImportService", () => {
       fail("loading fixture file failed");
     }
     expect(res).toBeInstanceOf(Rdfcsa);
-    expect(res.D.toString()).toEqual(resultD);
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.gaps).toEqual(resultGaps);
+    expect(res.D.toString()).toEqual(paperSample.resultD);
+    expect(res.psi).toEqual(paperSample.resultPsi);
+    expect(res.gaps).toEqual(paperSample.resultGaps);
     expect(res.dictionary.SO).toEqual(["SO:Inception", "SO:L.A."]);
     expect(res.dictionary.S).toEqual(["S:E.Page", "S:J.Gordon", "S:L.DiCaprio"]);
     expect(res.dictionary.P).toEqual(["P:appearsin", "P:awarded", "P:bornin", "P:cityof", "P:filmedin", "P:livesin"]);
@@ -70,13 +70,21 @@ describe("ImportService", () => {
   test("load sample", () => {
     let res = undefined;
     res = importService.loadSample();
-    expect(res).toBeInstanceOf(Rdfcsa);
-    expect(res.D.toString()).toEqual(resultD);
-    expect(res.psi).toEqual(resultPsi);
-    expect(res.gaps).toEqual(resultGaps);
+    expect(res).toBeInstanceOf(Rdfcsa, true);
+    expect(res.D.toString()).toEqual(ourSample.resultD);
+    expect(res.psi).toEqual(ourSample.resultPsi);
+    expect(res.gaps).toEqual(ourSample.resultGaps);
     expect(res.dictionary.SO).toEqual(["SO:Inception", "SO:L.A."]);
-    expect(res.dictionary.S).toEqual(["S:E.Page", "S:J.Gordon", "S:L.DiCaprio"]);
-    expect(res.dictionary.P).toEqual(["P:appearsin", "P:awarded", "P:bornin", "P:cityof", "P:filmedin", "P:livesin"]);
-    expect(res.dictionary.O).toEqual(["O:Canada", "O:Oscar2015", "O:USA"]);
+    expect(res.dictionary.S).toEqual(["RDFCSA:METADATA", "S:E.Page", "S:J.Gordon", "S:L.DiCaprio"]);
+    expect(res.dictionary.P).toEqual([
+      "METADATA:arrowColor",
+      "P:appearsin",
+      "P:awarded",
+      "P:bornin",
+      "P:cityof",
+      "P:filmedin",
+      "P:livesin",
+    ]);
+    expect(res.dictionary.O).toEqual(["METADATA:#8fce00", "O:Canada", "O:Oscar2015", "O:USA"]);
   });
 });

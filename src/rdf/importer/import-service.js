@@ -36,13 +36,17 @@ export class ImportService {
    * @returns {Rdfcsa} new or updated RDFCSA
    * @throws {Error} When no importer for the file type is available
    */
-  async importFile(file, replace = false, useJsBitvector = true) {
+  async importFile(file, replace = true, useJsBitvector = true) {
     /** @type {Importer} */
     let importer;
     const fileExtension = file.name.split(".").pop();
     if (fileExtension === "rdfcsa") {
-      this.#rdfcsa = this.#loadNativeDatabase(file);
-      return this.#rdfcsa;
+      if (replace) {
+        this.#rdfcsa = this.#loadNativeDatabase(file);
+        return this.#rdfcsa;
+      } else {
+        return this.#rdfcsa;
+      }
     }
     try {
       importer = this.#importers[fileExtension];
@@ -55,7 +59,7 @@ export class ImportService {
     } else {
       tripleList.forEach((triple) => {
         const rdfOperations = new RdfOperations(this.#rdfcsa);
-        rdfOperations.addTriple(triple);
+        rdfOperations.addTriple(triple[0], triple[1], triple[2]);
       });
       return this.#rdfcsa;
     }

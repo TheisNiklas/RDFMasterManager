@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import { ChangeEvent } from "react";
 import { styled } from "@mui/system";
 import {
@@ -56,42 +56,44 @@ const Import = () => {
   const dispatch = useDispatch();
   const [toastOpen, setToastOpen] = React.useState(false);
   const [toastMessage, setToastMessage] = React.useState("");
+  const [replaceDatabase, setReplaceDatabase] = React.useState(false);
+  const [useJsBitvector, setUseJsBitvector] = React.useState(false);
 
-  let appendData = false;
-  let javascriptBitvector = false;
+  const database = useSelector((state: any) => state.database);
 
   //Receives the event with true in the checkbox for new data appended to the old
   //or false if the old data is replaced by the new one
   const handleFormChangeCheckBoxAppendData = (event: ChangeEvent<HTMLInputElement>) => {
-    appendData = event.target.checked;
+    setReplaceDatabase(event.target.checked);
+    setUseJsBitvector(false);
   };
 
-    //Receives the event with true in the checkbox for new data appended to the old
+  //Receives the event with true in the checkbox for new data appended to the old
   //or false if the old data is replaced by the new one
   const handleFormChangeCheckBoxBitvector = (event: ChangeEvent<HTMLInputElement>) => {
-    javascriptBitvector = event.target.checked;
+    setUseJsBitvector(event.target.checked);
   };
 
   //To start the data input for attaching to or replacing the old triple data
   const userImportRequest = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
-    const importService = new ImportService();
+    const importService = new ImportService(database);
 
     // Add an event handler to get the selected file path.
     fileInput.addEventListener("change", async (event) => {
       const file = (event as any).target.files[0];
-      const rdfcsa = await importService.importFile(file, appendData, javascriptBitvector);
+      const rdfcsa = await importService.importFile(file, replaceDatabase, useJsBitvector);
       if (rdfcsa === undefined) {
         setOpen(true);
       } else {
-        dispatch(setDatabase(rdfcsa))
+        dispatch(setDatabase(rdfcsa));
         if (rdfcsa.tripleCount < 10000) {
           // TODO: include in config
           const queryManager = new QueryManager(rdfcsa);
           const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
           dispatch(setCurrentData(data));
-        } else if (!appendData) {
+        } else if (replaceDatabase) {
           setToastMessage("Data not displayed. Exceeds configured maximum.");
           setToastOpen(true);
           dispatch(setCurrentData([]));
@@ -108,7 +110,7 @@ const Import = () => {
 
   const handleToastClose = () => {
     setToastOpen(false);
-  }
+  };
 
   const handleClose = () => {
     setOpen(false);
@@ -117,22 +119,29 @@ const Import = () => {
   return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>
       <Header variant="h6">Import / Upload Database</Header>
-      <Grid container spacing={0} columns={13}>
-        <Grid item xs={1} sm={4}>
+      <Grid container spacing={0} columns={12}>
+        <Grid item xs={5} sm={5}>
           <FormControlLabel
             control={
-              <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)} />
+              <Checkbox
+                checked={replaceDatabase}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxAppendData(event)}
+              />
             }
-            label="Attach data"
+            label="Replace Database"
           />
         </Grid>
-        <Grid item xs={8} sm={8}>
-            <FormControlLabel
-              control={
-                <Checkbox onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxBitvector(event)} />
-              }
-              label="Use Javascript-Bitvector"
-            />
+        <Grid item xs={7} sm={7}>
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={useJsBitvector}
+                disabled={!replaceDatabase}
+                onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeCheckBoxBitvector(event)}
+              />
+            }
+            label="Use Javascript-Bitvector"
+          />
         </Grid>
       </Grid>
       <Grid item xs={1} sm={3}>

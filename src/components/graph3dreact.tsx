@@ -21,6 +21,7 @@ import load_data from "./triple2graph";
 import { Box, Hidden } from "@mui/material";
 import { useEffect } from "react";
 import { QueryCall } from "../interface/query-call";
+import { setMainFrame } from "../actions";
 
 let widthValue = "30%";
 
@@ -39,6 +40,7 @@ export default function Graph3DReact() {
   const currentData = useSelector((state: any) => state.currentData);
   const graphData = useSelector((state: any) => state.graphData);
   const metaData = useSelector((state: any) => state.metaData);
+  const mainFrame = useSelector((state: any) => state.mainFrame);
 
   const dispatch = useDispatch();
   //dispatch(graphData(database, currentData))
@@ -157,12 +159,27 @@ export default function Graph3DReact() {
       dispatch(setDatabase(newDatabase));
       // TODO: Query with the currently set filter
 
-      // const queryManager = new QueryManager(newDatabase);
-      // dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-      // dispatch(setGraphData(database, currentData));
+      const queryManager = new QueryManager(newDatabase);
+      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      dispatch(setGraphData(database, currentData));
       setToastMessage("Successfully renamed triple");
       setSuccessToastOpen(true);
       setOpenLinkLeft(false);
+
+      if (linkSourceName === "RDFCSA:METADATA") {
+        let metaData = QueryCall.queryCallData(
+          [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+          newDatabase
+        );
+        if (metaData) {
+          dispatch(setMetaData(metaData));
+        }
+
+        dispatch(setMainFrame("blank"));
+        setTimeout(function () {
+          dispatch(setMainFrame("3d"));
+        }, 1);
+      }
     } else {
       setToastMessage("Can't rename Elements with empty String");
       setErrorToastOpen(true);

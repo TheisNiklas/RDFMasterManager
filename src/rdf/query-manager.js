@@ -351,7 +351,12 @@ export class QueryManager {
       queryResult.forEach((triple) => {
         queryJoinVars.forEach((joinVar, joinIndex) => {
           if(joinVar >= 0) {
-              varAssignmentByQuery[queryIndex][joinVar].add(triple[joinIndex]);
+              var element = triple[joinIndex]
+              if(joinIndex===2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) { // if object
+                console.log("Detected SO: " + element);
+                element = element - this.rdfcsa.gaps[2];
+              }
+              varAssignmentByQuery[queryIndex][joinVar].add(element);
           }
         });
       });
@@ -372,7 +377,12 @@ export class QueryManager {
       allTriples[i].forEach((triple) => {
         var add = true;
         allJoinVars[i].forEach((joinVar, joinIndex) => {
-          if(add && joinVar >= 0 && !resultVars[joinVar].has(triple[joinIndex])) {
+          var element = triple[joinIndex]
+          if(joinIndex===2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) { // if object
+            console.log("Detected_2 SO: " + element);
+            element = element - this.rdfcsa.gaps[2];
+          }
+          if(add && joinVar >= 0 && !resultVars[joinVar].has(element)) {
             add = false;
           }
         });
@@ -382,17 +392,6 @@ export class QueryManager {
       });
     }
     return [...resultTriples];
-  }
-
-  #getResult(listOfSets) {
-    if (listOfSets.length === 0) {
-      return new Set();
-    }
-  
-    return listOfSets.reduce((intersectionSet, currentSet) => {
-      console.log("CurrentSet:" + currentSet);
-      return new Set([...intersectionSet].filter(element => currentSet.has(element)));
-    });
   }
 
   /**

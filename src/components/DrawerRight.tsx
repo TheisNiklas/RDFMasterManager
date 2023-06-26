@@ -128,6 +128,8 @@ export default function PersistentDrawerRight() {
       return <Graph3DReact />;
     } else if (mainFrame === "2d") {
       return <Graph2DReact />;
+    } else if (mainFrame === "blank") {
+      return <div></div>;
     }
   }, [database, currentData, mainFrame, graphData]);
 

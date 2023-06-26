@@ -91,8 +91,10 @@ const AddTripleForm = () => {
     const newDatabase = rdfOperations.addTriple(formFields.subject, formFields.predicate, formFields.object);
     if (newDatabase !== undefined) {
       dispatch(setDatabase(newDatabase));
-      const queryManager = new QueryManager(newDatabase);
-      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      if (newDatabase.tripleCount > 10000) {
+        const queryManager = new QueryManager(newDatabase);
+        dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      }
       setFormFields({ subject: "", predicate: "", object: "" });
       setOpen(false);
     } else {

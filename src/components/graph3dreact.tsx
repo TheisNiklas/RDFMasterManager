@@ -189,7 +189,22 @@ export default function Graph3DReact() {
     dispatch(setGraphData(database, currentData));
     setToastMessage("Successfully deleted triple");
     setSuccessToastOpen(true);
+
     setOpenLinkLeft(false);
+    if (linkSourceName === "RDFCSA:METADATA") {
+      let metaData = QueryCall.queryCallData(
+        [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+        newDatabase
+      );
+      if (metaData) {
+        dispatch(setMetaData(metaData));
+      }
+
+      dispatch(setMainFrame("blank"));
+      setTimeout(function () {
+        dispatch(setMainFrame("3d"));
+      }, 1);
+    }
   };
 
   const handleDeleteNode = () => {
@@ -199,14 +214,24 @@ export default function Graph3DReact() {
     const queryManager = new QueryManager(newDatabase);
     dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
     dispatch(setGraphData(newDatabase, currentData));
-    // let metaData = QueryCall.queryCallData([{subject:"RDFCSA:METADATA", predicate:"", object: ""}], newDatabase);
-    // if (metaData)
-    // {
-    //   dispatch(setMetaData(metaData));
-    // }
-    setToastMessage("Successfully renamed node");
+    
+    setToastMessage("Successfully deleted node");
     setSuccessToastOpen(true);
     setOpenNodeLeft(false);
+    
+    let metaData = QueryCall.queryCallData(
+      [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+      newDatabase
+    );
+    if (metaData) {
+      dispatch(setMetaData(metaData));
+    }
+
+    dispatch(setMainFrame("blank"));
+    setTimeout(function () {
+      dispatch(setMainFrame("3d"));
+    }, 1);
+    
   };
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {

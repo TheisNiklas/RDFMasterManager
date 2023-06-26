@@ -165,7 +165,7 @@ export default function Graph2DReact() {
 
         dispatch(setMainFrame("blank"));
         setTimeout(function () {
-          dispatch(setMainFrame("3d"));
+          dispatch(setMainFrame("2d"));
         }, 1);
       }
     } else {
@@ -186,7 +186,22 @@ export default function Graph2DReact() {
     dispatch(setGraphData(database, currentData));
     setToastMessage("Successfully deleted triple");
     setSuccessToastOpen(true);
+
     setOpenLinkLeft(false);
+    if (linkSourceName === "RDFCSA:METADATA") {
+      let metaData = QueryCall.queryCallData(
+        [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+        newDatabase
+      );
+      if (metaData) {
+        dispatch(setMetaData(metaData));
+      }
+
+      dispatch(setMainFrame("blank"));
+      setTimeout(function () {
+        dispatch(setMainFrame("2d"));
+      }, 1);
+    }
   };
 
   const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
@@ -197,6 +212,32 @@ export default function Graph2DReact() {
     setErrorToastOpen(false);
   };
 
+  const handleDeleteNode = () => {
+    const rdfOperations = new RdfOperations(database);
+    const newDatabase = rdfOperations.deleteElementInDictionary(nodeId);
+    dispatch(setDatabase(newDatabase as Rdfcsa));
+    const queryManager = new QueryManager(newDatabase);
+    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+    dispatch(setGraphData(newDatabase, currentData));
+    
+    setToastMessage("Successfully deleted node");
+    setSuccessToastOpen(true);
+    setOpenNodeLeft(false);
+    
+    let metaData = QueryCall.queryCallData(
+      [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+      newDatabase
+    );
+    if (metaData) {
+      dispatch(setMetaData(metaData));
+    }
+
+    dispatch(setMainFrame("blank"));
+    setTimeout(function () {
+      dispatch(setMainFrame("2d"));
+    }, 1);
+    
+  };
   return (
     <div>
       <NoSSRForceGraph2D
@@ -221,6 +262,7 @@ export default function Graph2DReact() {
         </DialogContent>
         <DialogActions>
           <Button onClick={handleNodeLeftClose}>Cancel</Button>
+          <Button onClick={handleDeleteNode}>Delete Node</Button>
           <Button onClick={handleSubmitNode}>Rename Node</Button>
         </DialogActions>
       </Dialog>

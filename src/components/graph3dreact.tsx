@@ -5,6 +5,7 @@
  * Bjarne Küper
  * Karl Neitmann
  * Sarah Flohr
+ * Kai Joshua Martin
  */
 
 import dynamic from "next/dynamic";
@@ -52,7 +53,7 @@ export default function Graph3DReact() {
   const mainFrame = useSelector((state: any) => state.mainFrame);
 
   const dispatch = useDispatch();
-  //dispatch(graphData(database, currentData))
+
   const initial_data = load_data(database, currentData);
   const [data, setData] = React.useState(initial_data);
 
@@ -76,23 +77,30 @@ export default function Graph3DReact() {
   const [successToastMessage, setSuccessToastMessage] = React.useState("");
   const [warningToastMessage, setWarningToastMessage] = React.useState("");
 
+  // Transform current data into data format for graph
   useEffect(() => {
     const initial_data = load_data(database, currentData);
     setData(initial_data);
   }, [currentData]);
 
+  // Update graph depending on meta data
   useEffect(() => {
     validateMetaData();
   }, [metaData]);
 
+  // Close popup
   const handleNodeLeftClose = () => {
     setOpenNodeLeft(false);
   };
 
+  // Close popup
   const handleLinkLeftClose = () => {
     setOpenLinkLeft(false);
   };
 
+  /**
+   * Update colors for arrows and nodes depending on metadata.
+   */
   function validateMetaData() {
     for (const item of metaData) {
       const predicateValue = database.dictionary.getElementById(item.predicate).replace("METADATA:", "") as string;
@@ -107,15 +115,16 @@ export default function Graph3DReact() {
           break;
         }
         default: {
-          // Code for other cases (if needed)
           break;
         }
       }
     }
-    return false;
   }
 
-  //display information about the node
+  /**
+   * Display information about a node
+   * @param node Node that should be displayed
+   */
   const handleNodeLeftClick = (node: any) => {
     setNodeId(node.id);
     setNodeName(node.content);
@@ -123,7 +132,10 @@ export default function Graph3DReact() {
     setOpenNodeLeft(true);
   };
 
-  //display information about the link
+  /**
+   * Display information about a link
+   * @param link Link that should be displayed
+   */
   const handleLinkLeftClick = (link: any) => {
     setLinkSourceName(database.dictionary.getElementById(link.source.id) as string);
     setLinkName(database.dictionary.getElementById(link.id) as string);
@@ -134,98 +146,35 @@ export default function Graph3DReact() {
     setOpenLinkLeft(true);
   };
 
-  //handle Submit when Node Data is changed
-  const handleSubmitNode = () => {
-    if (formField != "") {
-      const rdfOperations = new RdfOperations(database);
-      const newDatabase = rdfOperations.changeInDictionary(nodeId, formField);
-      dispatch(setDatabase(newDatabase as Rdfcsa));
-
-      setSuccessToastMessage("Successfully renamed node");
-      setSuccessToastOpen(true);
-      setOpenNodeLeft(false);
-
-      if (newDatabase.tripleCount < 10000) {
-        const queryManager = new QueryManager(newDatabase);
-        dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-        dispatch(setGraphData(newDatabase, currentData));
-      } else {
-        setWarningToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+  /**
+ * Show a toast msg.
+ * @param msg Message that should be displayed
+ * @param type Type of the toast. Valid types are: success, warning, error.
+ */
+  const showToast = (msg: string, type: string) => {
+    switch (type) {
+      case "success":
+        setSuccessToastMessage(msg);
+        setSuccessToastOpen(true);
+        break;
+      case "warning":
+        setWarningToastMessage(msg);
         setWarningToastOpen(true);
-        dispatch(setCurrentData([]));
-        dispatch(setGraphData(newDatabase, currentData));
-      }
-    } else {
-      setErrorToastMessage("Can not rename Node with empty String");
-      setErrorToastOpen(true);
-      setOpenNodeLeft(false);
+        break;
+      case "error":
+        setErrorToastMessage(msg);
+        setErrorToastOpen(true);
+        break;
+      default:
+        break;
     }
-  };
+  }
 
-  //handle Submit when Triple Data is changed
-  const handleSubmitLink = () => {
-    if (linkSourceName != "" && linkName != "" && linkTargetName != "") {
-      const rdfOperations = new RdfOperations(database);
-      const tripleToModify = new Triple(+linkSource, +linkId, +linkTarget);
-      const newDatabase = rdfOperations.modifyTriple(tripleToModify, linkSourceName, linkName, linkTargetName);
-      dispatch(setDatabase(newDatabase));
-      // TODO: Query with the currently set filter
-
-      if (newDatabase.tripleCount < 10000) {
-        const queryManager = new QueryManager(newDatabase);
-        dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-        dispatch(setGraphData(newDatabase, currentData));
-      } else {
-        setWarningToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
-        setWarningToastOpen(true);
-        dispatch(setCurrentData([]));
-        dispatch(setGraphData(newDatabase, currentData));
-      }
-      setSuccessToastMessage("Successfully renamed triple");
-      setSuccessToastOpen(true);
-      setOpenLinkLeft(false);
-
-      if (linkSourceName === "RDFCSA:METADATA") {
-        let metaData = QueryCall.queryCallData(
-          [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
-          newDatabase
-        );
-        if (metaData) {
-          dispatch(setMetaData(metaData));
-        }
-
-        dispatch(setMainFrame("blank"));
-        setTimeout(function () {
-          dispatch(setMainFrame("3d"));
-        }, 1);
-      }
-    } else {
-      setErrorToastMessage("Can't rename Elements with empty String");
-      setErrorToastOpen(true);
-      setOpenLinkLeft(false);
-    }
-  };
-
-  //handle Delete of Triple
-  const handleDeleteTriple = () => {
-    const rdfOperations = new RdfOperations(database);
-    const tripleToDelete = new Triple(+linkSource, +linkId, +linkTarget);
-    const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
-    dispatch(setDatabase(newDatabase as Rdfcsa));
-    if (newDatabase.tripleCount < 10000) {
-      const queryManager = new QueryManager(newDatabase);
-      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-      dispatch(setGraphData(newDatabase, currentData));
-    } else {
-      setWarningToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
-      setWarningToastOpen(true);
-      dispatch(setCurrentData([]));
-      dispatch(setGraphData(newDatabase, currentData));
-    }
-    setSuccessToastMessage("Successfully deleted triple");
-    setSuccessToastOpen(true);
-
-    setOpenLinkLeft(false);
+  /**
+   * Update metadata if meta data node has changed
+   * @param newDatabase Updated database
+   */
+  const updateMetaData = (newDatabase) => {
     if (linkSourceName === "RDFCSA:METADATA") {
       let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], newDatabase);
       if (metaData) {
@@ -237,38 +186,114 @@ export default function Graph3DReact() {
         dispatch(setMainFrame("3d"));
       }, 1);
     }
-  };
+  }
 
-  const handleDeleteNode = () => {
-    const rdfOperations = new RdfOperations(database);
-    const newDatabase = rdfOperations.deleteElementInDictionary(nodeId);
-    dispatch(setDatabase(newDatabase as Rdfcsa));
+
+  /**
+   * Update database. Query all triples.
+   * @param newDatabase Updated database
+   */
+  const updateDatabase = (newDatabase) => {
     if (newDatabase.tripleCount < 10000) {
+      // Query new data
       const queryManager = new QueryManager(newDatabase);
       dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
       dispatch(setGraphData(newDatabase, currentData));
     } else {
-      setWarningToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
-      setWarningToastOpen(true);
+      // Don't query automatically for better usability
+      showToast("Dataset exceeds 10k triples - Data not queries - query manually", "warning");
+
       dispatch(setCurrentData([]));
       dispatch(setGraphData(newDatabase, currentData));
     }
+  }
 
-    setSuccessToastMessage("Successfully deleted node");
-    setSuccessToastOpen(true);
-    setOpenNodeLeft(false);
 
-    let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], newDatabase);
-    if (metaData) {
-      dispatch(setMetaData(metaData));
+
+  /**
+   * Change value of a node. Update database.
+   */
+  const handleSubmitNode = () => {
+    // Early exit if empty string
+    if (formField === "") {
+      showToast("Can not rename Node with empty String", "error");
+      setOpenNodeLeft(false);
+      return
     }
 
-    dispatch(setMainFrame("blank"));
-    setTimeout(function () {
-      dispatch(setMainFrame("3d"));
-    }, 1);
+    const rdfOperations = new RdfOperations(database);
+    const newDatabase = rdfOperations.changeInDictionary(nodeId, formField);
+    dispatch(setDatabase(newDatabase as Rdfcsa));
+
+    showToast("Successfully renamed node", "success");
+
+    setOpenNodeLeft(false);
+
+    updateDatabase(newDatabase);
+
   };
 
+  /**
+   * Rename elements of triple. Update database and metadata.
+   */
+  const handleSubmitLink = () => {
+    if (linkSourceName === "" || linkName === "" || linkTargetName === "") {
+      setErrorToastMessage("Can't rename Elements with empty String");
+      setErrorToastOpen(true);
+      setOpenLinkLeft(false);
+      // Early exit
+      return
+    }
+
+    const rdfOperations = new RdfOperations(database);
+    const tripleToModify = new Triple(+linkSource, +linkId, +linkTarget);
+    const newDatabase = rdfOperations.modifyTriple(tripleToModify, linkSourceName, linkName, linkTargetName);
+    dispatch(setDatabase(newDatabase));
+
+    updateDatabase(newDatabase);
+
+    showToast("Successfully renamed triple", "success");
+
+    setOpenLinkLeft(false);
+
+    updateMetaData(newDatabase);
+  };
+
+  /**
+   * Delete a Triple. Update database and metadata.
+   */
+  const handleDeleteTriple = () => {
+    const rdfOperations = new RdfOperations(database);
+    const tripleToDelete = new Triple(+linkSource, +linkId, +linkTarget);
+    const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
+    dispatch(setDatabase(newDatabase as Rdfcsa));
+
+    updateDatabase(newDatabase);
+
+    showToast("Successfully deleted triple", "success");
+
+    setOpenLinkLeft(false);
+    updateMetaData(newDatabase);
+  };
+
+  /**
+   * Delete a node. Update database and metadata.
+   */
+  const handleDeleteNode = () => {
+    const rdfOperations = new RdfOperations(database);
+    const newDatabase = rdfOperations.deleteElementInDictionary(nodeId);
+    dispatch(setDatabase(newDatabase as Rdfcsa));
+
+    updateDatabase(newDatabase);
+
+    showToast("Successfully deleted node", "success");
+
+    setOpenNodeLeft(false);
+
+    updateMetaData(newDatabase);
+  };
+
+  // Close popup
   const handleErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -276,6 +301,7 @@ export default function Graph3DReact() {
     setErrorToastOpen(false);
   };
 
+  // Close popup
   const handleSuccessClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
@@ -283,6 +309,7 @@ export default function Graph3DReact() {
     setSuccessToastOpen(false);
   };
 
+  // Close popup
   const handleWarningClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;

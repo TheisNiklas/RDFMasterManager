@@ -1,3 +1,8 @@
+/**
+ * Contributions made by:
+ * Sarah Flohr
+ */
+
 import { useMediaQuery } from 'react-responsive'
 
 export const isMobileDevice = useMediaQuery({
@@ -28,5 +33,5 @@ export const drawerWidth = {
   mobile: 400,
   tablet: 400,
   laptop: 400,
-  desktop : 400
+  desktop: 400
 }

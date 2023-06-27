@@ -1,3 +1,11 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ * Kai Joshua Martin
+ */
+
 import * as React from "react";
 import { styled } from "@mui/system";
 import Table from "@mui/material/Table";

@@ -1,3 +1,10 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ */
+
 import { QueryManager } from "../rdf/query-manager";
 import { Rdfcsa } from "../rdf/rdfcsa";
 import { QueryTriple } from "../rdf/models/query-triple";

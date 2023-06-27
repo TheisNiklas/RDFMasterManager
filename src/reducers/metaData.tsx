@@ -1,3 +1,8 @@
+/**
+ * Contributions made by:
+ * Bjarne Küper
+ */
+
 const initialState: any[] = [];
 
 const metaDataReducer = (state = initialState, action: any) => {

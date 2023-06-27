@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Bjarne Küper
+ */
+
 import {
   Accordion,
   AccordionDetails,

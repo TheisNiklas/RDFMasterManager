@@ -1,3 +1,10 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Kai Joshua Martin
+ * Karl Neitmann
+ */
 import * as React from "react";
 import { ChangeEvent, useEffect, useState } from "react";
 import { styled } from "@mui/system";

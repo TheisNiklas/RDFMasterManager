@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Sarah Flohr
+ */
+
 const initialState: any[] = [];
 
 const currentDataReducer = (state = initialState, action: any) => {

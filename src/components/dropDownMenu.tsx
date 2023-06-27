@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Kai Joshua Martin
+ */
+
 import {
   Box,
   FormControl,
@@ -22,10 +28,10 @@ const DropDownBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-function isMobileDevice(){
-  if(window.screen.width < 1200 && window.screen.width >= 320){
-      return true;
-  }else{
+function isMobileDevice() {
+  if (window.screen.width < 1200 && window.screen.width >= 320) {
+    return true;
+  } else {
     return false;
   }
 }

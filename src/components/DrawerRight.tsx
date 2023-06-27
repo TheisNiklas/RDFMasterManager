@@ -1,3 +1,13 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ * Kai Joshua Martin
+ * Karl Neitmann
+ * Sarah Flohr
+ */
+
 import * as React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";

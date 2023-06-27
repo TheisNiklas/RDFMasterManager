@@ -1,3 +1,8 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ */
+
 //reducer to handle changes in the sort-form
 const initialState = {
   sortElement: 'sortSubject',

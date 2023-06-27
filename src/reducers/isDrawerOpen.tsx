@@ -1,3 +1,8 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ */
+
 //reducer to handle drawer open and close
 const isDrawerOpenReducer = (state = false, action: any) => {
   switch (action.type) {

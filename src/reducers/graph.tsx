@@ -1,3 +1,8 @@
+/**
+ * Contributions made by:
+ * Sarah Flohr
+ */
+
 const initialState = {
   nodes: [],
   links: [],

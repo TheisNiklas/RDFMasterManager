@@ -1,3 +1,10 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Bjarne Küper
+ * Sarah Flohr
+ */
+
 import load_data from "../components/triple2graph";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { Triple } from "../rdf/models/triple";

@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Kai Joshua Martin
+ */
+
 import * as React from 'react';
 import { ChangeEvent, useState, SyntheticEvent } from "react";
 import { styled } from "@mui/system";

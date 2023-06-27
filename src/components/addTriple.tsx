@@ -1,3 +1,10 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ */
+
 import React, { ChangeEvent, useState } from "react";
 import { styled } from "@mui/system";
 import {

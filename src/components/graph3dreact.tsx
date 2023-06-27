@@ -1,3 +1,12 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ * Karl Neitmann
+ * Sarah Flohr
+ */
+
 import dynamic from "next/dynamic";
 import * as React from "react";
 import Button from "@mui/material/Button";

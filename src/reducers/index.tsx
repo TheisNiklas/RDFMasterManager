@@ -1,3 +1,10 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Bjarne Küper
+ * Sarah Flohr
+ */
+
 import isDrawerOpenReducer from "./isDrawerOpen";
 import { combineReducers } from "redux";
 import sortOptionsReducer from "./sortOptions";

@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Kai Joshua Martin
+ */
+
 import * as React from 'react';
 import { ChangeEvent, useState } from "react";
 import { styled } from "@mui/system";
@@ -40,9 +46,9 @@ const SubmitButton = styled(Button)(({ theme }) => ({
 
 const SortFormData = () => {
 
-    let sortElement = 'sortSubject';
-    let sortOrder = 'ascending';
-    let visualLimit = 0;
+  let sortElement = 'sortSubject';
+  let sortOrder = 'ascending';
+  let visualLimit = 0;
 
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
@@ -74,9 +80,9 @@ const SortFormData = () => {
     setOpen(false);
   };
 
-   //Redux
-   const sortOptions = useSelector((state: any) => state.sortOptions);
-   const dispatch = useDispatch();
+  //Redux
+  const sortOptions = useSelector((state: any) => state.sortOptions);
+  const dispatch = useDispatch();
   return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>
       <div>
@@ -85,7 +91,7 @@ const SortFormData = () => {
             <Grid item xs={12} sm={12}>
               <Grid container spacing={2}>
                 <Header variant="h6" sx={{ marginTop: 5, marginLeft: 3, marginBottom: -2 }}>
-                Sorting
+                  Sorting
                 </Header>
                 <Grid item xs={12}>
                 </Grid>

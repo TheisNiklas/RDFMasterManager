@@ -131,6 +131,10 @@ const getOptions = () => {
     return menuItems;
 };
 
+/**
+ * Displays triples as text in a table. Switch between different formats. Valid formats are: n-Triples, Turtle, JSON-LD
+ * @returns React function TextVisualization
+ */
 export default function TextVisualization() {
     const [page, setPage] = React.useState(0);
     const [rowsPerPage, setRowsPerPage] = React.useState(15);

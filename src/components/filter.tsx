@@ -31,7 +31,7 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { QueryCall } from "../interface/query-call";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector, useDispatch } from "react-redux";
-import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData, setVisualLimit } from "./../actions";
+import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData, } from "./../actions";
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
   marginBottom: theme.spacing(2),
@@ -95,7 +95,6 @@ const FilterForm = () => {
   //check if the query is correct
   const handleSubmit = () => {
     let queryResult = QueryCall.queryCallData(filterTriples, database)
-    console.log(queryResult)
     if (queryResult) {
       if (sortOrder === 'descending') {
         queryResult.sort(sortDescending);
@@ -252,7 +251,7 @@ const FilterForm = () => {
                   </Grid>
                 );
               })}
-
+              {/* Sort and Limit options*/}
               <Accordion sx={{ marginTop: 2, }} defaultExpanded={false}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
                   <Header variant="h6" sx={{ marginBottom: -1 }}>
@@ -264,7 +263,7 @@ const FilterForm = () => {
                     <div>
                       <Grid container spacing={2}>
                         <Grid container spacing={2} alignItems="center">
-
+                          {/* Sort order*/}
                           <Grid item xs={12}>
                             <SortFormControl>
                               <InputLabel id="sort-label">Sort order</InputLabel>
@@ -279,7 +278,7 @@ const FilterForm = () => {
                               </Select>
                             </SortFormControl>
                           </Grid>
-
+                          {/* Sort element*/}
                           <Grid item xs={12} sm={6}>
                             <Grid container spacing={2}>
                               <Grid item xs={12}>
@@ -299,6 +298,7 @@ const FilterForm = () => {
                               </Grid>
                             </Grid>
                           </Grid>
+                          {/* Limit*/}
                           <Grid item xs={6}>
                             <Tooltip title="Maximum number of triple results of queries, > 0" placement="top">
                               <StyledTextField
@@ -316,7 +316,6 @@ const FilterForm = () => {
                   </Container>
                 </AccordionDetails>
               </Accordion>
-
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12}>
                   <AddButton variant="contained" color="primary" endIcon={<Add />} onClick={addFilterTriple}>
@@ -350,8 +349,6 @@ const FilterForm = () => {
             </Grid>
           </div>
         </Container>
-
-
       </AccordionDetails>
     </Accordion>
 

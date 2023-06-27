@@ -318,27 +318,30 @@ export class QueryManager {
   }
 
   /**
-   * Joins multiple query pattern with the merge join strategy
-   * TODO: does not work properly
+   * Joins multiple query pattern with the merge join strategy. If multiple distinct patterns are given, they are combined using UNION.
    * @param {QueryTriple[]} queries
-   * @returns {number[][]} result list of triples
+   * @returns {Triple[]} result list of triples
    */
   #mergeJoin(queries) {
     //TODO: sortieren nach Join Variablen
     //TODO: Check whether set is faster
-    console.log(queries)
-    const resultList = [];
+    //TODO: Investigate further use of exact join vars
+    // console.log(queries)
     const varAssignmentByQuery = []
-    var maxJoinVar = -1;
-    var resultVars = []
+    var maxJoinVar = -1; // number of JoinVars
+    var resultVars = [] // possible assignments for joinVars
     var allTriples = []
     var allJoinVars = []
+
+    // first determine all join vars given a single query
     queries.forEach((query, queryIndex) => {
       varAssignmentByQuery[queryIndex] = [];
       const queryResult = this.#getQueryTripleResult(query);
       allTriples.push(queryResult);
       const queryJoinVars = this.#getJoinVars(query);
       allJoinVars.push(queryJoinVars)
+
+      // create set to hold possible joinVar assignments for every joinVar
       queryJoinVars.forEach((joinVar, joinIndex) => {
         if(joinVar >= 0) {
           maxJoinVar = Math.max(joinVar, maxJoinVar);
@@ -347,51 +350,50 @@ export class QueryManager {
           }
       }
       });
-      const mergeResult =  []
+
+      // save possible joinVars to the created set
       queryResult.forEach((triple) => {
         queryJoinVars.forEach((joinVar, joinIndex) => {
           if(joinVar >= 0) {
               var element = triple[joinIndex]
               if(joinIndex===2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) { // if object
-                console.log("Detected SO: " + element);
                 element = element - this.rdfcsa.gaps[2];
               }
-              varAssignmentByQuery[queryIndex][joinVar].add(element);
+              if(!varAssignmentByQuery[queryIndex][joinVar].has(element)){
+                varAssignmentByQuery[queryIndex][joinVar].add(element);
+              }
           }
         });
       });
-      resultList.push([queryResult, queryJoinVars]);
     });
-    console.log(varAssignmentByQuery);
-    console.log("MaxJoinVar: " + maxJoinVar)
+
+    // merge join vars
     for (var i = 0; i <= maxJoinVar; i++) {
       var result1 = varAssignmentByQuery.map(x => x[i]).filter(element => element !== undefined)
-      console.log(result1);
       resultVars[i] = new Set(result1.reduce((a, b) => [...a].filter(c => [...b].includes(c))))
-      console.log("Variable " + i + ":" + [...resultVars[i]]);
     }
+    console.log(resultVars)
 
-    const resultTriples = new Set();
+    // get triples for visual representation
+    const resultTriples = [];
     for (var i = 0; i < allTriples.length; i++) {
-      // console.log(i + "--" + allTriples[i])
       allTriples[i].forEach((triple) => {
         var add = true;
         allJoinVars[i].forEach((joinVar, joinIndex) => {
           var element = triple[joinIndex]
           if(joinIndex===2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) { // if object
-            console.log("Detected_2 SO: " + element);
             element = element - this.rdfcsa.gaps[2];
           }
           if(add && joinVar >= 0 && !resultVars[joinVar].has(element)) {
             add = false;
           }
         });
-        if(add) {
-          resultTriples.add(triple);
+        if(add && JSON.stringify(resultTriples).indexOf(JSON.stringify(triple)) == -1) {  // javascript can't check if an array is in an array using includes
+          resultTriples.push(triple);
         }
       });
     }
-    return [...resultTriples];
+    return resultTriples; // returns only visual representation
   }
 
   /**

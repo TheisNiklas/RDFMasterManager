@@ -18,7 +18,7 @@ import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setGraphData, setMetaData } from "../actions";
 import load_data from "./triple2graph";
-import { Box, Hidden } from "@mui/material";
+import { Box, Hidden, Stack } from "@mui/material";
 import { useEffect } from "react";
 import { QueryCall } from "../interface/query-call";
 import { setMainFrame } from "../actions";
@@ -60,9 +60,12 @@ export default function Graph3DReact() {
   const [formField, setFormField] = React.useState("");
   const [successToastOpen, setSuccessToastOpen] = React.useState(false);
   const [errorToastOpen, setErrorToastOpen] = React.useState(false);
+  const [warningToastOpen, setWarningToastOpen] = React.useState(false);
   const [arrowColor, setArrowColor] = React.useState("FFFFFF");
   const [nodeColor, setNodeColor] = React.useState("e69138");
-  const [toastMessage, setToastMessage] = React.useState("");
+  const [errorToastMessage, setErrorToastMessage] = React.useState("");
+  const [successToastMessage, setSuccessToastMessage] = React.useState("");
+  const [warningToastMessage, setWarningToastMessage] = React.useState("");
 
   useEffect(() => {
     const initial_data = load_data(database, currentData);
@@ -128,14 +131,23 @@ export default function Graph3DReact() {
       const rdfOperations = new RdfOperations(database);
       const newDatabase = rdfOperations.changeInDictionary(nodeId, formField);
       dispatch(setDatabase(newDatabase as Rdfcsa));
-      const queryManager = new QueryManager(newDatabase);
-      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-      dispatch(setGraphData(newDatabase, currentData));
-      setToastMessage("Successfully renamed node");
+
+      setSuccessToastMessage("Successfully renamed node");
       setSuccessToastOpen(true);
       setOpenNodeLeft(false);
+
+      if (newDatabase.tripleCount < 10000) {
+        const queryManager = new QueryManager(newDatabase);
+        dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+        dispatch(setGraphData(newDatabase, currentData));
+      } else {
+        setWarningToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+        setWarningToastOpen(true);
+        dispatch(setCurrentData([]));
+        dispatch(setGraphData(newDatabase, currentData));
+      }
     } else {
-      setToastMessage("Can not rename Node with empty String");
+      setErrorToastMessage("Can not rename Node with empty String");
       setErrorToastOpen(true);
       setOpenNodeLeft(false);
     }
@@ -150,10 +162,17 @@ export default function Graph3DReact() {
       dispatch(setDatabase(newDatabase));
       // TODO: Query with the currently set filter
 
-      const queryManager = new QueryManager(newDatabase);
-      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-      dispatch(setGraphData(database, currentData));
-      setToastMessage("Successfully renamed triple");
+      if (newDatabase.tripleCount < 10000) {
+        const queryManager = new QueryManager(newDatabase);
+        dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+        dispatch(setGraphData(newDatabase, currentData));
+      } else {
+        setWarningToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+        setWarningToastOpen(true);
+        dispatch(setCurrentData([]));
+        dispatch(setGraphData(newDatabase, currentData));
+      }
+      setSuccessToastMessage("Successfully renamed triple");
       setSuccessToastOpen(true);
       setOpenLinkLeft(false);
 
@@ -172,7 +191,7 @@ export default function Graph3DReact() {
         }, 1);
       }
     } else {
-      setToastMessage("Can't rename Elements with empty String");
+      setErrorToastMessage("Can't rename Elements with empty String");
       setErrorToastOpen(true);
       setOpenLinkLeft(false);
     }
@@ -184,18 +203,22 @@ export default function Graph3DReact() {
     const tripleToDelete = new Triple(+linkSource, +linkId, +linkTarget);
     const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
     dispatch(setDatabase(newDatabase as Rdfcsa));
-    const queryManager = new QueryManager(newDatabase);
-    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-    dispatch(setGraphData(database, currentData));
-    setToastMessage("Successfully deleted triple");
+    if (newDatabase.tripleCount < 10000) {
+      const queryManager = new QueryManager(newDatabase);
+      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      dispatch(setGraphData(newDatabase, currentData));
+    } else {
+      setWarningToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+      setWarningToastOpen(true);
+      dispatch(setCurrentData([]));
+      dispatch(setGraphData(newDatabase, currentData));
+    }
+    setSuccessToastMessage("Successfully deleted triple");
     setSuccessToastOpen(true);
 
     setOpenLinkLeft(false);
     if (linkSourceName === "RDFCSA:METADATA") {
-      let metaData = QueryCall.queryCallData(
-        [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
-        newDatabase
-      );
+      let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], newDatabase);
       if (metaData) {
         dispatch(setMetaData(metaData));
       }
@@ -211,18 +234,22 @@ export default function Graph3DReact() {
     const rdfOperations = new RdfOperations(database);
     const newDatabase = rdfOperations.deleteElementInDictionary(nodeId);
     dispatch(setDatabase(newDatabase as Rdfcsa));
-    const queryManager = new QueryManager(newDatabase);
-    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-    dispatch(setGraphData(newDatabase, currentData));
-    
-    setToastMessage("Successfully deleted node");
+    if (newDatabase.tripleCount < 10000) {
+      const queryManager = new QueryManager(newDatabase);
+      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      dispatch(setGraphData(newDatabase, currentData));
+    } else {
+      setWarningToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+      setWarningToastOpen(true);
+      dispatch(setCurrentData([]));
+      dispatch(setGraphData(newDatabase, currentData));
+    }
+
+    setSuccessToastMessage("Successfully deleted node");
     setSuccessToastOpen(true);
     setOpenNodeLeft(false);
-    
-    let metaData = QueryCall.queryCallData(
-      [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
-      newDatabase
-    );
+
+    let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], newDatabase);
     if (metaData) {
       dispatch(setMetaData(metaData));
     }
@@ -231,19 +258,31 @@ export default function Graph3DReact() {
     setTimeout(function () {
       dispatch(setMainFrame("3d"));
     }, 1);
-    
   };
 
-  const handleClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+  const handleErrorClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
     if (reason === "clickaway") {
       return;
     }
     setErrorToastOpen(false);
+  };
+
+  const handleSuccessClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
     setSuccessToastOpen(false);
   };
 
+  const handleWarningClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setWarningToastOpen(false);
+  };
+
   return (
-    <div>
+    <div style={{ marginLeft: -16, marginTop: -16 }}>
       <NoSSRForceGraph
         graphData={data}
         nodeColor={(node: any) => (node.color = nodeColor)}
@@ -316,14 +355,24 @@ export default function Graph3DReact() {
           <Button onClick={handleSubmitLink}>Submit</Button>
         </DialogActions>
       </Dialog>
-      <Snackbar open={successToastOpen} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="success" sx={{ width: "100%" }}>
-          {toastMessage}
+      <Snackbar open={successToastOpen} autoHideDuration={6000} onClose={handleSuccessClose}>
+        <Alert onClose={handleSuccessClose} severity="success" sx={{ width: "100%" }}>
+          {successToastMessage}
         </Alert>
       </Snackbar>
-      <Snackbar open={errorToastOpen} autoHideDuration={6000} onClose={handleClose}>
-        <Alert onClose={handleClose} severity="error" sx={{ width: "100%" }}>
-          {toastMessage}
+      <Snackbar open={errorToastOpen} autoHideDuration={6000} onClose={handleErrorClose}>
+        <Alert onClose={handleErrorClose} severity="error" sx={{ width: "100%" }}>
+          {errorToastMessage}
+        </Alert>
+      </Snackbar>
+      <Snackbar
+        open={warningToastOpen}
+        autoHideDuration={6000}
+        onClose={handleWarningClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleWarningClose} severity="warning" sx={{ width: "100%" }}>
+          {warningToastMessage}
         </Alert>
       </Snackbar>
     </div>

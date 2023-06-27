@@ -137,7 +137,6 @@ export default function PersistentDrawerRight() {
     const rdfcsa = new ImportService().loadSample(useJsBitvector);
     const queryManager = new QueryManager(rdfcsa);
     const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-    //const data = queryManager.getAllTriples()
     dispatch(setCurrentData(data));
     dispatch(setDatabase(rdfcsa));
     dispatch(setGraphData(database, currentData));

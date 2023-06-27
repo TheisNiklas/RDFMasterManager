@@ -94,7 +94,7 @@ const Import = () => {
           const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
           dispatch(setCurrentData(data));
         } else if (replaceDatabase) {
-          setToastMessage("Data not displayed. Exceeds configured maximum.");
+          setToastMessage("Data not displayed. Exceeds 10k triples.");
           setToastOpen(true);
           dispatch(setCurrentData([]));
         }

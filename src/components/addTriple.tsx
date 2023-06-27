@@ -12,6 +12,8 @@ import {
   DialogContentText,
   DialogActions,
   Tooltip,
+  Snackbar,
+  Alert,
 } from "@mui/material";
 import { RdfOperations } from "../rdf/rdf-operations";
 import { QueryManager } from "../rdf/query-manager";
@@ -39,6 +41,8 @@ const AddTripleForm = () => {
   const [subjectValid, setSubjectValid] = useState(false);
   const [predicateValid, setPredicateValid] = useState(false);
   const [objectValid, setObjectValid] = useState(false);
+  const [toastOpen, setToastOpen] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState("");
 
   const handleIRIValidation = (input: string, type: string) => {
     const iriRegex =
@@ -91,9 +95,13 @@ const AddTripleForm = () => {
     const newDatabase = rdfOperations.addTriple(formFields.subject, formFields.predicate, formFields.object);
     if (newDatabase !== undefined) {
       dispatch(setDatabase(newDatabase));
-      if (newDatabase.tripleCount > 10000) {
+      if (newDatabase.tripleCount < 10000) {
         const queryManager = new QueryManager(newDatabase);
         dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      } else {
+        setToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+        setToastOpen(true);
+        dispatch(setCurrentData([]));
       }
       setFormFields({ subject: "", predicate: "", object: "" });
       setOpen(false);
@@ -107,6 +115,13 @@ const AddTripleForm = () => {
 
   const handleClose = () => {
     setOpen(false);
+  };
+
+  const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setToastOpen(false);
   };
 
   const database = useSelector((state: any) => state.database);
@@ -176,6 +191,16 @@ const AddTripleForm = () => {
             </Button>
           </DialogActions>
         </Dialog>
+        <Snackbar
+          open={toastOpen}
+          autoHideDuration={6000}
+          onClose={handleToastClose}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert onClose={handleToastClose} severity="warning" sx={{ width: "100%" }}>
+            {toastMessage}
+          </Alert>
+        </Snackbar>
       </div>
     </Container>
   );

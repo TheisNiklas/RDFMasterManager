@@ -1,4 +1,18 @@
-import { Accordion, AccordionDetails, AccordionSummary, Container, FormControl, FormLabel, Grid, Tooltip, Typography, TextField, Button } from "@mui/material";
+import {
+  Accordion,
+  AccordionDetails,
+  AccordionSummary,
+  Container,
+  FormControl,
+  FormLabel,
+  Grid,
+  Tooltip,
+  Typography,
+  TextField,
+  Button,
+  Snackbar,
+  Alert,
+} from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
 import { styled } from "@mui/system";
 import { setCurrentData, setDatabase, setGraphData, setMetaData } from "../actions";
@@ -28,6 +42,9 @@ const MetaDataForm = () => {
 
   const [linkColorValue, setLinkColorValue] = useState("");
   const [linkColorValid, setLinkColorValid] = useState(true);
+  const [toastOpen, setToastOpen] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState("");
+
   const database = useSelector((state: any) => state.database);
   const metaData = useSelector((state: any) => state.metaData);
   const currentData = useSelector((state: any) => state.currentData);
@@ -55,7 +72,7 @@ const MetaDataForm = () => {
           switch (predicateValue) {
             case "arrowColor": {
               if (linkColorValue != "") {
-                setMetadataElement(item, linkColorValue, possibility)
+                setMetadataElement(item, linkColorValue, possibility);
               }
               updated = true;
               break;
@@ -80,7 +97,7 @@ const MetaDataForm = () => {
         switch (possibility) {
           case "arrowColor": {
             if (linkColorValue != "") {
-              addMetadataElement(possibility, linkColorValue)
+              addMetadataElement(possibility, linkColorValue);
             }
             break;
           }
@@ -96,35 +113,67 @@ const MetaDataForm = () => {
           }
         }
       }
-      let metaDataQueried = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], database);
+      let metaDataQueried = QueryCall.queryCallData(
+        [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+        database
+      );
       if (metaDataQueried) {
         dispatch(setMetaData(metaDataQueried));
       }
     }
-    let metaDataQueried = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], database);
+    let metaDataQueried = QueryCall.queryCallData(
+      [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
+      database
+    );
     if (metaDataQueried) {
       dispatch(setMetaData(metaDataQueried));
     }
-  }
+  };
 
   const setMetadataElement = (element: any, newValue: string, possibility: string) => {
     const rdfOperations = new RdfOperations(database);
     const newDatabase = rdfOperations.modifyTriple(element, "RDFCSA:METADATA", "METADATA:" + possibility, newValue);
     dispatch(setDatabase(newDatabase as Rdfcsa));
-    const queryManager = new QueryManager(newDatabase);
-    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-    dispatch(setGraphData(newDatabase, currentData));
-  }
+    if (newDatabase.tripleCount < 10000) {
+      const queryManager = new QueryManager(newDatabase);
+      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      dispatch(setGraphData(newDatabase, currentData));
+    } else {
+      setToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+      setToastOpen(true);
+      dispatch(setCurrentData([]));
+      dispatch(setGraphData(newDatabase, currentData));
+    }
+  };
 
   const addMetadataElement = (possibility: string, value: string) => {
     const rdfOperations = new RdfOperations(database);
-    const newDatabase = rdfOperations.addTriple("RDFCSA:METADATA", "METADATA:" + possibility, JSON.parse(JSON.stringify(value)));
+    const newDatabase = rdfOperations.addTriple(
+      "RDFCSA:METADATA",
+      "METADATA:" + possibility,
+      JSON.parse(JSON.stringify(value))
+    );
     dispatch(setDatabase(newDatabase));
-    const queryManager = new QueryManager(newDatabase);
-    dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-  }
-  return (
+    if (newDatabase.tripleCount < 10000) {
+      const queryManager = new QueryManager(newDatabase);
+      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
+      dispatch(setGraphData(newDatabase, currentData));
+    } else {
+      setToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+      setToastOpen(true);
+      dispatch(setCurrentData([]));
+      dispatch(setGraphData(newDatabase, currentData));
+    }
+  };
 
+  const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {
+    if (reason === "clickaway") {
+      return;
+    }
+    setToastOpen(false);
+  };
+
+  return (
     <Container maxWidth="md" sx={{ marginBottom: 3 }}>
       <Header variant="h6">Change Metadata</Header>
       <div>
@@ -149,11 +198,26 @@ const MetaDataForm = () => {
           </Grid>
         </Grid>
         <Grid item xs={12}>
-          <SubmitButton variant="contained" color="primary" onClick={() => submitMetdata()} disabled={!linkColorValid || !nodeColorValid}>
+          <SubmitButton
+            variant="contained"
+            color="primary"
+            onClick={() => submitMetdata()}
+            disabled={!linkColorValid || !nodeColorValid}
+          >
             Submit
           </SubmitButton>
         </Grid>
       </div>
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={6000}
+        onClose={handleToastClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
+        <Alert onClose={handleToastClose} severity="warning" sx={{ width: "100%" }}>
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </Container>
   );
 };

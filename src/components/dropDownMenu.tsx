@@ -2,6 +2,7 @@
  * Contributions made by:
  * Niklas Theis
  * Kai Joshua Martin
+ * Karl Neitmann
  */
 
 import {
@@ -28,6 +29,7 @@ const DropDownBox = styled(Box)(({ theme }) => ({
   },
 }));
 
+//Change of the layout with for the mobile device, tablet and pc
 function isMobileDevice() {
   if (window.screen.width < 1200 && window.screen.width >= 320) {
     return true;
@@ -36,6 +38,7 @@ function isMobileDevice() {
   }
 }
 
+//Dropdown for the different visualisation options
 const DropDownForm = styled(FormControl)(({ theme }) => ({
   minWidth: 100,
 }));

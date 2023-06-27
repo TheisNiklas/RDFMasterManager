@@ -43,6 +43,7 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
   },
 }));
 
+//Backend call for the exportService
 const Export = () => {
   const [exportFunction, setExportFunction] = useState("");
   const [exporter, setExporter] = useState(new ExportService());
@@ -64,7 +65,7 @@ const Export = () => {
     }
   }, [availableExporters]);
 
-  //receives the user selectoin for the export function
+  //Receives the user selectoin for the export function
   const handleFormChangeExportFunction = (event: SelectChangeEvent<string>) => {
     setExportFunction(event.target.value);
   };

@@ -3,6 +3,7 @@
  * Niklas Theis
  * Tobias Kaps
  * Bjarne Küper
+ * Karl Neitmann
  */
 
 import React, { ChangeEvent, useState } from "react";
@@ -42,6 +43,7 @@ const SubmitButton = styled(Button)(() => ({
   width: "100%",
 }));
 
+//Triple structure with regex for the correct spo form.
 const AddTripleForm = () => {
   const [formFields, setFormFields] = useState({ subject: "", predicate: "", object: "" });
 

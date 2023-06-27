@@ -2,6 +2,7 @@
  * Contributions made by:
  * Niklas Theis
  * Kai Joshua Martin
+ * Karl Neitmann
  */
 
 import * as React from 'react';
@@ -68,6 +69,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
+//Backend call for the redux state objects for the querys
 const FilterForm = () => {
   //Redux
   const filterTriples = useSelector((state: any) => state.filterTriples);

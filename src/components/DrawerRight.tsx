@@ -31,7 +31,6 @@ import { ChangeEvent } from "react";
 import { open, close, setCurrentData, setDatabase, setGraphData, setMetaData } from "./../actions";
 import AddTripleForm from "./addTriple";
 import DropDownMenue from "./dropDownMenu";
-import SortFormData from "./sort";
 import FilterForm from "./filter";
 import Import from "./import";
 import Export from "./export";

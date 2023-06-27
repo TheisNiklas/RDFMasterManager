@@ -117,7 +117,7 @@ export class ImportService {
     rdfcsa.dictionary.O = deserialized.dictionary.O;
     rdfcsa.gaps = deserialized.gaps;
     rdfcsa.psi = deserialized.psi;
-    rdfcsa.tripleCount = deserialized.triple;
+    rdfcsa.tripleCount = deserialized.tripleCount;
     return rdfcsa;
   }
 }

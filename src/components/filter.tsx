@@ -21,13 +21,17 @@ import {
   DialogContentText,
   DialogActions,
   createFilterOptions,
+  SelectChangeEvent,
+  MenuItem,
+  InputLabel,
+  Select,
 } from "@mui/material";
 import { Add } from "@mui/icons-material";
 import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { QueryCall } from "../interface/query-call";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector, useDispatch } from "react-redux";
-import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData } from "./../actions";
+import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData, } from "./../actions";
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
   marginBottom: theme.spacing(2),
@@ -74,17 +78,35 @@ const FilterForm = () => {
     dispatch(addQueryTriple(object));
   };
 
+  const [visualLimit, setVisualLimit] = React.useState(0);
+  const [sortElement, setSortElement] = React.useState('subject');
+  const [sortOrder, setSortOrder] = React.useState('ascending');
+
+
+  function sortAscending(left: any, right: any) {
+    return left[sortElement] - right[sortElement];
+  }
+
+  function sortDescending(left: any, right: any) {
+    return right[sortElement] - left[sortElement];
+  }
   //Data call of the interface for data adjustment of the triple in the backend
   //Sends the filter data
   //check if the query is correct
   const handleSubmit = () => {
     let queryResult = QueryCall.queryCallData(filterTriples, database)
-    if (queryResult)
-    {
+    if (queryResult) {
+      if (sortOrder === 'descending') {
+        queryResult.sort(sortDescending);
+      } else {
+        queryResult.sort(sortAscending);
+      }
+      if (visualLimit > 0) {
+        queryResult = queryResult.slice(0, visualLimit)
+      }
       dispatch(setCurrentData(queryResult));
-    }  
-    else
-    {
+    }
+    else {
       //change popup
       setOpen(true);
     }
@@ -105,10 +127,24 @@ const FilterForm = () => {
     dispatch(updateObject(index, ("" + newValue)));
   };
 
+  //Adaptation of the selected sorting order (ascending, descending) the user picked
+  const handleFormChangeSortOrderObject = (event: SelectChangeEvent<string>) => {
+    setSortOrder(event.target.value);
+  };
+
+  //Adaptation of the selected element (Subject, Predicate, Object) the user picked by that the list shall get sorted
+  const handleFormChangeSortElementObject = (event: SelectChangeEvent<string>) => {
+    setSortElement(event.target.value);
+  };
+
+  const handleFormChangeLimit = (event: SelectChangeEvent<number>) => {
+    setVisualLimit(Number(event.target.value));
+  };
+
   //Removes a triple pair of SPO filter elements with the corresponding join variables
   const deleteFilterTriple = (index: number) => {
     if (index === 0) {
-        return;
+      return;
     }
     dispatch(removeQueryTriple(index));
   };
@@ -120,7 +156,7 @@ const FilterForm = () => {
     setOpen(false);
   };
 
-  
+
   return (
     <Accordion defaultExpanded={true}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
@@ -157,7 +193,7 @@ const FilterForm = () => {
                               }}
                             />
                           )}
-                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500 })}
                           value={form.subject}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeSubject(event, index, newValue)}
                         />
@@ -178,7 +214,7 @@ const FilterForm = () => {
                               }}
                             />
                           )}
-                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500 })}
                           value={form.predicate}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangePredicate(event, index, newValue)}
                         />
@@ -199,7 +235,7 @@ const FilterForm = () => {
                               }}
                             />
                           )}
-                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500})}
+                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500 })}
                           value={form.object}
                           onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeObject(event, index, newValue)}
                         />
@@ -215,10 +251,75 @@ const FilterForm = () => {
                   </Grid>
                 );
               })}
+              {/* Sort and Limit options*/}
+              <Accordion sx={{ marginTop: 2, }} defaultExpanded={false}>
+                <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
+                  <Header variant="h6" sx={{ marginBottom: -1 }}>
+                    Sorting
+                  </Header>
+                </AccordionSummary>
+                <AccordionDetails>
+                  <Container maxWidth="md" sx={{ marginBottom: 3 }}>
+                    <div>
+                      <Grid container spacing={2}>
+                        <Grid container spacing={2} alignItems="center">
+                          {/* Sort order*/}
+                          <Grid item xs={12}>
+                            <SortFormControl>
+                              <InputLabel id="sort-label">Sort order</InputLabel>
+                              <Select
+                                labelId="sort-label"
+                                defaultValue=""
+                                onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}
+                              >
+                                <MenuItem value="">-----</MenuItem>
+                                <MenuItem value="ascending">Ascending</MenuItem>
+                                <MenuItem value="descending">Descending</MenuItem>
+                              </Select>
+                            </SortFormControl>
+                          </Grid>
+                          {/* Sort element*/}
+                          <Grid item xs={12} sm={6}>
+                            <Grid container spacing={2}>
+                              <Grid item xs={12}>
+                                <SortFormControl>
+                                  <InputLabel id="sort-label">Sorting element</InputLabel>
+                                  <Select
+                                    labelId="sort-label"
+                                    defaultValue=""
+                                    onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}
+                                  >
+                                    <MenuItem value="">-----</MenuItem>
+                                    <MenuItem value="subject">Subject</MenuItem>
+                                    <MenuItem value="predicate">Predicate</MenuItem>
+                                    <MenuItem value="object">Object</MenuItem>
+                                  </Select>
+                                </SortFormControl>
+                              </Grid>
+                            </Grid>
+                          </Grid>
+                          {/* Limit*/}
+                          <Grid item xs={6}>
+                            <Tooltip title="Maximum number of triple results of queries, > 0" placement="top">
+                              <StyledTextField
+                                name="visualLimit"
+                                label="Limit"
+                                type="number"
+                                InputProps={{ inputProps: { min: 1 } }}
+                                onChange={(event: ChangeEvent<HTMLInputElement>) => handleFormChangeLimit(event)}
+                              />
+                            </Tooltip>
+                          </Grid>
+                        </Grid>
+                      </Grid>
+                    </div>
+                  </Container>
+                </AccordionDetails>
+              </Accordion>
               <Grid container spacing={2} alignItems="center">
                 <Grid item xs={12}>
                   <AddButton variant="contained" color="primary" endIcon={<Add />} onClick={addFilterTriple}>
-                  Add filter
+                    Add filter
                   </AddButton>
                 </Grid>
                 <Grid item xs={12}>
@@ -234,7 +335,7 @@ const FilterForm = () => {
                     <DialogTitle id="alert-dialog-title">{"Query cannot be executed"}</DialogTitle>
                     <DialogContent>
                       <DialogContentText id="alert-dialog-description">
-                      Please change your entries, because the query cannot be executed like this.
+                        Please change your entries, because the query cannot be executed like this.
                       </DialogContentText>
                     </DialogContent>
                     <DialogActions>
@@ -250,6 +351,7 @@ const FilterForm = () => {
         </Container>
       </AccordionDetails>
     </Accordion>
+
   );
 };
 

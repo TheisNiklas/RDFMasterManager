@@ -31,7 +31,7 @@ import { QueryTriple } from "../rdf/models/query-triple";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentData, setDatabase, setMetaData } from "../actions";
+import { setCurrentData, setDatabase, setMetaData, setLoading } from "../actions";
 import { QueryCall } from "../interface/query-call";
 
 const Header = styled(Typography)(({ theme }) => ({
@@ -111,6 +111,20 @@ const Import = () => {
     }
   }
 
+  const importFile = async (file, importService) => {
+    const rdfcsa = await importService.importFile(file, replaceDatabase, useJsBitvector);
+    if (rdfcsa === undefined) {
+      setOpen(true);
+    } else {
+      dispatch(setDatabase(rdfcsa));
+      updateCurrentData(rdfcsa);
+      updateMetaData(rdfcsa);
+      setOpen(false);
+
+    }
+    dispatch(setLoading(false));
+  }
+
   //To start the data input for attaching to or replacing the old triple data
   const userImportRequest = () => {
     const fileInput = document.createElement("input");
@@ -120,15 +134,9 @@ const Import = () => {
     // Add an event handler to get the selected file path.
     fileInput.addEventListener("change", async (event) => {
       const file = (event as any).target.files[0];
-      const rdfcsa = await importService.importFile(file, replaceDatabase, useJsBitvector);
-      if (rdfcsa === undefined) {
-        setOpen(true);
-      } else {
-        dispatch(setDatabase(rdfcsa));
-        updateCurrentData(rdfcsa);
-        updateMetaData(rdfcsa);
-        setOpen(false);
-      }
+      dispatch(setLoading(true));
+      // Set timeout here to give components time to render backdrop
+      setTimeout(importFile, 5, file, importService);
     });
 
     fileInput.click();
@@ -202,6 +210,7 @@ const Import = () => {
         </Alert>
       </Snackbar>
     </Container>
+
   );
 };
 

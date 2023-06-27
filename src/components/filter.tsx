@@ -37,7 +37,9 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { QueryCall } from "../interface/query-call";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector, useDispatch } from "react-redux";
-import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData, } from "./../actions";
+import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData, setLoading } from "./../actions";
+import Backdrop from '@mui/material/Backdrop';
+
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
   marginBottom: theme.spacing(2),
@@ -88,11 +90,22 @@ const FilterForm = () => {
   const [sortElement, setSortElement] = React.useState('subject');
   const [sortOrder, setSortOrder] = React.useState('ascending');
 
-
+  /**
+   * Sort query result ascending
+   * @param left Left triple
+   * @param right Right triple
+   * @returns Returns value < 0 if right is bigger, returns > 0 if left is bigger. Return 0 if they are equal
+   */
   function sortAscending(left: any, right: any) {
     return left[sortElement] - right[sortElement];
   }
 
+  /**
+   * Sort query result descending
+   * @param left Left triple
+   * @param right Right triple
+   * @returns Returns value > 0 if right is bigger, returns < 0 if left is bigger. Return 0 if they are equal
+   */
   function sortDescending(left: any, right: any) {
     return right[sortElement] - left[sortElement];
   }
@@ -100,7 +113,17 @@ const FilterForm = () => {
   //Sends the filter data
   //check if the query is correct
   const handleSubmit = () => {
-    let queryResult = QueryCall.queryCallData(filterTriples, database)
+    dispatch(setLoading(true))
+    // Set timeout here to give components time to render backdrop
+    setTimeout(executeQuery, 5);
+  };
+
+  /**
+   * Execute the query. Sort and limit the result.
+   */
+  const executeQuery = () => {
+
+    let queryResult = QueryCall.queryCallData(filterTriples, database);
     if (queryResult) {
       if (sortOrder === 'descending') {
         queryResult.sort(sortDescending);
@@ -111,12 +134,13 @@ const FilterForm = () => {
         queryResult = queryResult.slice(0, visualLimit)
       }
       dispatch(setCurrentData(queryResult));
+      dispatch(setLoading(false));
     }
     else {
       //change popup
       setOpen(true);
     }
-  };
+  }
 
   //Adaptation of the subject filter
   const handleFormChangeSubject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
@@ -355,7 +379,6 @@ const FilterForm = () => {
         </Container>
       </AccordionDetails>
     </Accordion>
-
   );
 };
 

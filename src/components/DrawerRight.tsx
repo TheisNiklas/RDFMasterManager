@@ -44,6 +44,8 @@ import metaData from "../reducers/metaData";
 import { QueryCall } from "../interface/query-call";
 import MetaDataForm from "./metaDataForm";
 import { Rdfcsa } from "../rdf/rdfcsa";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 let drawerWidth = 500;
 
@@ -107,6 +109,8 @@ export default function PersistentDrawerRight() {
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
   const [openDialog, setOpenDialog] = React.useState(true);
   const [drawerWidth, setDrawerWidth] = React.useState(500);
+  const [toastOpen, setToastOpen] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState("");
   window.matchMedia("(orientation: portrait)").addEventListener("change", (e) => {
     const portrait = e.matches;
     if (portrait) {
@@ -130,6 +134,11 @@ export default function PersistentDrawerRight() {
     setUseJsBitvector(event.target.checked);
   };
 
+  // Close popup - toastmsg
+  const handleToastClose = () => {
+    setToastOpen(false);
+  };
+
   const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
       return <TextVisualization />;
@@ -142,17 +151,41 @@ export default function PersistentDrawerRight() {
     }
   }, [database, currentData, mainFrame, graphData]);
 
-  const handleFromFromExample = () => {
-    const rdfcsa = new ImportService().loadSample(useJsBitvector);
-    const queryManager = new QueryManager(rdfcsa);
-    const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-    dispatch(setCurrentData(data));
-    dispatch(setDatabase(rdfcsa));
-    dispatch(setGraphData(database, currentData));
+  /**
+   * Update meta data. Query for meta data triples.
+   * @param rdfcsa Database to query on
+   */
+  const updateMetaData = (rdfcsa) => {
     let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], rdfcsa);
     if (metaData) {
       dispatch(setMetaData(metaData));
     }
+  }
+
+  /**
+   * Init current session by setting current data, current database and update meta data. Don't set current data if more than 10k triples in db.
+   * @param rdfcsa Database that should be initialized
+   */
+  const initCurrentData = (rdfcsa) => {
+    dispatch(setDatabase(rdfcsa));
+    updateMetaData(rdfcsa);
+    if (rdfcsa.tripleCount < 10000) {
+      const queryManager = new QueryManager(rdfcsa);
+      const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+      dispatch(setCurrentData(data));
+    } else {
+      setToastMessage("Data not displayed. Exceeds 10k triples. Query manually");
+      setToastOpen(true);
+      dispatch(setCurrentData([]));
+    }
+  }
+
+  const handleFromFromExample = () => {
+    const rdfcsa = new ImportService().loadSample(useJsBitvector);
+
+    initCurrentData(rdfcsa);
+
+    dispatch(setGraphData(database, currentData));
     setStartDialogOpen(false);
   };
 
@@ -174,17 +207,7 @@ export default function PersistentDrawerRight() {
       if (rdfcsa === undefined) {
         setStartDialogOpen(true);
       } else {
-        dispatch(setDatabase(rdfcsa));
-        if (rdfcsa.tripleCount < 10000) {
-          // TODO: include in config
-          const queryManager = new QueryManager(rdfcsa);
-          const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-          dispatch(setCurrentData(data));
-          let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], database);
-          if (metaData) {
-            dispatch(setMetaData(metaData));
-          }
-        }
+        initCurrentData(rdfcsa);
         setStartDialogOpen(false);
       }
     });
@@ -327,6 +350,11 @@ export default function PersistentDrawerRight() {
           </DialogContentText>
         </DialogContent>
       </Dialog>
+      <Snackbar open={toastOpen} autoHideDuration={6000} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+        <Alert onClose={handleToastClose} severity="warning" sx={{ width: "100%" }}>
+          {toastMessage}
+        </Alert>
+      </Snackbar>
     </>
   );
 }

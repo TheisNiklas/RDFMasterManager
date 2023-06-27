@@ -31,7 +31,8 @@ import { QueryTriple } from "../rdf/models/query-triple";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentData, setDatabase } from "../actions";
+import { setCurrentData, setDatabase, setMetaData } from "../actions";
+import { QueryCall } from "../interface/query-call";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -103,6 +104,13 @@ const Import = () => {
     }
   }
 
+  const updateMetaData = (rdfcsa) => {
+    let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], rdfcsa);
+    if (metaData) {
+      dispatch(setMetaData(metaData));
+    }
+  }
+
   //To start the data input for attaching to or replacing the old triple data
   const userImportRequest = () => {
     const fileInput = document.createElement("input");
@@ -118,6 +126,7 @@ const Import = () => {
       } else {
         dispatch(setDatabase(rdfcsa));
         updateCurrentData(rdfcsa);
+        updateMetaData(rdfcsa);
         setOpen(false);
       }
     });
@@ -187,7 +196,7 @@ const Import = () => {
           </DialogActions>
         </Dialog>
       </Grid>
-      <Snackbar open={toastOpen} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar open={toastOpen} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
         <Alert onClose={handleToastClose} severity="warning" sx={{ width: "100%" }}>
           {toastMessage}
         </Alert>

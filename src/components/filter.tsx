@@ -2,6 +2,7 @@
  * Contributions made by:
  * Niklas Theis
  * Kai Joshua Martin
+ * Karl Neitmann
  */
 
 import * as React from 'react';
@@ -66,6 +67,7 @@ const SubmitButton = styled(Button)(({ theme }) => ({
   width: "100%",
 }));
 
+//Backend call for the redux state objects for the querys
 const FilterForm = () => {
   //Redux
   const filterTriples = useSelector((state: any) => state.filterTriples);
@@ -89,10 +91,12 @@ const FilterForm = () => {
   const [sortOrder, setSortOrder] = React.useState('ascending');
 
 
+  //Ascending order for the text visualisation with the from user selected subject, predicate or object
   function sortAscending(left: any, right: any) {
     return left[sortElement] - right[sortElement];
   }
 
+  //Descending order for the text visualisation with the from user selected subject, predicate or object
   function sortDescending(left: any, right: any) {
     return right[sortElement] - left[sortElement];
   }

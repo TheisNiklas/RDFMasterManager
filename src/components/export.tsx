@@ -42,6 +42,7 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
   },
 }));
 
+//Backend call for the exportService
 const Export = () => {
   const [exportFunction, setExportFunction] = useState("");
   const [exporter, setExporter] = useState(new ExportService());
@@ -63,17 +64,17 @@ const Export = () => {
     }
   }, [availableExporters]);
 
-  //receives the user selectoin for the export function
+  //Receives the user selectoin for the export function
   const handleFormChangeExportFunction = (event: SelectChangeEvent<string>) => {
     setExportFunction(event.target.value);
   };
 
-  //calls the interface function for the export of the current selected graph data
+  //Calls the interface function for the export of the current selected graph data
   const subgraphDataExport = async () => {
     const result = await exporter.exportTriples(currentData, database.dictionary, exportFunction);
   };
 
-  //calls the interface function for the export of the complete data
+  //Calls the interface function for the export of the complete data
   const graphDataExport = async () => {
     const queryManager = new QueryManager(database);
     const allData = queryManager.getTriples([new QueryTriple(null, null, null)]);

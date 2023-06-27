@@ -131,6 +131,7 @@ export default function PersistentDrawerRight() {
     setUseJsBitvector(event.target.checked);
   };
 
+  //Visualization switch between the different types
   const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
       return <TextVisualization />;
@@ -143,6 +144,7 @@ export default function PersistentDrawerRight() {
     }
   }, [database, currentData, mainFrame, graphData]);
 
+  //Backend call for example data
   const handleFromFromExample = () => {
     const rdfcsa = new ImportService().loadSample(useJsBitvector);
     const queryManager = new QueryManager(rdfcsa);
@@ -157,12 +159,14 @@ export default function PersistentDrawerRight() {
     setStartDialogOpen(false);
   };
 
+  //Backend call for the from scratch data by program start
   const handleFromScratch = () => {
     const rdfcsa = new Rdfcsa([], useJsBitvector);
     dispatch(setDatabase(rdfcsa));
     setStartDialogOpen(false);
   };
 
+  //Import handling and backend call for usability of the import data
   const handleImportRequest = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -193,6 +197,7 @@ export default function PersistentDrawerRight() {
     fileInput.click();
   };
 
+  //Change of the layout with for the mobile device, tablet and pc
   function isMobileDevice() {
     if (window.screen.width < 1200 && window.screen.width >= 320) {
       return true;
@@ -201,6 +206,7 @@ export default function PersistentDrawerRight() {
     }
   }
 
+  //Change of the layout with for the mobile device
   const handleDrawerOpen = () => {
     if (isMobileDevice()) {
       setDrawerWidth(400);
@@ -210,6 +216,7 @@ export default function PersistentDrawerRight() {
     dispatch(open());
   };
 
+  //Change of the layout with for the mobile device
   const handleDrawerClose = () => {
     if (isMobileDevice()) {
       setDrawerWidth(500);
@@ -219,6 +226,7 @@ export default function PersistentDrawerRight() {
     dispatch(close());
   };
 
+  //UseEffect for the landscape and portrait orientation
   React.useEffect(() => {
     const portrait = window.matchMedia("(orientation: portrait)").matches;
     if (portrait) {

@@ -24,6 +24,7 @@ import { ExportService } from "../rdf/exporter/export-service";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "./../actions";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -68,17 +69,55 @@ const Export = () => {
     setExportFunction(event.target.value);
   };
 
-  //calls the interface function for the export of the current selected graph data
-  const subgraphDataExport = async () => {
+  /**
+   * Queries for all triples and exports them
+   */
+  const exportSelectedTriples = async () => {
     const result = await exporter.exportTriples(currentData, database.dictionary, exportFunction);
+    dispatch(setLoading(false));
+  }
+
+  //calls the interface function for the export of the current selected graph data. Don't call exportSelectedTriples directly. Otherwise backdrop wont be rendered
+  const subgraphDataExport = async () => {
+    dispatch(setLoading(true));
+    // Set timeout here to give components time to render backdrop
+    setTimeout(exportSelectedTriples, 5);
   };
 
-  //calls the interface function for the export of the complete data
-  const graphDataExport = async () => {
+  /**
+   * Queries for all triples and exports them
+   */
+  const exportAllTriples = async () => {
     const queryManager = new QueryManager(database);
     const allData = queryManager.getTriples([new QueryTriple(null, null, null)]);
     const result = await exporter.exportTriples(allData, database.dictionary, exportFunction);
+    dispatch(setLoading(false));
+  }
+
+  //calls the interface function for the export of the complete data. Don't call exportAllTriples directly. Otherwise backdrop wont be rendered
+  const graphDataExport = async () => {
+    dispatch(setLoading(true));
+    // Set timeout here to give components time to render backdrop
+    setTimeout(exportAllTriples, 5);
+
   };
+
+  /**
+   * Save database as binary file.
+   */
+  const saveDatabase = async () => {
+    const result = await database.saveDatabase();
+    dispatch(setLoading(false));
+  }
+
+  /**
+   * Handle save database event. Don't call saveDatabase directly. Otherwise backdrop wont be rendered
+   */
+  const handleSaveDatabase = async () => {
+    dispatch(setLoading(true));
+    // Set timeout here to give components time to render backdrop
+    setTimeout(saveDatabase, 5);
+  }
 
   //State for the Dialog to open
   const [open, setOpen] = React.useState(false);
@@ -120,7 +159,7 @@ const Export = () => {
           </SubmitButton>
         </Grid>
       </Grid>
-      <SubmitButton variant="contained" color="primary" onClick={() => database.saveDatabase()}>
+      <SubmitButton variant="contained" color="primary" onClick={() => handleSaveDatabase()}>
         Save database in binary
       </SubmitButton>
     </Container>

@@ -43,7 +43,7 @@ export class BitVector {
       let element = Math.floor(index / this.bitsPerElement);
       // if element is outside of bits array, add new elment to bits
       if (element >= this.arrayLength) {
-        this.addNewIntElement(element+1);
+        this.#addNewIntElement(element+1);
       }
       // increase superblocks at element by 1
       this.superblocks[element]+=1;
@@ -168,7 +168,7 @@ export class BitVector {
         if (i === this.arrayLength) {
           //if no new element is already added to bits and the prelastbit equals 0, add new array element
           if (!stop && prelastbit > 0) {
-            this.addNewIntElement(this.arrayLength + 1);
+            this.#addNewIntElement(this.arrayLength + 1);
             stop = true;
           }
           else{
@@ -271,7 +271,7 @@ export class BitVector {
         this.bits[i] = (nextfirstbit << shift) | (this.bits[i] >> 1);
     }
     // delete all not used elements in bits array
-    this.deleteUnusedIntElements()
+    this.#deleteUnusedIntElements()
     }
   }
 
@@ -279,7 +279,7 @@ export class BitVector {
    * Add new element to bits array until newArrayLength is reached
    * @param {*} newArrayLength 
    */
-  addNewIntElement(newArrayLength) {
+  #addNewIntElement(newArrayLength) {
     // define array
     let array = [];
     // add arrays from bits array
@@ -300,7 +300,7 @@ export class BitVector {
    * Delete as much element in bits as not used at the end
    * @param {*} newArrayLength 
    */
-  deleteUnusedIntElements(){
+  #deleteUnusedIntElements(){
     let newArrayLength = this.arrayLength;
     // check if lat element of bits array is empty and not the first element
     while (this.bits[newArrayLength - 1] === 0 && newArrayLength > 1) {

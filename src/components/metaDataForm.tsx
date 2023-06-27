@@ -134,16 +134,9 @@ const MetaDataForm = () => {
     const rdfOperations = new RdfOperations(database);
     const newDatabase = rdfOperations.modifyTriple(element, "RDFCSA:METADATA", "METADATA:" + possibility, newValue);
     dispatch(setDatabase(newDatabase as Rdfcsa));
-    if (newDatabase.tripleCount < 10000) {
-      const queryManager = new QueryManager(newDatabase);
-      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-      dispatch(setGraphData(newDatabase, currentData));
-    } else {
-      setToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
-      setToastOpen(true);
-      dispatch(setCurrentData([]));
-      dispatch(setGraphData(newDatabase, currentData));
-    }
+
+    setToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+    setToastOpen(true);
   };
 
   const addMetadataElement = (possibility: string, value: string) => {
@@ -154,16 +147,9 @@ const MetaDataForm = () => {
       JSON.parse(JSON.stringify(value))
     );
     dispatch(setDatabase(newDatabase));
-    if (newDatabase.tripleCount < 10000) {
-      const queryManager = new QueryManager(newDatabase);
-      dispatch(setCurrentData(queryManager.getTriples([new QueryTriple(null, null, null)])));
-      dispatch(setGraphData(newDatabase, currentData));
-    } else {
-      setToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
-      setToastOpen(true);
-      dispatch(setCurrentData([]));
-      dispatch(setGraphData(newDatabase, currentData));
-    }
+
+    setToastMessage("Dataset exceeds 10k triples - Data not queries - query manually");
+    setToastOpen(true);
   };
 
   const handleToastClose = (event?: React.SyntheticEvent | Event, reason?: string) => {

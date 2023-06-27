@@ -228,7 +228,7 @@ export default function PersistentDrawerRight() {
               RDF Master Manager
             </Typography>
             <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
-              Anzahl Triples: {database.tripleCount}
+              Anzahl Triples: {database.tripleCount} ({currentData.length} displayed)
             </Typography>
             <DropDownMenue></DropDownMenue>
             <IconButton

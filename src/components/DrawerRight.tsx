@@ -28,7 +28,7 @@ import { ImportService } from "../rdf/importer/import-service";
 import { useSelector, useDispatch } from "react-redux";
 import { FormControlLabel, Checkbox } from "@mui/material";
 import { ChangeEvent } from "react";
-import { open, close, setCurrentData, setDatabase, setGraphData, setMetaData } from "./../actions";
+import { open, close, setCurrentData, setDatabase, setGraphData, setMetaData, setLoading } from "./../actions";
 import AddTripleForm from "./addTriple";
 import DropDownMenue from "./dropDownMenu";
 import FilterForm from "./filter";
@@ -46,6 +46,7 @@ import MetaDataForm from "./metaDataForm";
 import { Rdfcsa } from "../rdf/rdfcsa";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
+import LoadingBackdrop from "./loadingBackdrop";
 
 let drawerWidth = 500;
 
@@ -203,13 +204,15 @@ export default function PersistentDrawerRight() {
     // Add an event handler to get the selected file path.
     fileInput.addEventListener("change", async (event) => {
       const file = (event as any).target.files[0];
+      setStartDialogOpen(false);
+      dispatch(setLoading(true));
       const rdfcsa = await importService.importFile(file, true, useJsBitvector);
       if (rdfcsa === undefined) {
         setStartDialogOpen(true);
       } else {
         initCurrentData(rdfcsa);
-        setStartDialogOpen(false);
       }
+      dispatch(setLoading(false));
     });
 
     fileInput.click();
@@ -355,6 +358,7 @@ export default function PersistentDrawerRight() {
           {toastMessage}
         </Alert>
       </Snackbar>
+      <LoadingBackdrop />
     </>
   );
 }

@@ -97,3 +97,8 @@ export const setMetaData = (triples: Triple[]) => ({
   type: "SET_METADATA",
   payload: triples,
 });
+
+export const setLoading = (loading: boolean) => ({
+  type: "SET_LOADING",
+  payload: loading,
+});

@@ -34,23 +34,7 @@ export class QueryManager {
     if (queries.length === 1) {
       const query = queries[0];
       // get number of unbound elements
-      const countUnboundType = this.#getQueryType(query);
-      switch (countUnboundType) {
-        case 0:
-          resultArray = this.getBoundTriple(query);
-          break;
-        case 1:
-          resultArray = this.getOneUnboundTriple(query);
-          break;
-        case 2:
-          resultArray = this.getTwoUnboundTriple(query);
-          break;
-        case 3:
-          resultArray = this.getAllTriples();
-          break;
-        default:
-          return [];
-      }
+      resultArray = this.#getQueryTripleResult(query);
       // convert result array to array with triple elements
       resultArray.forEach((triple) => {
         result.push(new Triple(triple[0], triple[1], triple[2]));
@@ -274,21 +258,8 @@ export class QueryManager {
   // step 4: append all solutions for each results of step3
   leftChainingJoinTwoQueries(queries) {
     let result1;
-    const countUnboundType = this.#getQueryType(queries[0]);
-    switch (countUnboundType) {
-      case 0:
-        result1 = this.getBoundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
-        break;
-      case 1:
-        result1 = this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
-        break;
-      case 2:
-        result1 = this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(queries[0]));
-        break;
-      default:
-        result1 = this.getAllTriples();
-        break;
-    }
+    result1 = this.#getQueryTripleResult(queries[0]);
+
     // find query var in left triple
 
     let result2 = [];
@@ -346,72 +317,85 @@ export class QueryManager {
   }
 
   /**
-   * Joins multiple query pattern with the merge join strategy
-   * TODO: does not work properly
+   * Joins multiple query pattern with the merge join strategy. If multiple distinct patterns are given, they are combined using UNION.
    * @param {QueryTriple[]} queries
-   * @returns {number[][]} result list of triples
+   * @returns {Triple[]} result list of triples
    */
   #mergeJoin(queries) {
     //TODO: sortieren nach Join Variablen
-    const resultList = [];
-    queries.forEach((query) => {
-      const countUnboundType = this.#getQueryType(query);
-      switch (countUnboundType) {
-        case 0:
-          resultList.push(this.getBoundTriple(this.#createNormalQueryFromJoinQuery(query)));
-          break;
-        case 1:
-          resultList.push(this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
-          break;
-        case 2:
-          resultList.push(this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(query)));
-          break;
-        default:
-          resultList.push(this.getAllTriples());
-          break;
-      }
-    });
+    //TODO: Check whether set is faster
+    //TODO: Investigate further use of exact join vars
+    // console.log(queries)
+    const varAssignmentByQuery = [];
+    var maxJoinVar = -1; // number of JoinVars
+    var resultVars = []; // possible assignments for joinVars
+    var allTriples = [];
+    var allJoinVars = [];
 
-    var mergedResults = undefined;
-    if (resultList.length > 0) {
-      mergedResults = resultList[0];
-    }
-    var joinVars = [];
-    joinVars.push(this.#getJoinVars(queries[0]));
-    for (var i = 1; i < resultList.length; i++) {
-      // get join variable  ((?x, p1, o1)x(?y, p2, o2)x(?x, p3, ?y),
-      //                     (?x, p1, ?y)x(?y, p2, o2)x(?x, p3, o1)x(?y, p1, o4))
-      joinVars.push(this.#getJoinVars(queries[i]));
-      const preJoinVar = joinVars[i - 1]; // TODO: noch nicht richtig (Überprüfung aller vorherigen Arrays)
-      const curJoinVar = joinVars[i];
-      // compare join variable
-      var joinVar = undefined;
-      for (var j = 0; j < curJoinVar.length; j++) {
-        if (curJoinVar[j] >= 0 && joinVar === undefined) {
-          switch (j) {
-            case 0:
-              if (curJoinVar[j] === preJoinVar[0]) {
-                joinVar = "S";
-              } else if (curJoinVar[j] === preJoinVar[2]) {
-                joinVar = "SO";
-              }
-              break;
-            case 2:
-              if (curJoinVar[j] === preJoinVar[0]) {
-                joinVar = "OS";
-              } else if (curJoinVar[j] === preJoinVar[2]) {
-                joinVar = "O";
-              }
-              break;
-            default:
-              break;
+    // first determine all join vars given a single query
+    queries.forEach((query, queryIndex) => {
+      varAssignmentByQuery[queryIndex] = [];
+      const queryResult = this.#getQueryTripleResult(query);
+      allTriples.push(queryResult);
+      const queryJoinVars = this.#getJoinVars(query);
+      allJoinVars.push(queryJoinVars);
+
+      // create set to hold possible joinVar assignments for every joinVar
+      queryJoinVars.forEach((joinVar, joinIndex) => {
+        if (joinVar >= 0) {
+          maxJoinVar = Math.max(joinVar, maxJoinVar);
+          if (varAssignmentByQuery[queryIndex][joinVar] === undefined) {
+            varAssignmentByQuery[queryIndex][joinVar] = new Set();
           }
         }
-      }
-      // get merged results
-      mergedResults = this.#intersectTwoResultLists(mergedResults, resultList[i], joinVar);
+      });
+
+      // save possible joinVars to the created set
+      queryResult.forEach((triple) => {
+        queryJoinVars.forEach((joinVar, joinIndex) => {
+          if (joinVar >= 0) {
+            var element = triple[joinIndex];
+            if (joinIndex === 2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) {
+              // if object
+              element = element - this.rdfcsa.gaps[2];
+            }
+            if (!varAssignmentByQuery[queryIndex][joinVar].has(element)) {
+              varAssignmentByQuery[queryIndex][joinVar].add(element);
+            }
+          }
+        });
+      });
+    });
+
+    // merge join vars
+    for (var i = 0; i <= maxJoinVar; i++) {
+      var result1 = varAssignmentByQuery.map((x) => x[i]).filter((element) => element !== undefined);
+      resultVars[i] = new Set(result1.reduce((a, b) => [...a].filter((c) => [...b].includes(c))));
     }
-    return mergedResults;
+    console.log(resultVars);
+
+    // get triples for visual representation
+    const resultTriples = [];
+    for (var i = 0; i < allTriples.length; i++) {
+      allTriples[i].forEach((triple) => {
+        var add = true;
+        allJoinVars[i].forEach((joinVar, joinIndex) => {
+          var element = triple[joinIndex];
+          if (joinIndex === 2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) {
+            // if object
+            element = element - this.rdfcsa.gaps[2];
+          }
+          if (add && joinVar >= 0 && !resultVars[joinVar].has(element)) {
+            add = false;
+          }
+        });
+        if (add && JSON.stringify(resultTriples).indexOf(JSON.stringify(triple)) == -1) {
+          // javascript can't check if an array is in an array using includes
+          resultTriples.push(triple);
+        }
+      });
+    }
+    return resultTriples; // returns only visual representation
   }
 
   /**
@@ -421,80 +405,22 @@ export class QueryManager {
    */
   #getJoinVars(triple) {
     const joinVars = [];
-    if (triple.subject.isJoinVar) {
+    if (triple.subject && triple.subject.isJoinVar) {
       joinVars.push(triple.subject.id);
     } else {
       joinVars.push(-1);
     }
-    if (triple.predicate.isJoinVar) {
+    if (triple.predicate && triple.predicate.isJoinVar) {
       joinVars.push(triple.predicate.id);
     } else {
       joinVars.push(-1);
     }
-    if (triple.object.isJoinVar) {
+    if (triple.object && triple.object.isJoinVar) {
       joinVars.push(triple.object.id);
     } else {
       joinVars.push(-1);
     }
     return joinVars;
-  }
-
-  /**
-   * Intersects two given lists with triples by the in `joinElement` element.
-   * The resulting list contains the matching triples from both lists
-   * @param {Triple[]} l1
-   * @param {Triple[]} l2
-   * @param {string} joinElement:
-   *    S: Join on subject
-   *    O: Join on Object
-   *    SO: Join Subject of `l1` on Object of `l2`
-   *    OS: Join Object of `l1` on Subject of `l2`
-   */
-  #intersectTwoResultLists(l1, l2, joinElement) {
-    const resultList = [];
-    switch (joinElement) {
-      case "S":
-        l1.forEach((triple1) => {
-          l2.forEach((triple2, index) => {
-            if (triple2.subject === triple1.subject) {
-              resultList.push(triple1);
-              resultList.push(triple2);
-              // CHECK: pop of triple2 from l2 faster, to reduce nessecary iterations
-            }
-          });
-        });
-        break;
-      case "O":
-        l1.forEach((triple1) => {
-          l2.forEach((triple2) => {
-            if (triple2.object === triple1.object) {
-              resultList.push(triple1);
-              resultList.push(triple2);
-            }
-          });
-        });
-        break;
-      case "SO":
-        l1.forEach((triple1) => {
-          l2.forEach((triple2) => {
-            if (triple2.object === triple1.subject) {
-              resultList.push(triple1);
-              resultList.push(triple2);
-            }
-          });
-        });
-        break;
-      case "OS":
-        l1.forEach((triple1) => {
-          l2.forEach((triple2) => {
-            if (triple2.subject === triple1.object) {
-              resultList.push(triple1);
-              resultList.push(triple2);
-            }
-          });
-        });
-    }
-    return resultList;
   }
 
   /**
@@ -506,7 +432,7 @@ export class QueryManager {
    * @param {QueryTriple} query
    * @returns {number} possible choices are 0,1,2,3
    */
-  #getQueryType(query) {
+  #getQueryTripleResult(query) {
     var countUnbound = 0;
     // evaluate subject
     if (query.subject === null || query.subject.isJoinVar) {
@@ -520,7 +446,16 @@ export class QueryManager {
     if (query.object === null || query.object.isJoinVar) {
       countUnbound += 1;
     }
-    return countUnbound;
+    switch (countUnbound) {
+      case 0:
+        return this.getBoundTriple(this.#createNormalQueryFromJoinQuery(query));
+      case 1:
+        return this.getOneUnboundTriple(this.#createNormalQueryFromJoinQuery(query));
+      case 2:
+        return this.getTwoUnboundTriple(this.#createNormalQueryFromJoinQuery(query));
+      default:
+        return this.getAllTriples();
+    }
   }
 
   /**

@@ -269,10 +269,9 @@ const FilterForm = () => {
                               <InputLabel id="sort-label">Sort order</InputLabel>
                               <Select
                                 labelId="sort-label"
-                                defaultValue=""
+                                defaultValue="ascending"
                                 onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortOrderObject(event)}
                               >
-                                <MenuItem value="">-----</MenuItem>
                                 <MenuItem value="ascending">Ascending</MenuItem>
                                 <MenuItem value="descending">Descending</MenuItem>
                               </Select>
@@ -286,10 +285,9 @@ const FilterForm = () => {
                                   <InputLabel id="sort-label">Sorting element</InputLabel>
                                   <Select
                                     labelId="sort-label"
-                                    defaultValue=""
+                                    defaultValue="subject"
                                     onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}
                                   >
-                                    <MenuItem value="">-----</MenuItem>
                                     <MenuItem value="subject">Subject</MenuItem>
                                     <MenuItem value="predicate">Predicate</MenuItem>
                                     <MenuItem value="object">Object</MenuItem>

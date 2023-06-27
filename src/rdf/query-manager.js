@@ -55,7 +55,6 @@ export class QueryManager {
    * @returns {Triple[]}
    */
   getAllTriples() {
-    // TODO: return all triples
     const tripleList = [];
     for (let i = 0; i < this.rdfcsa.psi.length / 3; i++) {
       // find the next referenced element
@@ -260,7 +259,7 @@ export class QueryManager {
   leftChainingJoinTwoQueries(queries) {
     let result1;
     result1 = this.#getQueryTripleResult(queries[0]);
-    
+
     // find query var in left triple
 
     let result2 = [];
@@ -327,11 +326,11 @@ export class QueryManager {
     //TODO: Check whether set is faster
     //TODO: Investigate further use of exact join vars
     // console.log(queries)
-    const varAssignmentByQuery = []
+    const varAssignmentByQuery = [];
     var maxJoinVar = -1; // number of JoinVars
-    var resultVars = [] // possible assignments for joinVars
-    var allTriples = []
-    var allJoinVars = []
+    var resultVars = []; // possible assignments for joinVars
+    var allTriples = [];
+    var allJoinVars = [];
 
     // first determine all join vars given a single query
     queries.forEach((query, queryIndex) => {
@@ -339,29 +338,30 @@ export class QueryManager {
       const queryResult = this.#getQueryTripleResult(query);
       allTriples.push(queryResult);
       const queryJoinVars = this.#getJoinVars(query);
-      allJoinVars.push(queryJoinVars)
+      allJoinVars.push(queryJoinVars);
 
       // create set to hold possible joinVar assignments for every joinVar
       queryJoinVars.forEach((joinVar, joinIndex) => {
-        if(joinVar >= 0) {
+        if (joinVar >= 0) {
           maxJoinVar = Math.max(joinVar, maxJoinVar);
           if (varAssignmentByQuery[queryIndex][joinVar] === undefined) {
             varAssignmentByQuery[queryIndex][joinVar] = new Set();
           }
-      }
+        }
       });
 
       // save possible joinVars to the created set
       queryResult.forEach((triple) => {
         queryJoinVars.forEach((joinVar, joinIndex) => {
-          if(joinVar >= 0) {
-              var element = triple[joinIndex]
-              if(joinIndex===2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) { // if object
-                element = element - this.rdfcsa.gaps[2];
-              }
-              if(!varAssignmentByQuery[queryIndex][joinVar].has(element)){
-                varAssignmentByQuery[queryIndex][joinVar].add(element);
-              }
+          if (joinVar >= 0) {
+            var element = triple[joinIndex];
+            if (joinIndex === 2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) {
+              // if object
+              element = element - this.rdfcsa.gaps[2];
+            }
+            if (!varAssignmentByQuery[queryIndex][joinVar].has(element)) {
+              varAssignmentByQuery[queryIndex][joinVar].add(element);
+            }
           }
         });
       });
@@ -369,10 +369,10 @@ export class QueryManager {
 
     // merge join vars
     for (var i = 0; i <= maxJoinVar; i++) {
-      var result1 = varAssignmentByQuery.map(x => x[i]).filter(element => element !== undefined)
-      resultVars[i] = new Set(result1.reduce((a, b) => [...a].filter(c => [...b].includes(c))))
+      var result1 = varAssignmentByQuery.map((x) => x[i]).filter((element) => element !== undefined);
+      resultVars[i] = new Set(result1.reduce((a, b) => [...a].filter((c) => [...b].includes(c))));
     }
-    console.log(resultVars)
+    console.log(resultVars);
 
     // get triples for visual representation
     const resultTriples = [];
@@ -380,15 +380,17 @@ export class QueryManager {
       allTriples[i].forEach((triple) => {
         var add = true;
         allJoinVars[i].forEach((joinVar, joinIndex) => {
-          var element = triple[joinIndex]
-          if(joinIndex===2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) { // if object
+          var element = triple[joinIndex];
+          if (joinIndex === 2 && this.rdfcsa.dictionary.isSubjectObjectById(element)) {
+            // if object
             element = element - this.rdfcsa.gaps[2];
           }
-          if(add && joinVar >= 0 && !resultVars[joinVar].has(element)) {
+          if (add && joinVar >= 0 && !resultVars[joinVar].has(element)) {
             add = false;
           }
         });
-        if(add && JSON.stringify(resultTriples).indexOf(JSON.stringify(triple)) == -1) {  // javascript can't check if an array is in an array using includes
+        if (add && JSON.stringify(resultTriples).indexOf(JSON.stringify(triple)) == -1) {
+          // javascript can't check if an array is in an array using includes
           resultTriples.push(triple);
         }
       });

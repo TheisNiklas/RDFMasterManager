@@ -23,9 +23,9 @@ describe.skip("Rdfcsa Performance", () => {
       const data = dataset;
       let rdfcsa = new RdfcsaOld(data);
       const end = performance.now();
-      times.push(end-start)
+      times.push(end - start);
     }
-    expect(times).toEqual([])
+    expect(times).toEqual([]);
   });
 
   // Result:
@@ -41,14 +41,13 @@ describe.skip("Rdfcsa Performance", () => {
       const data = dataset;
       let rdfcsa = new RdfcsaNew(data);
       const end = performance.now();
-      times.push(end-start)
+      times.push(end - start);
     }
-    expect(times).toEqual([])
+    expect(times).toEqual([]);
   });
 });
 
 describe.skip("Dictionary Performance", () => {
-
   // Result:
   //  2244.7050000000745,
   //  2242.3101000003517,
@@ -63,9 +62,9 @@ describe.skip("Dictionary Performance", () => {
       const data = dataset;
       dictionary.createDictionaries(data);
       const end = performance.now();
-      times.push(end-start)
+      times.push(end - start);
     }
-    expect(times).toEqual([])
+    expect(times).toEqual([]);
   });
 
   // Result:
@@ -83,8 +82,8 @@ describe.skip("Dictionary Performance", () => {
       const data = dataset;
       dictionary.createDictionariesNew(data);
       const end = performance.now();
-      times.push(end-start)
+      times.push(end - start);
     }
-    expect(times).toEqual([])
+    expect(times).toEqual([]);
   });
 });

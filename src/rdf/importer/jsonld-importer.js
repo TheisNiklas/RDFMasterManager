@@ -3,7 +3,7 @@ import { JsonLdParser } from "jsonld-streaming-parser";
 
 export class JsonldImporter extends Importer {
   /**
-   *
+   * Reads in a file and extracts the triples
    * @param {File} file
    * @returns
    */

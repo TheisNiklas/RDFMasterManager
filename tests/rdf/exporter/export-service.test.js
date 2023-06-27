@@ -71,5 +71,5 @@ describe("ExportService", () => {
   test("getAvailableExporters", () => {
     const result = exportService.getAvailableExporters();
     expect(result).toEqual(["N-Triples", "JSON-LD", "Turtle"]);
-  })
+  });
 });

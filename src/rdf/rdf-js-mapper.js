@@ -1,5 +1,9 @@
 import { Quad, NamedNode } from "n3";
 
+/**
+ * Class for mapping internat triple format to Rdf.js
+ * Used in import and export.
+ */
 export class RdfJsMapper {
   /**
    * Map a Rdf.js quad to the internally used format

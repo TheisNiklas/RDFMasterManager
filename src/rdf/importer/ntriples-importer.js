@@ -4,7 +4,7 @@ import { RdfJsMapper } from "../rdf-js-mapper";
 
 export class NTriplesImporter extends Importer {
   /**
-   *
+   * Reads in a file and extracts the triples
    * @param {File} file
    * @returns
    */

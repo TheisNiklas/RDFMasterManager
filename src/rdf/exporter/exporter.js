@@ -1,7 +1,7 @@
 export class Exporter {
   constructor() {}
   /**
-   * Export a given triple list to a file
+   * Export a given triple list to a string
    * @param {string[][]} tripleList
    * @returns {_Readable._Writable}
    */

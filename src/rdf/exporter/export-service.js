@@ -1,18 +1,15 @@
-import { Dictionary } from "../dictionary";
-import { Exporter } from "./exporter";
-import { Triple } from "../models/triple";
 import { NTriplesExporter } from "./ntriples-exporter";
 import { TurtleExporter } from "./turtle-exporter";
 import { JsonldExporter } from "./jsonld-exporter";
 import { saveAs } from "file-saver";
 
+/**
+ * Service for handling the exports
+ */
 export class ExportService {
   /** @type {{[key: string]: Exporter}} */
   #exporters = {};
 
-  /**
-   * Service for handling the exports
-   */
   constructor() {
     this.registerExporter(new NTriplesExporter(), ["N-Triples"], "nt", "application/n-triples");
     this.registerExporter(new JsonldExporter(), ["JSON-LD"], "jsonld", "application/ld+json", true);
@@ -88,7 +85,12 @@ export class ExportService {
     if (exporter.exportTriples === undefined) {
       throw Error("The given exporter is not based on the interface class Importer or StreamImporter");
     }
-    this.#exporters[exporterFormat] = {instance: exporter, extension: extension, isStreamExporter: isStreamExporter, mimeType: mimeType};
+    this.#exporters[exporterFormat] = {
+      instance: exporter,
+      extension: extension,
+      isStreamExporter: isStreamExporter,
+      mimeType: mimeType,
+    };
   }
 
   /**
@@ -110,15 +112,16 @@ export class ExportService {
   }
 
   /**
-   * 
-   * @param {string} format 
+   * Gets the exporter for a given filetype
+   * @param {string} format
    * @returns {{instance: Exporter, extension: string, isStreamExporter: boolean, mimeType: string}}
+   * @throws {Error} if no matching exporter found
    */
   #getExporter(format) {
     let exporter = this.#exporters[format];
     if (exporter === undefined) {
       throw Error(
-        `No exporter available for format ${format} in category ${isStreamExporter ? "normal" : "streaming"}`
+        `No exporter available for format ${format} in category ${exporter.isStreamExporter ? "normal" : "streaming"}`
       );
     }
     return exporter;

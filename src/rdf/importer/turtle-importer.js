@@ -3,7 +3,7 @@ import { Importer } from "./importer";
 
 export class TurtleImporter extends Importer {
   /**
-   *
+   * Reads in a file and extracts the triples
    * @param {File} file
    * @returns {string[][]}
    */

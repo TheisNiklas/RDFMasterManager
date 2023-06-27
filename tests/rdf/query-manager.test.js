@@ -2,13 +2,13 @@ import { Rdfcsa } from "../../src/rdf/rdfcsa";
 import { QueryManager } from "../../src/rdf/query-manager";
 import { QueryElement } from "../../src/rdf/models/query-element";
 import { QueryTriple } from "../../src/rdf/models/query-triple";
-import { tripleList } from "./fixtures/rdfcsa.test.json";
+import { paperSample } from "./fixtures/rdfcsa.test.json";
 import { Triple } from "../../src/rdf/models/triple";
 
 describe("QueryManager", () => {
   let queryManager;
   beforeEach(() => {
-    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(tripleList)));
+    let rdfcsa = new Rdfcsa(JSON.parse(JSON.stringify(paperSample.tripleList)), true);
     queryManager = new QueryManager(rdfcsa);
   });
   test("getBoundTriple(0,9,12)", () => {
@@ -206,10 +206,7 @@ describe("QueryManager", () => {
     const object1 = new QueryElement(0, true);
     const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
-    expect(new Set(result)).toEqual(new Set([
-      new Triple(3, 7, 15),
-      new Triple(4, 7, 15),
-    ]));
+    expect(new Set(result)).toEqual(new Set([new Triple(3, 7, 15), new Triple(4, 7, 15)]));
   });
 
   /**
@@ -225,14 +222,16 @@ describe("QueryManager", () => {
     const object1 = null;
     const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
-    expect(new Set(result)).toEqual(new Set([
-      new Triple(0,9,12),
-      new Triple(2,5,11),
-      new Triple(3,5,11),
-      new Triple(3,10,12),
-      new Triple(4,5,11),
-      new Triple(1,8,15)
-    ]));
+    expect(new Set(result)).toEqual(
+      new Set([
+        new Triple(0, 9, 12),
+        new Triple(2, 5, 11),
+        new Triple(3, 5, 11),
+        new Triple(3, 10, 12),
+        new Triple(4, 5, 11),
+        new Triple(1, 8, 15),
+      ])
+    );
   });
   /**
    * Return all subjects that have a relation to an object that is also a subject that has a relation to the initial subject
@@ -247,30 +246,36 @@ describe("QueryManager", () => {
     const object1 = new QueryElement(0, true);
     const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
-    expect(result).toEqual([
-      new Triple(0,9,12),
-    ]);
+    expect(result).toEqual([new Triple(0, 9, 12)]);
   });
 
   /**
-  * Testing more complex joins with three variables
-  * ?x appears in ?y
-  * ?x lives in ?z
-  * ?y filmed in ?z
-  * x={J.Gordon}
-  * y={Inception}
-  * z={L.A.}
-  */
+   * Testing more complex joins with three variables
+   * ?x appears in ?y
+   * ?x lives in ?z
+   * ?y filmed in ?z
+   * x={J.Gordon}
+   * y={Inception}
+   * z={L.A.}
+   */
   test("getJoin(?x,5,?y)(?x,10,?z)(?y,9,?z)", () => {
-    const firstQueryTriple = new QueryTriple(new QueryElement(0, true), new QueryElement(5, false), new QueryElement(1, true));
-    const secondQueryTriple = new QueryTriple(new QueryElement(0, true), new QueryElement(10, false), new QueryElement(2, true));
-    const thirdQueryTriple = new QueryTriple(new QueryElement(1, true), new QueryElement(9, false), new QueryElement(2, true));
+    const firstQueryTriple = new QueryTriple(
+      new QueryElement(0, true),
+      new QueryElement(5, false),
+      new QueryElement(1, true)
+    );
+    const secondQueryTriple = new QueryTriple(
+      new QueryElement(0, true),
+      new QueryElement(10, false),
+      new QueryElement(2, true)
+    );
+    const thirdQueryTriple = new QueryTriple(
+      new QueryElement(1, true),
+      new QueryElement(9, false),
+      new QueryElement(2, true)
+    );
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple, thirdQueryTriple]);
-    expect(new Set(result)).toEqual(new Set([
-      new Triple(3,10,12),
-      new Triple(3,5,11),
-      new Triple(0,9,12)
-    ]));
+    expect(new Set(result)).toEqual(new Set([new Triple(3, 10, 12), new Triple(3, 5, 11), new Triple(0, 9, 12)]));
   });
 
   /**
@@ -281,36 +286,50 @@ describe("QueryManager", () => {
    */
   test("getJoin(4,5,)(0,9,12)", () => {
     const firstQueryTriple = new QueryTriple(new QueryElement(4, false), new QueryElement(5, false), null);
-    const secondQueryTriple = new QueryTriple(new QueryElement(0, false), new QueryElement(9, false), new QueryElement(12, false));
+    const secondQueryTriple = new QueryTriple(
+      new QueryElement(0, false),
+      new QueryElement(9, false),
+      new QueryElement(12, false)
+    );
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple]);
-    expect(new Set(result)).toEqual(new Set([
-      new Triple(4,5,11),
-      new Triple(0,9,12),
-    ]));
+    expect(new Set(result)).toEqual(new Set([new Triple(4, 5, 11), new Triple(0, 9, 12)]));
   });
 
   /**
-  * Testing UNION
-  * ?x appears in Inception
-  * ?x awarded Oscar 2015
-  * ?y appears in Inception
-  * ?y born in USA
-  * RESULT: Everyone who appeared in Inception and (got awarded an Oscar 2015 or born in USA)
-  * x=L. DiCaprio
-  * y=J. Gordon
-  */
+   * Testing UNION
+   * ?x appears in Inception
+   * ?x awarded Oscar 2015
+   * ?y appears in Inception
+   * ?y born in USA
+   * RESULT: Everyone who appeared in Inception and (got awarded an Oscar 2015 or born in USA)
+   * x=L. DiCaprio
+   * y=J. Gordon
+   */
   test("getJoin(?x,5,11)(?x,6,14)(?y,5,11)(?y,10,12)", () => {
-    const firstQueryTriple = new QueryTriple(new QueryElement(0, true), new QueryElement(5, false), new QueryElement(11, false));
-    const secondQueryTriple = new QueryTriple(new QueryElement(0, true), new QueryElement(6, false), new QueryElement(14, false));
-    const thirdQueryTriple = new QueryTriple(new QueryElement(1, true), new QueryElement(5, false), new QueryElement(11, false));
-    const fourthQueryTriple = new QueryTriple(new QueryElement(1, true), new QueryElement(10, false), new QueryElement(12, false));
+    const firstQueryTriple = new QueryTriple(
+      new QueryElement(0, true),
+      new QueryElement(5, false),
+      new QueryElement(11, false)
+    );
+    const secondQueryTriple = new QueryTriple(
+      new QueryElement(0, true),
+      new QueryElement(6, false),
+      new QueryElement(14, false)
+    );
+    const thirdQueryTriple = new QueryTriple(
+      new QueryElement(1, true),
+      new QueryElement(5, false),
+      new QueryElement(11, false)
+    );
+    const fourthQueryTriple = new QueryTriple(
+      new QueryElement(1, true),
+      new QueryElement(10, false),
+      new QueryElement(12, false)
+    );
     const result = queryManager.getTriples([firstQueryTriple, secondQueryTriple, thirdQueryTriple, fourthQueryTriple]);
-    expect(new Set(result)).toEqual(new Set([
-      new Triple(4,5,11),
-      new Triple(4,6,14),
-      new Triple(3,5,11),
-      new Triple(3,10,12)
-    ]));
+    expect(new Set(result)).toEqual(
+      new Set([new Triple(4, 5, 11), new Triple(4, 6, 14), new Triple(3, 5, 11), new Triple(3, 10, 12)])
+    );
   });
 
   test("leftChainingJoinTwoQueries(x,5,11)(x,7,15)", () => {

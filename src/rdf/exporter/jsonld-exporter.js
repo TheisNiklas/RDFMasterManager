@@ -4,7 +4,7 @@ import { JsonLdSerializer } from "jsonld-streaming-serializer";
 
 export class JsonldExporter extends StreamExporter {
   /**
-   * Export a given triple list to a file
+   * Export a given triple list to a stream
    * @param {string[][]} tripleList
    * @returns {}
    */

@@ -1,7 +1,7 @@
 export class StreamExporter {
   constructor() {}
   /**
-   * WIP: may never be used
+   * Export a given triple list to a stream
    * @param {string[][]} tripleList
    */
   exportTriples(tripleList) {}

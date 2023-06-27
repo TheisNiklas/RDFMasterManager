@@ -9,4 +9,4 @@ describe("NTriplesExporter", () => {
 
     expect(result).toEqual(expectedResult);
   });
-})
+});

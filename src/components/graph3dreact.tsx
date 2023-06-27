@@ -147,10 +147,10 @@ export default function Graph3DReact() {
   };
 
   /**
- * Show a toast msg.
- * @param msg Message that should be displayed
- * @param type Type of the toast. Valid types are: success, warning, error.
- */
+   * Show a toast msg.
+   * @param msg Message that should be displayed
+   * @param type Type of the toast. Valid types are: success, warning, error.
+   */
   const showToast = (msg: string, type: string) => {
     switch (type) {
       case "success":
@@ -193,7 +193,7 @@ export default function Graph3DReact() {
    * Update database. Query all triples.
    * @param newDatabase Updated database
    */
-  const updateDatabase = (newDatabase) => {
+  const updateCurrentData = (newDatabase) => {
     if (newDatabase.tripleCount < 10000) {
       // Query new data
       const queryManager = new QueryManager(newDatabase);
@@ -207,7 +207,6 @@ export default function Graph3DReact() {
       dispatch(setGraphData(newDatabase, currentData));
     }
   }
-
 
 
   /**
@@ -229,7 +228,7 @@ export default function Graph3DReact() {
 
     setOpenNodeLeft(false);
 
-    updateDatabase(newDatabase);
+    updateCurrentData(newDatabase);
 
   };
 
@@ -250,7 +249,7 @@ export default function Graph3DReact() {
     const newDatabase = rdfOperations.modifyTriple(tripleToModify, linkSourceName, linkName, linkTargetName);
     dispatch(setDatabase(newDatabase));
 
-    updateDatabase(newDatabase);
+    updateCurrentData(newDatabase);
 
     showToast("Successfully renamed triple", "success");
 
@@ -268,7 +267,7 @@ export default function Graph3DReact() {
     const newDatabase = rdfOperations.deleteTriple(tripleToDelete);
     dispatch(setDatabase(newDatabase as Rdfcsa));
 
-    updateDatabase(newDatabase);
+    updateCurrentData(newDatabase);
 
     showToast("Successfully deleted triple", "success");
 
@@ -284,7 +283,7 @@ export default function Graph3DReact() {
     const newDatabase = rdfOperations.deleteElementInDictionary(nodeId);
     dispatch(setDatabase(newDatabase as Rdfcsa));
 
-    updateDatabase(newDatabase);
+    updateCurrentData(newDatabase);
 
     showToast("Successfully deleted node", "success");
 

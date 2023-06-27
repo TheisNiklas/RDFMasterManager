@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ */
+
 import { Importer } from "./importer";
 import { JsonLdParser } from "jsonld-streaming-parser";
 

@@ -1,3 +1,11 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Svea Worms
+ * Xaver Steinsmeier
+ */
+
 import { Triple } from "./models/triple";
 
 /**

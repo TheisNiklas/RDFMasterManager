@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ */
+
 import { Writer } from "n3";
 import { RdfJsMapper } from "../rdf-js-mapper";
 import { Exporter } from "./exporter";

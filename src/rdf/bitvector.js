@@ -1,3 +1,10 @@
+/**
+ * Contributions made by:
+ * Svea Worms
+ * Tobias Kaps
+ * Niklas Theis
+ */
+
 export class BitVector {
   /**
    * bits representing the bitvector as array of elements of type Uint32
@@ -25,9 +32,9 @@ export class BitVector {
       return 0;
     }
     // get the elment of the array bits, where the index is saved in
-    let element = Math.floor(index / (this.bitsPerElement));
+    let element = Math.floor(index / this.bitsPerElement);
     // create a mask, which includes a 1 at index, else 0
-    const mask = 1 << index % (this.bitsPerElement);
+    const mask = 1 << index % this.bitsPerElement;
     // get the index's value
     return (this.bits[element] & mask) === 0 ? 0 : 1;
   }
@@ -43,11 +50,11 @@ export class BitVector {
       let element = Math.floor(index / this.bitsPerElement);
       // if element is outside of bits array, add new elment to bits
       if (element >= this.arrayLength) {
-        this.#addNewIntElement(element+1);
+        this.#addNewIntElement(element + 1);
       }
       // increase superblocks at element by 1
-      this.superblocks[element]+=1;
-      // set bits at element at index to 1 
+      this.superblocks[element] += 1;
+      // set bits at element at index to 1
       this.bits[element] |= 1 << index % this.bitsPerElement;
     }
   }
@@ -65,7 +72,7 @@ export class BitVector {
       }
       // get the elment of the array bits, where the index is saved in
       let element = Math.floor(index / this.bitsPerElement);
-      // set bits at element at index to 1 
+      // set bits at element at index to 1
       this.bits[element] &= ~(1 << index % this.bitsPerElement);
       // decrease superblocks at element by 1
       this.superblocks[element] -= 1;
@@ -79,7 +86,7 @@ export class BitVector {
    */
   rank(index) {
     // get the elment of the array bits, where the index is saved in
-    let element = Math.floor(index / (this.bitsPerElement));
+    let element = Math.floor(index / this.bitsPerElement);
     // if element is outside of bits array, set index to last index of BitVector
     if (element >= this.arrayLength) {
       index = this.arrayLength * this.bitsPerElement - 1;
@@ -108,20 +115,20 @@ export class BitVector {
   select(count) {
     // check if count is valid
     if (count >= 0) {
-      // check if count is equal to 0 
+      // check if count is equal to 0
       if (count === 0) {
-          return 0;
+        return 0;
       }
       // define element
       let element = 0;
 
-      // check if count - superblock at element is greater than 0, 
+      // check if count - superblock at element is greater than 0,
       // than decrease count by superblocks at element and increase element by 1
       while (count - this.superblocks[element] > 0) {
         count -= this.superblocks[element];
         element++;
       }
-      
+
       // foreach index in bits starting by element, decrease count by value of index until count equals 0
       for (let index = this.bitsPerElement * element; index < this.toString().length; index++) {
         count -= this.getBit(index);
@@ -145,7 +152,7 @@ export class BitVector {
 
       // create shifted subpart of current element in bits
       // get the length to be shifted
-      let length = this.bitsPerElement - 1-  (index % this.bitsPerElement);
+      let length = this.bitsPerElement - 1 - (index % this.bitsPerElement);
       // create a mask, where 1 are at the indices to shift
       const mask = ((1 << length) - 1) << index % this.bitsPerElement;
       // get subpart of element of bits
@@ -164,14 +171,13 @@ export class BitVector {
       let stop = false;
       // foreach i in bits array do shifting
       for (let i = element + 1; i <= this.arrayLength; i++) {
-        // check if i is not in array 
+        // check if i is not in array
         if (i === this.arrayLength) {
           //if no new element is already added to bits and the prelastbit equals 0, add new array element
           if (!stop && prelastbit > 0) {
             this.#addNewIntElement(this.arrayLength + 1);
             stop = true;
-          }
-          else{
+          } else {
             return;
           }
         }
@@ -198,7 +204,7 @@ export class BitVector {
     // check if index is valid
     if (index < this.toString().length) {
       // get the elment of the array bits, where the index is saved in
-      let element = Math.floor(index / (this.bitsPerElement));
+      let element = Math.floor(index / this.bitsPerElement);
 
       // get value of bit to be deleted and edit superblocks
       if (this.getBit(index) === 1) {
@@ -207,42 +213,45 @@ export class BitVector {
 
       // create shifted subpart of current element in bits
       // get the length to be shifted
-      let length = this.bitsPerElement -1 - (index % (this.bitsPerElement));
+      let length = this.bitsPerElement - 1 - (index % this.bitsPerElement);
       // define mask
       let mask = 0;
       // if index is last saved 1
-      if (element === this.arrayLength-1 && this.bits[element] < 2**this.bitsPerElement-2**(this.bitsPerElement-1)){
+      if (
+        element === this.arrayLength - 1 &&
+        this.bits[element] < 2 ** this.bitsPerElement - 2 ** (this.bitsPerElement - 1)
+      ) {
         // create a mask, where 1 are at the indices to shift
-        mask = ((1 << length) - 1) << (index % (this.bitsPerElement));
-      }
-      else {
+        mask = ((1 << length) - 1) << index % this.bitsPerElement;
+      } else {
         // create a mask, where 1 are at the indices to shift
-        mask = ((1 << length) - 1) << (index % (this.bitsPerElement)) + 1;
+        mask = ((1 << length) - 1) << ((index % this.bitsPerElement) + 1);
       }
       // get subpart of element of bits
-      const subpart = (this.bits[element] & mask) >>> index % (this.bitsPerElement);
+      const subpart = (this.bits[element] & mask) >>> index % this.bitsPerElement;
       // right shift subpart by one
       let shiftedSubpart = subpart >> 1;
 
       // define bit
       let bit = 0;
-      // if element is not last element of bits, 
+      // if element is not last element of bits,
       // get the first bit of next element and edit superblocks
       if (element < this.arrayLength - 1) {
         bit = this.bits[element + 1] & 1;
         this.superblocks[element] += bit;
         this.superblocks[element + 1] -= bit;
       }
-      
+
       // define the count of shifting
-      let shift = this.bitsPerElement-1;
+      let shift = this.bitsPerElement - 1;
       // if element is last element of bits, edit shift
-      if (element === this.arrayLength -1){
+      if (element === this.arrayLength - 1) {
         // shift = length of last element -1
         shift = (index % this.bitsPerElement) - 1;
       }
       // shift the number "shift" bits to the right, add the not shifted part and add the first bit of the next element or 0
-      this.bits[element] = (this.bits[element] & ~mask) | (shiftedSubpart << index % (this.bitsPerElement)) | (bit << shift);
+      this.bits[element] =
+        (this.bits[element] & ~mask) | (shiftedSubpart << index % this.bitsPerElement) | (bit << shift);
 
       // foreach i in bits array do shifting
       for (let i = element + 1; i < this.arrayLength; i++) {
@@ -260,24 +269,24 @@ export class BitVector {
             this.superblocks[i + 1] -= 1;
           }
         }
-        
-        let shift = this.bitsPerElement-1;
+
+        let shift = this.bitsPerElement - 1;
         // if element is last element of bits, edit shift
-        if (i === this.arrayLength -1){
+        if (i === this.arrayLength - 1) {
           // shift = length of last element -1
           shift = (index % this.bitsPerElement) - 1;
         }
         // shift the number "shift" bits to the right and add the first bit of the next element or 0
         this.bits[i] = (nextfirstbit << shift) | (this.bits[i] >> 1);
-    }
-    // delete all not used elements in bits array
-    this.#deleteUnusedIntElements()
+      }
+      // delete all not used elements in bits array
+      this.#deleteUnusedIntElements();
     }
   }
 
   /**
    * Add new element to bits array until newArrayLength is reached
-   * @param {*} newArrayLength 
+   * @param {*} newArrayLength
    */
   #addNewIntElement(newArrayLength) {
     // define array
@@ -298,9 +307,9 @@ export class BitVector {
 
   /**
    * Delete as much element in bits as not used at the end
-   * @param {*} newArrayLength 
+   * @param {*} newArrayLength
    */
-  #deleteUnusedIntElements(){
+  #deleteUnusedIntElements() {
     let newArrayLength = this.arrayLength;
     // check if lat element of bits array is empty and not the first element
     while (this.bits[newArrayLength - 1] === 0 && newArrayLength > 1) {
@@ -311,20 +320,19 @@ export class BitVector {
     }
 
     // check if elements has to be removed
-    if (newArrayLength < this.arrayLength){
+    if (newArrayLength < this.arrayLength) {
       // define array
       let array = [];
       // add element until index lower than newArrayLength
-      for (let index = 0; index < newArrayLength; index++)
-      {
+      for (let index = 0; index < newArrayLength; index++) {
         array.push(this.bits[index]);
       }
       // edit arrayLength
       this.arrayLength = newArrayLength;
       // set bits to new array
       this.bits = new Uint32Array(array);
-      }
     }
+  }
 
   /**
    *  Printing bits as string. Used for debugging

@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ */
+
 import { Quad, NamedNode, Literal } from "n3";
 
 /**
@@ -38,7 +44,7 @@ export class RdfJsMapper {
   static internalToRdfJs(triple) {
     let object = new NamedNode(triple[2]);
     if (!this.iriRegex.test(triple[2])) {
-      object = new Literal("\"" + triple[2] + "\"");
+      object = new Literal('"' + triple[2] + '"');
     }
     return new Quad(new NamedNode(triple[0]), new NamedNode(triple[1]), object);
   }

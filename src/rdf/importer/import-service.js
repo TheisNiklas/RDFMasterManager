@@ -1,3 +1,11 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ * Svea Worms
+ */
+
 import { Importer } from "./importer";
 import { JsonldImporter } from "./jsonld-importer";
 import { NTriplesImporter } from "./ntriples-importer";

@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ */
+
 import { RdfJsMapper } from "../rdf-js-mapper";
 import { StreamExporter } from "./stream-exporter";
 import { JsonLdSerializer } from "jsonld-streaming-serializer";

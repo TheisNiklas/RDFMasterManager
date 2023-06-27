@@ -60,6 +60,10 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
   },
 }));
 
+/**
+ * Import a database from a file
+ * @returns React Component Import
+ */
 const Import = () => {
   const dispatch = useDispatch();
   const [toastOpen, setToastOpen] = React.useState(false);
@@ -82,6 +86,23 @@ const Import = () => {
     setUseJsBitvector(event.target.checked);
   };
 
+  // Update current data if triple count is below 10k. Show toast if current data wasnt updated.
+  const updateCurrentData = (rdfcsa) => {
+    if (rdfcsa.tripleCount < 10000) {
+      const queryManager = new QueryManager(rdfcsa);
+      const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+      dispatch(setCurrentData(data));
+    } else if (replaceDatabase) {
+      // Don't query for better usability
+      setToastMessage("Data not displayed. Exceeds 10k triples. Query manually");
+      setToastOpen(true);
+      dispatch(setCurrentData([]));
+    } else {
+      setToastMessage("Additional data not displayed. Exceeds 10k triples. Query manually");
+      setToastOpen(true);
+    }
+  }
+
   //To start the data input for attaching to or replacing the old triple data
   const userImportRequest = () => {
     const fileInput = document.createElement("input");
@@ -96,16 +117,7 @@ const Import = () => {
         setOpen(true);
       } else {
         dispatch(setDatabase(rdfcsa));
-        if (rdfcsa.tripleCount < 10000) {
-          // TODO: include in config
-          const queryManager = new QueryManager(rdfcsa);
-          const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-          dispatch(setCurrentData(data));
-        } else if (replaceDatabase) {
-          setToastMessage("Data not displayed. Exceeds 10k triples.");
-          setToastOpen(true);
-          dispatch(setCurrentData([]));
-        }
+        updateCurrentData(rdfcsa);
         setOpen(false);
       }
     });
@@ -116,10 +128,12 @@ const Import = () => {
   //State for the Dialog to open
   const [open, setOpen] = React.useState(false);
 
+  // Close popup
   const handleToastClose = () => {
     setToastOpen(false);
   };
 
+  // Close popup
   const handleClose = () => {
     setOpen(false);
   };

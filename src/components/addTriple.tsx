@@ -1,9 +1,9 @@
 /**
  * Contributions made by:
- * Niklas Theis
  * Tobias Kaps
  * Bjarne Küper
  * Karl Neitmann
+ * Niklas Theis
  */
 
 import React, { ChangeEvent, useState } from "react";

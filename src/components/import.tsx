@@ -1,9 +1,9 @@
 /**
  * Contributions made by:
- * Niklas Theis
  * Tobias Kaps
  * Kai Joshua Martin
  * Karl Neitmann
+ * Niklas Theis
  */
 
 import * as React from "react";

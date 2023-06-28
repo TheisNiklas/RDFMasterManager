@@ -1,8 +1,8 @@
 /**
  * Contributions made by:
- * Niklas Theis
  * Kai Joshua Martin
  * Karl Neitmann
+ * Niklas Theis
  */
 
 import { Box, FormControl, InputLabel, MenuItem, Select, styled } from "@mui/material";

@@ -1,8 +1,8 @@
 /**
  * Contributions made by:
- * Niklas Theis
  * Bjarne Küper
  * Kai Joshua Martin
+ * Niklas Theis
  */
 
 import { Container, Grid, Typography, TextField, Button, Snackbar, Alert } from "@mui/material";

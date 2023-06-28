@@ -1,9 +1,10 @@
 /**
  * Contributions made by:
- * Niklas Theis
+ * Sarah Flohr
  * Tobias Kaps
  * Karl Neitmann
  * Bjarne Küper
+ * Niklas Theis
  */
 
 import { Rdfcsa } from "../rdf/rdfcsa";

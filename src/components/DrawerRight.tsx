@@ -1,11 +1,11 @@
 /**
  * Contributions made by:
- * Niklas Theis
  * Tobias Kaps
  * Bjarne Küper
  * Kai Joshua Martin
  * Karl Neitmann
  * Sarah Flohr
+ * Niklas Theis
  */
 
 import * as React from "react";

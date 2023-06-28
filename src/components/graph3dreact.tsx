@@ -1,11 +1,11 @@
 /**
  * Contributions made by:
- * Niklas Theis
  * Tobias Kaps
  * Bjarne Küper
  * Karl Neitmann
  * Sarah Flohr
  * Kai Joshua Martin
+ * Niklas Theis
  */
 
 import dynamic from "next/dynamic";
@@ -31,8 +31,6 @@ import load_data from "./triple2graph";
 import { useEffect } from "react";
 import { QueryCall } from "../interface/query-call";
 import { setMainFrame } from "../actions";
-
-let widthValue = "30%";
 
 //No-SSR import because react-force-graph does not support SSR
 const NoSSRForceGraph3D = dynamic(() => import("../lib/NoSSRForceGraph3D"), {
@@ -102,6 +100,13 @@ export default function Graph3DReact() {
    */
   function validateMetaData() {
     for (const item of metaData) {
+      if (
+        database.dictionary.getElementById(item.predicate) === undefined ||
+        database.dictionary.getElementById(item.object) === undefined
+      ) {
+        updateMetaData(database);
+        return;
+      }
       const predicateValue = database.dictionary.getElementById(item.predicate).replace("METADATA:", "") as string;
       const objectValue = database.dictionary.getElementById(item.object).replace("METADATA:", "") as string;
       switch (predicateValue) {
@@ -174,17 +179,15 @@ export default function Graph3DReact() {
    * @param newDatabase Updated database
    */
   const updateMetaData = (newDatabase) => {
-    if (linkSourceName === "RDFCSA:METADATA") {
-      let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], newDatabase);
-      if (metaData) {
-        dispatch(setMetaData(metaData));
-      }
-
-      dispatch(setMainFrame("blank"));
-      setTimeout(function () {
-        dispatch(setMainFrame("3d"));
-      }, 1);
+    let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], newDatabase);
+    if (metaData) {
+      dispatch(setMetaData(metaData));
     }
+
+    dispatch(setMainFrame("blank"));
+    setTimeout(function () {
+      dispatch(setMainFrame("3d"));
+    }, 1);
   };
 
   /**
@@ -251,7 +254,9 @@ export default function Graph3DReact() {
 
     setOpenLinkLeft(false);
 
-    updateMetaData(newDatabase);
+    if (linkSourceName === "RDFCSA:METADATA") {
+      updateMetaData(newDatabase);
+    }
   };
 
   /**
@@ -268,7 +273,10 @@ export default function Graph3DReact() {
     showToast("Successfully deleted triple", "success");
 
     setOpenLinkLeft(false);
-    updateMetaData(newDatabase);
+
+    if (linkSourceName === "RDFCSA:METADATA") {
+      updateMetaData(newDatabase);
+    }
   };
 
   /**
@@ -285,7 +293,9 @@ export default function Graph3DReact() {
 
     setOpenNodeLeft(false);
 
-    updateMetaData(newDatabase);
+    if (linkSourceName === "RDFCSA:METADATA") {
+      updateMetaData(newDatabase);
+    }
   };
 
   // Close popup

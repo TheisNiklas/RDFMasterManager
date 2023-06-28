@@ -2,6 +2,7 @@
  * Contributions made by:
  * Niklas Theis
  * Tobias Kaps
+ * Karl Neitmann
  * Bjarne Küper
  */
 
@@ -34,7 +35,7 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     }
     let subjectValue = database.dictionary.getElementById(subject) as string;
 
-    //collect all nodes
+    //Collect all nodes
     if (objectOriginalId !== -1) {
       arrayNodes.push({ id: object, origId: objectOriginalId });
     } else {
@@ -42,7 +43,7 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     }
     arrayNodes.push({ id: subject, origId: triple.subject });
 
-    //generate links array
+    //Generate links array
     links.push({
       source: subject,
       target: object,
@@ -50,7 +51,7 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     });
   });
 
-  //make a set out of all collected nodes
+  //Make a set out of all collected nodes
   const resultNodes = [...new Map(arrayNodes.map((item: { id: string; origId: string }) => [item.id, item])).values()];
 
   resultNodes.forEach((node, index) => {
@@ -63,7 +64,7 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
     });
   });
 
-  //concatenate nodes and links array
+  //Concatenate nodes and links array
   const result = { nodes: nodes, links: links };
 
   return result;

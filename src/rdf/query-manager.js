@@ -273,7 +273,6 @@ export class QueryManager {
     queries.forEach((query) => {
       const queryJoinVars = this.#getJoinVars(query);
       allJoinVars.push(queryJoinVars);
-      console.log(allJoinVars);
       if (queryJoinVars[2] > 0 && this.rdfcsa.dictionary.isSubjectObjectById(queryJoinVars[2])) {
         queryJoinVars[2] = queryJoinVars[2] - this.rdfcsa.gaps[2];
       }
@@ -305,14 +304,14 @@ export class QueryManager {
       // perform queries for every possible variable assignment
       possibleSubjects.forEach((possibleSubject) => {
         possibleObjects.forEach((possibleObject) => {
-          if(possibleSubject !== null) {
+          if(possibleSubject !== null) { // make sure subject is in subject area
             if(possibleSubject > this.rdfcsa.gaps[1] && this.rdfcsa.dictionary.isSubjectObjectById(possibleSubject)) {
               console.log("Reduced: " + possibleSubject)
               possibleSubject = possibleSubject - this.rdfcsa.gaps[2];
             }
             possibleSubject = new QueryElement(possibleSubject, isJoinVarS);
           }
-          if(possibleObject != null) {
+          if(possibleObject != null) { // make sure object is in object area
             if(possibleObject < this.rdfcsa.gaps[2] && this.rdfcsa.dictionary.isSubjectObjectById(possibleObject)) {
               console.log("Enlarged: " + possibleObject)
               possibleObject = possibleObject + this.rdfcsa.gaps[2];
@@ -346,8 +345,7 @@ export class QueryManager {
       });
     });
 
-    console.log([...joinVars[0]])
-    console.log(allJoinVars)
+    console.log("JoinVars: " + [...joinVars[0]])
 
     // get triples for our visual representation
     const resultTriples = [];
@@ -357,10 +355,11 @@ export class QueryManager {
         allJoinVars[i].forEach((joinVar, joinIndex) => {
           var element = triple[joinIndex];
           if (joinIndex === 1 && this.rdfcsa.dictionary.isSubjectObjectById(element) && element > this.rdfcsa.gaps[1]) {
+            // if SO and at S position with value in O space subtract gap to get to S space
             element = element - this.rdfcsa.gaps[2];
           }
           if (joinIndex === 2 && this.rdfcsa.dictionary.isSubjectObjectById(element) && element < this.rdfcsa.gaps[2]) {
-            // if SO
+            // if SO and at O position with value in S space add gap to get to O space
             element = element + this.rdfcsa.gaps[2];
           }
           if (add && joinVar >= 0 && !joinVars[joinVar].has(element)) {

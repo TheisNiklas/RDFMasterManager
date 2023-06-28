@@ -90,12 +90,21 @@ export class BitVector {
     for (let j = 0; j < element; j++) {
       result += this.superblocks[j];
     }
+
+    // creat mask
+    const indexInElement = index % this.bitsPerElement
+    const mask = 2**(indexInElement+1)-1;
+    // get subpart of element of bits
+    const subpart = this.bits[element] & mask;
+    // get count of set bit in subparts
+    result += this.numberOfSetBits(subpart)
+
     // foreach i in bits at element less or equal to index, get value and at to result
-    for (let i = element * this.bitsPerElement; i <= index; i++) {
-      if (this.getBit(i) === 1) {
-        result += 1;
-      }
-    }
+    // for (let i = element * this.bitsPerElement; i <= index; i++) {
+    //   if (this.getBit(i) === 1) {
+    //     result2 += 1;
+    //   }
+    // }
 
     return result;
   }
@@ -154,8 +163,8 @@ export class BitVector {
       const shiftedSubpart = subpart << 1;
 
       // save bit that is shifted to next element
-      // shift the number 31 bits to the right to keep only the last bit
-      let prelastbit = (this.bits[element] >> 31) & 1;
+      // shift the number (this.bitsPerElement - 1) bits to the right to keep only the last bit
+      let prelastbit = (this.bits[element] >> (this.bitsPerElement - 1)) & 1;
 
       // set shifted and not shifted parts together
       this.bits[element] = (this.bits[element] & ~mask) | (shiftedSubpart << index % this.bitsPerElement);
@@ -181,8 +190,8 @@ export class BitVector {
           this.superblocks[i - 1] -= 1;
         }
         // save bit that is shifted to next element
-        // shift the number 31 bits to the right to keep only the last bit
-        let temp = (this.bits[i] >> 31) & 1;
+        // shift the number (this.bitsPerElement - 1) bits to the right to keep only the last bit
+        let temp = (this.bits[i] >> (this.bitsPerElement - 1)) & 1;
         // set bits at i to shifted bits (left shift) plus prelastbit
         this.bits[i] = (this.bits[i] << 1) | prelastbit;
         prelastbit = temp;
@@ -289,6 +298,7 @@ export class BitVector {
     // add new elements until newArrayLength is reached
     for (this.arrayLength; this.arrayLength <= newArrayLength - 1; this.arrayLength++) {
       array.push(0);
+      this.superblocks.push(0);
     }
     // set arrayLength
     this.arrayLength = newArrayLength;
@@ -341,5 +351,17 @@ export class BitVector {
       bitString += elementString;
     }
     return bitString;
+  }
+
+  numberOfSetBits(number)
+  {
+    // add pairs of bits
+    number = (number|0) - ((number >> 1) & 0x55555555);
+    // quads
+    number = (number & 0x33333333) + ((number >> 2) & 0x33333333);
+    // groups of 8
+    number = (number + (number >> 4)) & 0x0F0F0F0F;
+    // horizontal sum of bytes
+    return (number * 0x01010101) >> 24;
   }
 }

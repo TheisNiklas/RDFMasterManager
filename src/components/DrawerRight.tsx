@@ -1,3 +1,13 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ * Kai Joshua Martin
+ * Karl Neitmann
+ * Sarah Flohr
+ */
+
 import * as React from "react";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -18,23 +28,21 @@ import { ImportService } from "../rdf/importer/import-service";
 import { useSelector, useDispatch } from "react-redux";
 import { FormControlLabel, Checkbox } from "@mui/material";
 import { ChangeEvent } from "react";
-import { open, close, setCurrentData, setDatabase, setGraphData, setMetaData } from "./../actions";
+import { open, close, setCurrentData, setDatabase, setGraphData, setMetaData, setLoading } from "./../actions";
 import AddTripleForm from "./addTriple";
 import DropDownMenue from "./dropDownMenu";
-import SortFormData from "./sort";
 import FilterForm from "./filter";
 import Import from "./import";
 import Export from "./export";
 import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
 import Graph2DReact from "./graph2dreact";
-import { useMediaQuery } from "react-responsive";
-import { drawerOpenWidth, isMobileDevice } from "../constants/media";
-import { WavingHandTwoTone } from "@mui/icons-material";
-import metaData from "../reducers/metaData";
 import { QueryCall } from "../interface/query-call";
 import MetaDataForm from "./metaDataForm";
 import { Rdfcsa } from "../rdf/rdfcsa";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
+import LoadingBackdrop from "./loadingBackdrop";
 
 let drawerWidth = 500;
 
@@ -98,6 +106,8 @@ export default function PersistentDrawerRight() {
   const [startDialogOpen, setStartDialogOpen] = React.useState(true);
   const [openDialog, setOpenDialog] = React.useState(true);
   const [drawerWidth, setDrawerWidth] = React.useState(500);
+  const [toastOpen, setToastOpen] = React.useState(false);
+  const [toastMessage, setToastMessage] = React.useState("");
   window.matchMedia("(orientation: portrait)").addEventListener("change", (e) => {
     const portrait = e.matches;
     if (portrait) {
@@ -121,6 +131,11 @@ export default function PersistentDrawerRight() {
     setUseJsBitvector(event.target.checked);
   };
 
+  // Close popup - toastmsg
+  const handleToastClose = () => {
+    setToastOpen(false);
+  };
+
   const handleMainFrame = React.useCallback(() => {
     if (mainFrame === "text") {
       return <TextVisualization />;
@@ -133,26 +148,59 @@ export default function PersistentDrawerRight() {
     }
   }, [database, currentData, mainFrame, graphData]);
 
-  const handleFromFromExample = () => {
-    const rdfcsa = new ImportService().loadSample(useJsBitvector);
-    const queryManager = new QueryManager(rdfcsa);
-    const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-    dispatch(setCurrentData(data));
-    dispatch(setDatabase(rdfcsa));
-    dispatch(setGraphData(database, currentData));
+  /**
+   * Update meta data. Query for meta data triples.
+   * @param rdfcsa Database to query on
+   */
+  const updateMetaData = (rdfcsa) => {
     let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], rdfcsa);
     if (metaData) {
       dispatch(setMetaData(metaData));
     }
+  };
+
+  /**
+   * Init current session by setting current data, current database and update meta data. Don't set current data if more than 10k triples in db.
+   * @param rdfcsa Database that should be initialized
+   */
+  const initCurrentData = (rdfcsa) => {
+    dispatch(setDatabase(rdfcsa));
+    updateMetaData(rdfcsa);
+    if (rdfcsa.tripleCount < 10000) {
+      const queryManager = new QueryManager(rdfcsa);
+      const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+      dispatch(setCurrentData(data));
+    } else {
+      setToastMessage("Data not displayed. Exceeds 10k triples. Query manually");
+      setToastOpen(true);
+      dispatch(setCurrentData([]));
+    }
+  };
+
+  /**
+   * Import Rdfcsa Example
+   */
+  const handleFromFromExample = () => {
+    const rdfcsa = new ImportService().loadSample(useJsBitvector);
+
+    initCurrentData(rdfcsa);
+
+    dispatch(setGraphData(database, currentData));
     setStartDialogOpen(false);
   };
 
+  /**
+   * Start with an emtpy rdfcsa database
+   */
   const handleFromScratch = () => {
     const rdfcsa = new Rdfcsa([], useJsBitvector);
     dispatch(setDatabase(rdfcsa));
     setStartDialogOpen(false);
   };
 
+  /**
+   * Import an existing rdfcsa database
+   */
   const handleImportRequest = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -161,28 +209,21 @@ export default function PersistentDrawerRight() {
     // Add an event handler to get the selected file path.
     fileInput.addEventListener("change", async (event) => {
       const file = (event as any).target.files[0];
+      setStartDialogOpen(false);
+      dispatch(setLoading(true));
       const rdfcsa = await importService.importFile(file, true, useJsBitvector);
       if (rdfcsa === undefined) {
         setStartDialogOpen(true);
       } else {
-        dispatch(setDatabase(rdfcsa));
-        if (rdfcsa.tripleCount < 10000) {
-          // TODO: include in config
-          const queryManager = new QueryManager(rdfcsa);
-          const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-          dispatch(setCurrentData(data));
-          let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], database);
-          if (metaData) {
-            dispatch(setMetaData(metaData));
-          }
-        }
-        setStartDialogOpen(false);
+        initCurrentData(rdfcsa);
       }
+      dispatch(setLoading(false));
     });
 
     fileInput.click();
   };
 
+  //Change of the layout width for the mobile device, tablet and pc
   function isMobileDevice() {
     if (window.screen.width < 1200 && window.screen.width >= 320) {
       return true;
@@ -191,6 +232,7 @@ export default function PersistentDrawerRight() {
     }
   }
 
+  //Change of the layout width for the mobile device
   const handleDrawerOpen = () => {
     if (isMobileDevice()) {
       setDrawerWidth(400);
@@ -200,6 +242,7 @@ export default function PersistentDrawerRight() {
     dispatch(open());
   };
 
+  //Change of the layout width for the mobile device
   const handleDrawerClose = () => {
     if (isMobileDevice()) {
       setDrawerWidth(500);
@@ -209,6 +252,7 @@ export default function PersistentDrawerRight() {
     dispatch(close());
   };
 
+  //UseEffect for the landscape and portrait orientation
   React.useEffect(() => {
     const portrait = window.matchMedia("(orientation: portrait)").matches;
     if (portrait) {
@@ -228,7 +272,7 @@ export default function PersistentDrawerRight() {
               RDF Master Manager
             </Typography>
             <Typography variant="h6" noWrap sx={{ flexGrow: 1 }} component="div">
-              Anzahl Triples: {database.tripleCount}
+              Number of triples: {database.tripleCount} ({currentData.length} displayed)
             </Typography>
             <DropDownMenue></DropDownMenue>
             <IconButton
@@ -311,13 +355,21 @@ export default function PersistentDrawerRight() {
         aria-describedby="alert-dialog-description"
         fullScreen={true}
       >
-        <DialogTitle id="alert-dialog-title">{"Bitte drehen sie ihr Gerät."}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {"Bitte drehen Sie Ihr Gerät oder erweitern Sie das Fenster."}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Die Website funktioniert nur in der Landscape-Ansicht.
+            Die Website funktioniert nur in der Landscape-Ansicht oder in Full-Screen.
           </DialogContentText>
         </DialogContent>
       </Dialog>
+      <Snackbar open={toastOpen} autoHideDuration={6000} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+        <Alert onClose={handleToastClose} severity="warning" sx={{ width: "100%" }}>
+          {toastMessage}
+        </Alert>
+      </Snackbar>
+      <LoadingBackdrop />
     </>
   );
 }

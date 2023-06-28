@@ -1,10 +1,19 @@
-import { Quad, NamedNode } from "n3";
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ */
+
+import { Quad, NamedNode, Literal } from "n3";
 
 /**
  * Class for mapping internat triple format to Rdf.js
  * Used in import and export.
  */
 export class RdfJsMapper {
+  static iriRegex =
+    /((([A-Za-z]{1,9}:(?:\/\/)?)(?:[-;:&=\+\$,\w]+@)?[A-Za-z0-9.-]+|(?:www.|[-;:&=\+\$,\w]+@)[A-Za-z0-9.-]+)((?:\/[\+~%\/.\w-_]*)?\??(?:[-\+=&;%@.\w_]*)#?(?:[\w]*))?)/;
+
   /**
    * Map a Rdf.js quad to the internally used format
    * @param {Quad} quad
@@ -33,7 +42,11 @@ export class RdfJsMapper {
    * @returns {Quad}
    */
   static internalToRdfJs(triple) {
-    return new Quad(new NamedNode(triple[0]), new NamedNode(triple[1]), new NamedNode(triple[2]));
+    let object = new NamedNode(triple[2]);
+    if (!this.iriRegex.test(triple[2])) {
+      object = new Literal('"' + triple[2] + '"');
+    }
+    return new Quad(new NamedNode(triple[0]), new NamedNode(triple[1]), object);
   }
 
   /**

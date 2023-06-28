@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ */
+
 export class StreamExporter {
   constructor() {}
   /**

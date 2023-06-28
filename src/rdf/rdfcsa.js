@@ -1,3 +1,10 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Svea Worms
+ */
+
 import { Dictionary } from "./dictionary";
 import { BitVector } from "./bitvector";
 import { BitVectorJsArray } from "./bitvector-js-array";

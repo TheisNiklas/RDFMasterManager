@@ -1,3 +1,11 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ * Karl Neitmann
+ */
+
 import React, { ChangeEvent, useState } from "react";
 import { styled } from "@mui/system";
 import {
@@ -20,7 +28,6 @@ import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setMetaData } from "../actions";
-import { QueryCall } from "../interface/query-call";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -35,6 +42,7 @@ const SubmitButton = styled(Button)(() => ({
   width: "100%",
 }));
 
+//Triple structure with regex for the correct spo form.
 const AddTripleForm = () => {
   const [formFields, setFormFields] = useState({ subject: "", predicate: "", object: "" });
 

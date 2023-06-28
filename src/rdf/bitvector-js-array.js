@@ -1,4 +1,12 @@
 /**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Svea Worms
+ * Xaver Steinsmeier
+ */
+
+/**
  * Bitvector using a js array
  */
 export class BitVectorJsArray {

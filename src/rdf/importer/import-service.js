@@ -1,3 +1,11 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ * Svea Worms
+ */
+
 import { Importer } from "./importer";
 import { JsonldImporter } from "./jsonld-importer";
 import { NTriplesImporter } from "./ntriples-importer";
@@ -117,7 +125,7 @@ export class ImportService {
     rdfcsa.dictionary.O = deserialized.dictionary.O;
     rdfcsa.gaps = deserialized.gaps;
     rdfcsa.psi = deserialized.psi;
-    rdfcsa.tripleCount = deserialized.triple;
+    rdfcsa.tripleCount = deserialized.tripleCount;
     return rdfcsa;
   }
 }

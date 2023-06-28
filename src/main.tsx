@@ -1,3 +1,10 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Bjarne Küper
+ * Sarah Flohr
+ */
+
 import React from "react";
 import ReactDOM from "react-dom/client";
 import PersistentDrawerRight from "./components/DrawerRight.js";
@@ -8,7 +15,7 @@ import { devToolsEnhancer } from '@redux-devtools/extension';
 import { Dialog, DialogContent, DialogContentText, DialogTitle } from "@mui/material";
 
 
-const store = createStore(rootReducer, devToolsEnhancer() );
+const store = createStore(rootReducer, devToolsEnhancer());
 
 
 

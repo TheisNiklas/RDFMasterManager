@@ -1,3 +1,8 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ */
+
 export class Importer {
   constructor() {}
   /**

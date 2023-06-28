@@ -1,3 +1,11 @@
+/**
+ * Contributions made by:
+ * Xaver Steinsmeier
+ * Niklas Theis
+ * Tobias Kaps
+ * Svea Worms
+ */
+
 import { QueryTriple } from "../../src/rdf/models/query-triple";
 import { Triple } from "./models/triple";
 import { QueryElement } from "./models/query-element";

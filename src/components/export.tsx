@@ -1,5 +1,12 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Kai Joshua Martin
+ * Karl Neitmann
+ */
 import * as React from "react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "@mui/system";
 import {
   Typography,
@@ -17,6 +24,7 @@ import { ExportService } from "../rdf/exporter/export-service";
 import { QueryManager } from "../rdf/query-manager";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { useDispatch, useSelector } from "react-redux";
+import { setLoading } from "./../actions";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -35,6 +43,7 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
   },
 }));
 
+//Backend call for the exportService
 const Export = () => {
   const [exportFunction, setExportFunction] = useState("");
   const [exporter, setExporter] = useState(new ExportService());
@@ -56,28 +65,58 @@ const Export = () => {
     }
   }, [availableExporters]);
 
-  //receives the user selectoin for the export function
+  //Receives the user selectoin for the export function
   const handleFormChangeExportFunction = (event: SelectChangeEvent<string>) => {
     setExportFunction(event.target.value);
   };
 
-  //calls the interface function for the export of the current selected graph data
-  const subgraphDataExport = async () => {
+  /**
+   * Queries for all triples and exports them
+   */
+  const exportSelectedTriples = async () => {
     const result = await exporter.exportTriples(currentData, database.dictionary, exportFunction);
+    dispatch(setLoading(false));
   };
 
-  //calls the interface function for the export of the complete data
-  const graphDataExport = async () => {
+  //calls the interface function for the export of the current selected graph data. Don't call exportSelectedTriples directly. Otherwise backdrop wont be rendered
+  const subgraphDataExport = async () => {
+    dispatch(setLoading(true));
+    // Set timeout here to give components time to render backdrop
+    setTimeout(exportSelectedTriples, 5);
+  };
+
+  /**
+   * Queries for all triples and exports them
+   */
+  const exportAllTriples = async () => {
     const queryManager = new QueryManager(database);
     const allData = queryManager.getTriples([new QueryTriple(null, null, null)]);
     const result = await exporter.exportTriples(allData, database.dictionary, exportFunction);
+    dispatch(setLoading(false));
   };
 
-  //State for the Dialog to open
-  const [open, setOpen] = React.useState(false);
+  //calls the interface function for the export of the complete data. Don't call exportAllTriples directly. Otherwise backdrop wont be rendered
+  const graphDataExport = async () => {
+    dispatch(setLoading(true));
+    // Set timeout here to give components time to render backdrop
+    setTimeout(exportAllTriples, 5);
+  };
 
-  const handleClose = () => {
-    setOpen(false);
+  /**
+   * Save database as binary file.
+   */
+  const saveDatabase = async () => {
+    const result = await database.saveDatabase();
+    dispatch(setLoading(false));
+  };
+
+  /**
+   * Handle save database event. Don't call saveDatabase directly. Otherwise backdrop wont be rendered
+   */
+  const handleSaveDatabase = async () => {
+    dispatch(setLoading(true));
+    // Set timeout here to give components time to render backdrop
+    setTimeout(saveDatabase, 5);
   };
 
   return (
@@ -113,7 +152,7 @@ const Export = () => {
           </SubmitButton>
         </Grid>
       </Grid>
-      <SubmitButton variant="contained" color="primary" onClick={() => database.saveDatabase()}>
+      <SubmitButton variant="contained" color="primary" onClick={() => handleSaveDatabase()}>
         Save database in binary
       </SubmitButton>
     </Container>

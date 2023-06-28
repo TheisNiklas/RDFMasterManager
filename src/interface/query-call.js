@@ -1,3 +1,11 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Bjarne Küper
+ * Karl Neitmann
+ */
+
 import { QueryElement } from "../rdf/models/query-element";
 import { QueryTriple } from "../rdf/models/query-triple";
 import { Triple } from "../rdf/models/triple";

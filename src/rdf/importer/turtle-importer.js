@@ -1,3 +1,9 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ */
+
 import { Parser } from "n3";
 import { Importer } from "./importer";
 

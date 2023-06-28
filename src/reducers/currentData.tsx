@@ -1,11 +1,19 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Sarah Flohr
+ */
+
 const initialState: any[] = [];
 
+/**
+ * Set the current data dependetn on the current Triples.
+ * @param state current data store
+ * @param action payload information
+ * @returns modified current data store
+ */
 const currentDataReducer = (state = initialState, action: any) => {
   switch (action.type) {
-    case "ADD_TRIPLE":
-      return [...state, action.payload];
-    case "REMOVE_TRIPLE":
-      return state.filter((triple, index) => index !== action.payload);
     case "SET_CURRENTDATA":
       return action.payload;
     default:

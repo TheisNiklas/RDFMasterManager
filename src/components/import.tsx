@@ -1,3 +1,11 @@
+/**
+ * Contributions made by:
+ * Niklas Theis
+ * Tobias Kaps
+ * Kai Joshua Martin
+ * Karl Neitmann
+ */
+
 import * as React from "react";
 import { ChangeEvent } from "react";
 import { styled } from "@mui/system";
@@ -10,7 +18,6 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -23,7 +30,8 @@ import { QueryTriple } from "../rdf/models/query-triple";
 import Snackbar from "@mui/material/Snackbar";
 import Alert from "@mui/material/Alert";
 import { useSelector, useDispatch } from "react-redux";
-import { setCurrentData, setDatabase } from "../actions";
+import { setCurrentData, setDatabase, setMetaData, setLoading } from "../actions";
+import { QueryCall } from "../interface/query-call";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -52,6 +60,10 @@ const SortFormControl = styled(FormControl)(({ theme }) => ({
   },
 }));
 
+/**
+ * Import a database from a file
+ * @returns React Component Import
+ */
 const Import = () => {
   const dispatch = useDispatch();
   const [toastOpen, setToastOpen] = React.useState(false);
@@ -74,6 +86,43 @@ const Import = () => {
     setUseJsBitvector(event.target.checked);
   };
 
+  // Update current data if triple count is below 10k. Show toast if current data wasnt updated.
+  const updateCurrentData = (rdfcsa) => {
+    if (rdfcsa.tripleCount < 10000) {
+      const queryManager = new QueryManager(rdfcsa);
+      const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
+      dispatch(setCurrentData(data));
+    } else if (replaceDatabase) {
+      // Don't query for better usability
+      setToastMessage("Data not displayed. Exceeds 10k triples. Query manually");
+      setToastOpen(true);
+      dispatch(setCurrentData([]));
+    } else {
+      setToastMessage("Additional data not displayed. Exceeds 10k triples. Query manually");
+      setToastOpen(true);
+    }
+  };
+
+  const updateMetaData = (rdfcsa) => {
+    let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], rdfcsa);
+    if (metaData) {
+      dispatch(setMetaData(metaData));
+    }
+  };
+
+  const importFile = async (file, importService) => {
+    const rdfcsa = await importService.importFile(file, replaceDatabase, useJsBitvector);
+    if (rdfcsa === undefined) {
+      setOpen(true);
+    } else {
+      dispatch(setDatabase(rdfcsa));
+      updateCurrentData(rdfcsa);
+      updateMetaData(rdfcsa);
+      setOpen(false);
+    }
+    dispatch(setLoading(false));
+  };
+
   //To start the data input for attaching to or replacing the old triple data
   const userImportRequest = () => {
     const fileInput = document.createElement("input");
@@ -83,23 +132,9 @@ const Import = () => {
     // Add an event handler to get the selected file path.
     fileInput.addEventListener("change", async (event) => {
       const file = (event as any).target.files[0];
-      const rdfcsa = await importService.importFile(file, replaceDatabase, useJsBitvector);
-      if (rdfcsa === undefined) {
-        setOpen(true);
-      } else {
-        dispatch(setDatabase(rdfcsa));
-        if (rdfcsa.tripleCount < 10000) {
-          // TODO: include in config
-          const queryManager = new QueryManager(rdfcsa);
-          const data = queryManager.getTriples([new QueryTriple(null, null, null)]);
-          dispatch(setCurrentData(data));
-        } else if (replaceDatabase) {
-          setToastMessage("Data not displayed. Exceeds 10k triples.");
-          setToastOpen(true);
-          dispatch(setCurrentData([]));
-        }
-        setOpen(false);
-      }
+      dispatch(setLoading(true));
+      // Set timeout here to give components time to render backdrop
+      setTimeout(importFile, 5, file, importService);
     });
 
     fileInput.click();
@@ -108,10 +143,12 @@ const Import = () => {
   //State for the Dialog to open
   const [open, setOpen] = React.useState(false);
 
+  // Close popup
   const handleToastClose = () => {
     setToastOpen(false);
   };
 
+  // Close popup
   const handleClose = () => {
     setOpen(false);
   };
@@ -165,7 +202,12 @@ const Import = () => {
           </DialogActions>
         </Dialog>
       </Grid>
-      <Snackbar open={toastOpen} autoHideDuration={6000} onClose={handleClose}>
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
         <Alert onClose={handleToastClose} severity="warning" sx={{ width: "100%" }}>
           {toastMessage}
         </Alert>

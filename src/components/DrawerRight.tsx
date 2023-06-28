@@ -37,10 +37,6 @@ import Export from "./export";
 import TextVisualization from "./textVisualization";
 import Graph3DReact from "./graph3dreact";
 import Graph2DReact from "./graph2dreact";
-import { useMediaQuery } from "react-responsive";
-import { drawerOpenWidth, isMobileDevice } from "../constants/media";
-import { WavingHandTwoTone } from "@mui/icons-material";
-import metaData from "../reducers/metaData";
 import { QueryCall } from "../interface/query-call";
 import MetaDataForm from "./metaDataForm";
 import { Rdfcsa } from "../rdf/rdfcsa";
@@ -161,7 +157,7 @@ export default function PersistentDrawerRight() {
     if (metaData) {
       dispatch(setMetaData(metaData));
     }
-  }
+  };
 
   /**
    * Init current session by setting current data, current database and update meta data. Don't set current data if more than 10k triples in db.
@@ -179,7 +175,7 @@ export default function PersistentDrawerRight() {
       setToastOpen(true);
       dispatch(setCurrentData([]));
     }
-  }
+  };
 
   const handleFromFromExample = () => {
     const rdfcsa = new ImportService().loadSample(useJsBitvector);

@@ -237,7 +237,9 @@ export class RdfOperations {
 
     if (metadata.subject.isNew && sInsertIndex === 0) {
       this.rdfcsa.D.unsetBit(0);
-      this.rdfcsa.D.setBit(1); // toggle because element got shifted by one place
+      if (this.rdfcsa.tripleCount !== 0) {
+        this.rdfcsa.D.setBit(1); // toggle because element got shifted by one place
+      }
     }
 
     // Update existing references in psi

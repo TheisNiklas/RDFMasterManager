@@ -117,6 +117,8 @@ export class ImportService {
       rdfcsa.D.bits = deserialized.D.bits;
     } else {
       rdfcsa.D.bits = new Uint32Array(Object.values(deserialized.D.bits));
+      rdfcsa.D.superblocks = deserialized.D.superblocks;
+      rdfcsa.D.bitsPerElement = deserialized.D.bitsPerElement;
     }
     rdfcsa.D.arrayLength = deserialized.D.arrayLength;
     rdfcsa.dictionary.SO = deserialized.dictionary.SO;

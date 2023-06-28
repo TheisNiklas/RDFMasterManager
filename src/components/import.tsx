@@ -205,7 +205,7 @@ const Import = () => {
       <Snackbar
         open={toastOpen}
         autoHideDuration={6000}
-        onClose={handleClose}
+        onClose={handleToastClose}
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
       >
         <Alert onClose={handleToastClose} severity="warning" sx={{ width: "100%" }}>

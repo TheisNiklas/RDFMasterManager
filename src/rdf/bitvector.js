@@ -170,11 +170,7 @@ export class BitVector {
       const shiftedSubpart = subpart << 1;
 
       // save bit that is shifted to next element
-<<<<<<< HEAD
       // shift the number (this.bitsPerElement - 1) bits to the right to keep only the last bit
-=======
-      // shift the number this.bitsPerElement - 1 bits to the right to keep only the last bit
->>>>>>> 836928f9bf38ca2182ad39da7132c792da7cb14d
       let prelastbit = (this.bits[element] >> (this.bitsPerElement - 1)) & 1;
 
       // set shifted and not shifted parts together
@@ -200,11 +196,7 @@ export class BitVector {
           this.superblocks[i - 1] -= 1;
         }
         // save bit that is shifted to next element
-<<<<<<< HEAD
         // shift the number (this.bitsPerElement - 1) bits to the right to keep only the last bit
-=======
-        // shift the number this.bitsPerElement - 1 bits to the right to keep only the last bit
->>>>>>> 836928f9bf38ca2182ad39da7132c792da7cb14d
         let temp = (this.bits[i] >> (this.bitsPerElement - 1)) & 1;
         // set bits at i to shifted bits (left shift) plus prelastbit
         this.bits[i] = (this.bits[i] << 1) | prelastbit;

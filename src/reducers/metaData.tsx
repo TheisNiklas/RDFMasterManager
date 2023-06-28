@@ -5,12 +5,14 @@
 
 const initialState: any[] = [];
 
+/**
+ * Set the current Meta Data.
+ * @param state current meta data
+ * @param action payload information
+ * @returns modified meta data
+ */
 const metaDataReducer = (state = initialState, action: any) => {
   switch (action.type) {
-    case "ADD_TRIPLE":
-      return [...state, action.payload];
-    case "REMOVE_TRIPLE":
-      return state.filter((triple, index) => index !== action.payload);
     case "SET_METADATA":
       return action.payload;
     default:

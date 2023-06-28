@@ -5,6 +5,12 @@
 
 const initialState = [{ subject: "", predicate: "", object: "" }];
 
+/**
+ * Handle the Triple Filter Options.
+ * @param state inital values for subject, predicate and object
+ * @param action payload information
+ * @returns modified state
+ */
 const filterTripleReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case "ADD_QUERYTRIPLE":

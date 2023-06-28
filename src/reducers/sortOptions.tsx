@@ -5,11 +5,17 @@
 
 //reducer to handle changes in the sort-form
 const initialState = {
-  sortElement: 'sortSubject',
-  sortOrder: 'ascending',
+  sortElement: "sortSubject",
+  sortOrder: "ascending",
   visualLimit: 0,
 };
 
+/**
+ * Handle the different sorting options to display for triples.
+ * @param state current sorting options
+ * @param action payload information
+ * @returns modified sorting options
+ */
 const sortOptionsReducer = (state = initialState, action: any) => {
   switch (action.type) {
     case "SET_SORT_ELEMENT":

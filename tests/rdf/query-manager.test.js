@@ -332,7 +332,7 @@ describe("QueryManager", () => {
     );
   });
 
-  test.skip("leftChainingJoinTwoQueries(x,5,11)(x,7,15)", () => {
+  test("leftChainingJoinTwoQueries(x,5,11)(x,7,15)", () => {
     const subject = new QueryElement(0, true);
     const predicate = new QueryElement(5);
     const object = new QueryElement(11);
@@ -342,7 +342,7 @@ describe("QueryManager", () => {
     const object1 = new QueryElement(15);
     const secondQueryTriple = new QueryTriple(subject1, predicate1, object1); // (x, "born in", "USA")
     const result = queryManager.leftChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
-    expect(result).toEqual([new Triple(3, 7, 15), new Triple(4, 7, 15)]); // ("L. DiCarpio", "born in", "USA"), (J. Gordon, "born in", "USA")
+    expect(new Set(result)).toEqual(new Set([[3, 7, 15], [4, 7, 15]])); // ("L. DiCarpio", "born in", "USA"), (J. Gordon, "born in", "USA")
   });
 
   /**
@@ -350,7 +350,7 @@ describe("QueryManager", () => {
    * L. DiCaprio born in ?x
    * x=USA
    */
-  test.skip("leftChainingJoinTwoQueries(3,7,x)(4,7,x)", () => {
+  test("leftChainingJoinTwoQueries(3,7,x)(4,7,x)", () => {
     const subject = new QueryElement(3);
     const predicate = new QueryElement(7);
     const object = new QueryElement(0, true);
@@ -360,13 +360,13 @@ describe("QueryManager", () => {
     const object1 = new QueryElement(0, true);
     const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
     const result = queryManager.leftChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
-    expect(new Set(result)).toEqual(new Set([new Triple(3, 7, 15), new Triple(4, 7, 15)]));
+    expect(new Set(result)).toEqual(new Set([[3, 7, 15], [4, 7, 15]]));
   });
 
   /**
    * Get all subjects that are also objects
    */
-  test.skip("leftChainingJoinTwoQueries(,,x)(x,,)", () => {
+  test("leftChainingJoinTwoQueries(,,x)(x,,)", () => {
     const subject = null;
     const predicate = null;
     const object = new QueryElement(0, true);

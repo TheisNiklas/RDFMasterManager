@@ -245,37 +245,19 @@ export class QueryManager {
     return range;
   }
 
-  // <?y,p1,?x> <?y,p2,o1> <s,p3,?x>
-  // <s1,p1,?x> <s2,p2,?x> <?x,p3,o1>
 
-  // <s1,p1,?y> <?x,p2,o2> <?y,p3,?x>
-  // <s1,p1,?y> <?y,p3,?x> <?x,p2,o2>
-
-  // step 1 solve: <?s,p,?o>
-  // step 2: search for the first query var in first triple -> ?y
-  // step 3: execute <?y,p,o> with all results of <?y,p,?x> --> <y!,p2,o1> <y!,p1,o>
-  // step 4: search for the second query var in first triple -> ?x
-  // step 5: execute <s,p,?x> with all results of <y!,p,?x> --> <y!,p,!x> ------- <!y,p,!x> <!y,p,o> <s,p,!x>
-
-  // <?y,p1,?x> <?y,p2,?x> is this join valid?
-
-  // <?y,p1,o1> <?y,p2,o2>
-  // step 1 solve: <?y,p1,o1>
-  // step 2: search for the first query var in first triple -> ?y
-  // step 3: execute <?y,p2,o2> with all results of <?y,p1,o1> --> <y!,p2,o2>
-  // step 4: append all solutions for each results of step3
   leftChainingJoinTwoQueries(queries) {
     //some join variable overlapping (you could check where they overlap and then skip some)
-
-    var allTriples = new Set(); // for visual representation
+    var counter = 0;
+    var allTriples = []; // for visual representation
     var joinVars = [];
     var allJoinVars = [];
     queries.forEach((query) => {
       const queryJoinVars = this.#getJoinVars(query);
       allJoinVars.push(queryJoinVars);
-      if (queryJoinVars[2] > 0 && this.rdfcsa.dictionary.isSubjectObjectById(queryJoinVars[2])) {
-        queryJoinVars[2] = queryJoinVars[2] - this.rdfcsa.gaps[2];
-      }
+      //if (queryJoinVars[2] > 0 && this.rdfcsa.dictionary.isSubjectObjectById(queryJoinVars[2])) {
+      //  queryJoinVars[2] = queryJoinVars[2] - this.rdfcsa.gaps[2];
+      //}
       var chainedResultTriples = []
 
       // determine query
@@ -285,8 +267,6 @@ export class QueryManager {
       var isJoinVarO = true;
 
       // could use forEach to assign both using tuple, but readability suffers greatly in javascript due to single loop variable
-      //console.log("Current Vars: " + queryJoinVars)
-      //console.log("All Vars: " + joinVars)
       if(queryJoinVars[0] >= 0 && joinVars[queryJoinVars[0]] !== undefined) {
         possibleSubjects = joinVars[queryJoinVars[0]];
         isJoinVarS = false;
@@ -304,48 +284,48 @@ export class QueryManager {
       // perform queries for every possible variable assignment
       possibleSubjects.forEach((possibleSubject) => {
         possibleObjects.forEach((possibleObject) => {
+          var subject;
+          var object;
           if(possibleSubject !== null) { // make sure subject is in subject area
             if(possibleSubject > this.rdfcsa.gaps[1] && this.rdfcsa.dictionary.isSubjectObjectById(possibleSubject)) {
-              console.log("Reduced: " + possibleSubject)
               possibleSubject = possibleSubject - this.rdfcsa.gaps[2];
             }
-            possibleSubject = new QueryElement(possibleSubject, isJoinVarS);
+            subject = new QueryElement(possibleSubject, isJoinVarS);
           }
           if(possibleObject != null) { // make sure object is in object area
             if(possibleObject < this.rdfcsa.gaps[2] && this.rdfcsa.dictionary.isSubjectObjectById(possibleObject)) {
-              console.log("Enlarged: " + possibleObject)
               possibleObject = possibleObject + this.rdfcsa.gaps[2];
             }
-            possibleObject = new QueryElement(possibleObject, isJoinVarO);
+            object = new QueryElement(possibleObject, isJoinVarO);
           }
-          const newQuery = new QueryTriple(possibleSubject, query.predicate, possibleObject)
+          const newQuery = new QueryTriple(subject, query.predicate, object)
           const immediateQueryResult = this.#getQueryTripleResult(newQuery)
           chainedResultTriples = [...chainedResultTriples, 
                                   ...immediateQueryResult]
-          console.log(chainedResultTriples)
         });
       });
       if(chainedResultTriples === []) {
         return [];
       }
-      allTriples.add(chainedResultTriples)
+      allTriples.push(chainedResultTriples)
       // update used variable's allowed assignments
+      // reset used variables
       queryJoinVars.forEach((joinVar) => {
         if(joinVar >= 0) {
           joinVars[joinVar] = new Set();
         }
       })
-      chainedResultTriples.forEach((triple) => { // learn allowed variable values from result
+      // learn allowed variable values from result
+      chainedResultTriples.forEach((triple) => {
         queryJoinVars.forEach((joinVar, joinIndex) => {
           if(joinVar >= 0){
-            console.log("Adding... " + triple + " " + joinIndex)
             joinVars[joinVar].add(triple[joinIndex])
           }
         });
       });
     });
 
-    console.log("JoinVars: " + [...joinVars[0]])
+    console.log(joinVars);
 
     // get triples for our visual representation
     const resultTriples = [];

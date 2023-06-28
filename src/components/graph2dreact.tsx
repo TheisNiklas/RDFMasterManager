@@ -29,7 +29,6 @@ import { setCurrentData, setDatabase, setGraphData, setMainFrame, setMetaData } 
 import load_data from "./triple2graph";
 import { QueryCall } from "../interface/query-call";
 import { useEffect } from "react";
-import { Stack } from "@mui/material";
 
 let widthValue = "30%";
 
@@ -166,7 +165,7 @@ export default function Graph2DReact() {
       default:
         break;
     }
-  }
+  };
 
   /**
    * Update current data.
@@ -185,7 +184,7 @@ export default function Graph2DReact() {
       dispatch(setCurrentData([]));
       dispatch(setGraphData(newDatabase, currentData));
     }
-  }
+  };
 
   /**
    * Update metadata if meta data node has changed
@@ -193,10 +192,7 @@ export default function Graph2DReact() {
    */
   const updateMetaData = (newDatabase) => {
     if (linkSourceName === "RDFCSA:METADATA") {
-      let metaData = QueryCall.queryCallData(
-        [{ subject: "RDFCSA:METADATA", predicate: "", object: "" }],
-        newDatabase
-      );
+      let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], newDatabase);
       if (metaData) {
         dispatch(setMetaData(metaData));
       }
@@ -206,7 +202,7 @@ export default function Graph2DReact() {
         dispatch(setMainFrame("2d"));
       }, 1);
     }
-  }
+  };
 
   /**
    * Change value of a node. Update database.
@@ -216,7 +212,7 @@ export default function Graph2DReact() {
     if (formField === "") {
       showToast("Can not rename Node with empty String", "error");
       setOpenNodeLeft(false);
-      return
+      return;
     }
 
     const rdfOperations = new RdfOperations(database);
@@ -228,7 +224,6 @@ export default function Graph2DReact() {
     setOpenNodeLeft(false);
 
     updateCurrentData(newDatabase);
-
   };
 
   /**
@@ -239,7 +234,7 @@ export default function Graph2DReact() {
     if (linkSourceName === "" && linkName === "" && linkTargetName === "") {
       showToast("Can't rename Elements with empty String", "error");
       setOpenLinkLeft(false);
-      return
+      return;
     }
 
     // Modify triple
@@ -255,7 +250,6 @@ export default function Graph2DReact() {
     updateCurrentData(newDatabase);
 
     updateMetaData(newDatabase);
-
   };
 
   /**

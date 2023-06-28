@@ -5,8 +5,8 @@
  * Karl Neitmann
  */
 
-import * as React from 'react';
-import { ChangeEvent, useState, SyntheticEvent } from "react";
+import * as React from "react";
+import { ChangeEvent, SyntheticEvent } from "react";
 import { styled } from "@mui/system";
 import {
   Autocomplete,
@@ -38,8 +38,15 @@ import DeleteForeverIcon from "@mui/icons-material/DeleteForever";
 import { QueryCall } from "../interface/query-call";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import { useSelector, useDispatch } from "react-redux";
-import { updateObject, updatePredicate, updateSubject, addQueryTriple, removeQueryTriple, setCurrentData, setLoading } from "./../actions";
-import Backdrop from '@mui/material/Backdrop';
+import {
+  updateObject,
+  updatePredicate,
+  updateSubject,
+  addQueryTriple,
+  removeQueryTriple,
+  setCurrentData,
+  setLoading,
+} from "./../actions";
 
 const Header = styled(Typography)(({ theme }) => ({
   fontWeight: "bold",
@@ -89,8 +96,8 @@ const FilterForm = () => {
   };
 
   const [visualLimit, setVisualLimit] = React.useState(0);
-  const [sortElement, setSortElement] = React.useState('subject');
-  const [sortOrder, setSortOrder] = React.useState('ascending');
+  const [sortElement, setSortElement] = React.useState("subject");
+  const [sortOrder, setSortOrder] = React.useState("ascending");
 
   /**
    * Sort query result ascending
@@ -115,7 +122,7 @@ const FilterForm = () => {
   //Sends the filter data
   //check if the query is correct
   const handleSubmit = () => {
-    dispatch(setLoading(true))
+    dispatch(setLoading(true));
     // Set timeout here to give components time to render backdrop
     setTimeout(executeQuery, 5);
   };
@@ -124,39 +131,37 @@ const FilterForm = () => {
    * Execute the query. Sort and limit the result.
    */
   const executeQuery = () => {
-
     let queryResult = QueryCall.queryCallData(filterTriples, database);
     if (queryResult) {
-      if (sortOrder === 'descending') {
+      if (sortOrder === "descending") {
         queryResult.sort(sortDescending);
       } else {
         queryResult.sort(sortAscending);
       }
       if (visualLimit > 0) {
-        queryResult = queryResult.slice(0, visualLimit)
+        queryResult = queryResult.slice(0, visualLimit);
       }
       dispatch(setCurrentData(queryResult));
       dispatch(setLoading(false));
-    }
-    else {
+    } else {
       //change popup
       setOpen(true);
     }
-  }
+  };
 
   //Adaptation of the subject filter
   const handleFormChangeSubject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
-    dispatch(updateSubject(index, ("" + newValue)));
+    dispatch(updateSubject(index, "" + newValue));
   };
 
   //Adaptation of the predicat filter
   const handleFormChangePredicate = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
-    dispatch(updatePredicate(index, ("" + newValue)));
+    dispatch(updatePredicate(index, "" + newValue));
   };
 
   //Adaptation of the object filter
   const handleFormChangeObject = (event: SyntheticEvent<Element, Event>, index: number, newValue: string) => {
-    dispatch(updateObject(index, ("" + newValue)));
+    dispatch(updateObject(index, "" + newValue));
   };
 
   //Adaptation of the selected sorting order (ascending, descending) the user picked
@@ -188,7 +193,6 @@ const FilterForm = () => {
     setOpen(false);
   };
 
-
   return (
     <Accordion defaultExpanded={true}>
       <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
@@ -206,9 +210,7 @@ const FilterForm = () => {
               {filterTriples.map((form: any, index: number) => {
                 return (
                   <Grid container spacing={2} key={index} columns={13}>
-                    <Grid item xs={12} sm={7} sx={{ marginTop: 2 }}>
-
-                    </Grid>
+                    <Grid item xs={12} sm={7} sx={{ marginTop: 2 }}></Grid>
                     <Grid item xs={12} sm={6}></Grid>
                     <Grid item xs={13} sm={4}>
                       <Tooltip title="? means join variable, ?? for ? as string" placement="top">
@@ -225,9 +227,11 @@ const FilterForm = () => {
                               }}
                             />
                           )}
-                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500 })}
+                          filterOptions={createFilterOptions({ matchFrom: "any", limit: 500 })}
                           value={form.subject}
-                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeSubject(event, index, newValue)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) =>
+                            handleFormChangeSubject(event, index, newValue)
+                          }
                         />
                       </Tooltip>
                     </Grid>
@@ -246,9 +250,11 @@ const FilterForm = () => {
                               }}
                             />
                           )}
-                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500 })}
+                          filterOptions={createFilterOptions({ matchFrom: "any", limit: 500 })}
                           value={form.predicate}
-                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangePredicate(event, index, newValue)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) =>
+                            handleFormChangePredicate(event, index, newValue)
+                          }
                         />
                       </Tooltip>
                     </Grid>
@@ -267,9 +273,11 @@ const FilterForm = () => {
                               }}
                             />
                           )}
-                          filterOptions={createFilterOptions({ matchFrom: 'any', limit: 500 })}
+                          filterOptions={createFilterOptions({ matchFrom: "any", limit: 500 })}
                           value={form.object}
-                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) => handleFormChangeObject(event, index, newValue)}
+                          onInputChange={(event: SyntheticEvent<Element, Event>, newValue) =>
+                            handleFormChangeObject(event, index, newValue)
+                          }
                         />
                       </Tooltip>
                     </Grid>
@@ -284,7 +292,7 @@ const FilterForm = () => {
                 );
               })}
               {/* Sort and Limit options*/}
-              <Accordion sx={{ marginTop: 2, }} defaultExpanded={false}>
+              <Accordion sx={{ marginTop: 2 }} defaultExpanded={false}>
                 <AccordionSummary expandIcon={<ExpandMoreIcon />} aria-controls="panel1a-content" id="panel1a-header">
                   <Header variant="h6" sx={{ marginBottom: -1 }}>
                     Sorting
@@ -318,7 +326,9 @@ const FilterForm = () => {
                                   <Select
                                     labelId="sort-label"
                                     defaultValue="subject"
-                                    onChange={(event: SelectChangeEvent<string>) => handleFormChangeSortElementObject(event)}
+                                    onChange={(event: SelectChangeEvent<string>) =>
+                                      handleFormChangeSortElementObject(event)
+                                    }
                                   >
                                     <MenuItem value="subject">Subject</MenuItem>
                                     <MenuItem value="predicate">Predicate</MenuItem>

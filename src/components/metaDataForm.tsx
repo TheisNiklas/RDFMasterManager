@@ -5,21 +5,7 @@
  * Kai Joshua Martin
  */
 
-import {
-  Accordion,
-  AccordionDetails,
-  AccordionSummary,
-  Container,
-  FormControl,
-  FormLabel,
-  Grid,
-  Tooltip,
-  Typography,
-  TextField,
-  Button,
-  Snackbar,
-  Alert,
-} from "@mui/material";
+import { Container, Grid, Typography, TextField, Button, Snackbar, Alert } from "@mui/material";
 import React, { ChangeEvent, useState } from "react";
 import { styled } from "@mui/system";
 import { setCurrentData, setDatabase, setGraphData, setMetaData } from "../actions";
@@ -65,7 +51,7 @@ const MetaDataForm = () => {
 
   /**
    * Update link color. Check if value is valid.
-   * Only local var is updated. MetaData is not changed yet! 
+   * Only local var is updated. MetaData is not changed yet!
    * @param event Change event that has been triggered
    */
   const handleChangeLinkColor = (event: ChangeEvent<HTMLInputElement>) => {
@@ -75,7 +61,7 @@ const MetaDataForm = () => {
 
   /**
    * Update node color. Check if value is valid.
-   * Only local var is updated. MetaData is not changed yet! 
+   * Only local var is updated. MetaData is not changed yet!
    * @param event Change event that has been triggered
    */
   const handleChangeNodeColor = (event: ChangeEvent<HTMLInputElement>) => {
@@ -90,7 +76,7 @@ const MetaDataForm = () => {
   const showToast = (msg: string) => {
     setToastMessage(msg);
     setToastOpen(true);
-  }
+  };
 
   /**
    * Update database. Query all triples.
@@ -105,7 +91,7 @@ const MetaDataForm = () => {
       // Don't query automatically for better usability
       showToast("Dataset exceeds 10k triples - Data not queries - query manually");
     }
-  }
+  };
 
   /**
    * Update the object of a a meta data triple.
@@ -113,7 +99,7 @@ const MetaDataForm = () => {
    * @param possibility Predicate of meta data triple
    * @param newValue New value that should be set as the triple object
    */
-  const updateMetaTriple = (element: any, possibility: string, newValue: string,) => {
+  const updateMetaTriple = (element: any, possibility: string, newValue: string) => {
     const rdfOperations = new RdfOperations(database);
     const newDatabase = rdfOperations.modifyTriple(element, "RDFCSA:METADATA", "METADATA:" + possibility, newValue);
     dispatch(setDatabase(newDatabase as Rdfcsa));
@@ -138,7 +124,7 @@ const MetaDataForm = () => {
    * @param possibility Predicate of Meta Triple that should be updated or inserted.
    * @param metaTriple Meta Triple that will be updated. If null a new triple will be inserted.
    */
-  const setMetaTriple = (possibility: string, metaTriple: any,) => {
+  const setMetaTriple = (possibility: string, metaTriple: any) => {
     let value = "";
     switch (possibility) {
       case "arrowColor": {
@@ -159,7 +145,7 @@ const MetaDataForm = () => {
     }
     // Early exit
     if (value === "") {
-      return
+      return;
     }
 
     if (metaTriple !== null) {
@@ -170,7 +156,6 @@ const MetaDataForm = () => {
       insertMetaTriple(possibility, value);
     }
   };
-
 
   /**
    * Update current meta data. Query for meta data and set it into state.
@@ -183,7 +168,7 @@ const MetaDataForm = () => {
     if (metaDataQueried) {
       dispatch(setMetaData(metaDataQueried));
     }
-  }
+  };
 
   /**
    * Update metadata on submit. Update existing nodes or insert new node if meta data node doesnt exists yet.
@@ -208,7 +193,7 @@ const MetaDataForm = () => {
         setMetaTriple(possibility, null);
       }
 
-      updateMetaData()
+      updateMetaData();
     }
   };
 

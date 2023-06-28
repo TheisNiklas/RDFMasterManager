@@ -177,6 +177,9 @@ export default function PersistentDrawerRight() {
     }
   };
 
+  /**
+   * Import Rdfcsa Example
+   */
   const handleFromFromExample = () => {
     const rdfcsa = new ImportService().loadSample(useJsBitvector);
 
@@ -186,14 +189,18 @@ export default function PersistentDrawerRight() {
     setStartDialogOpen(false);
   };
 
-  //Backend call for the from scratch data by program start
+  /**
+   * Start with an emtpy rdfcsa database
+   */
   const handleFromScratch = () => {
     const rdfcsa = new Rdfcsa([], useJsBitvector);
     dispatch(setDatabase(rdfcsa));
     setStartDialogOpen(false);
   };
 
-  //Import handling and backend call for usability of the import data
+  /**
+   * Import an existing rdfcsa database
+   */
   const handleImportRequest = () => {
     const fileInput = document.createElement("input");
     fileInput.type = "file";
@@ -216,7 +223,7 @@ export default function PersistentDrawerRight() {
     fileInput.click();
   };
 
-  //Change of the layout with for the mobile device, tablet and pc
+  //Change of the layout width for the mobile device, tablet and pc
   function isMobileDevice() {
     if (window.screen.width < 1200 && window.screen.width >= 320) {
       return true;
@@ -225,7 +232,7 @@ export default function PersistentDrawerRight() {
     }
   }
 
-  //Change of the layout with for the mobile device
+  //Change of the layout width for the mobile device
   const handleDrawerOpen = () => {
     if (isMobileDevice()) {
       setDrawerWidth(400);
@@ -235,7 +242,7 @@ export default function PersistentDrawerRight() {
     dispatch(open());
   };
 
-  //Change of the layout with for the mobile device
+  //Change of the layout width for the mobile device
   const handleDrawerClose = () => {
     if (isMobileDevice()) {
       setDrawerWidth(500);
@@ -348,10 +355,12 @@ export default function PersistentDrawerRight() {
         aria-describedby="alert-dialog-description"
         fullScreen={true}
       >
-        <DialogTitle id="alert-dialog-title">{"Bitte drehen sie ihr Gerät."}</DialogTitle>
+        <DialogTitle id="alert-dialog-title">
+          {"Bitte drehen Sie Ihr Gerät oder erweitern Sie das Fenster."}
+        </DialogTitle>
         <DialogContent>
           <DialogContentText id="alert-dialog-description">
-            Die Website funktioniert nur in der Landscape-Ansicht.
+            Die Website funktioniert nur in der Landscape-Ansicht oder in Full-Screen.
           </DialogContentText>
         </DialogContent>
       </Dialog>

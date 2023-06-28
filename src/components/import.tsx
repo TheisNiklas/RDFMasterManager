@@ -18,7 +18,6 @@ import {
   Checkbox,
   FormControl,
   FormControlLabel,
-  Tooltip,
   Dialog,
   DialogTitle,
   DialogContent,
@@ -102,14 +101,14 @@ const Import = () => {
       setToastMessage("Additional data not displayed. Exceeds 10k triples. Query manually");
       setToastOpen(true);
     }
-  }
+  };
 
   const updateMetaData = (rdfcsa) => {
     let metaData = QueryCall.queryCallData([{ subject: "RDFCSA:METADATA", predicate: "", object: "" }], rdfcsa);
     if (metaData) {
       dispatch(setMetaData(metaData));
     }
-  }
+  };
 
   const importFile = async (file, importService) => {
     const rdfcsa = await importService.importFile(file, replaceDatabase, useJsBitvector);
@@ -120,10 +119,9 @@ const Import = () => {
       updateCurrentData(rdfcsa);
       updateMetaData(rdfcsa);
       setOpen(false);
-
     }
     dispatch(setLoading(false));
-  }
+  };
 
   //To start the data input for attaching to or replacing the old triple data
   const userImportRequest = () => {
@@ -204,13 +202,17 @@ const Import = () => {
           </DialogActions>
         </Dialog>
       </Grid>
-      <Snackbar open={toastOpen} autoHideDuration={6000} onClose={handleClose} anchorOrigin={{ vertical: "top", horizontal: "center" }}>
+      <Snackbar
+        open={toastOpen}
+        autoHideDuration={6000}
+        onClose={handleClose}
+        anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      >
         <Alert onClose={handleToastClose} severity="warning" sx={{ width: "100%" }}>
           {toastMessage}
         </Alert>
       </Snackbar>
     </Container>
-
   );
 };
 

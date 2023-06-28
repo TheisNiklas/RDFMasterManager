@@ -5,14 +5,7 @@
  * Karl Neitmann
  */
 
-import {
-  Box,
-  FormControl,
-  InputLabel,
-  MenuItem,
-  Select,
-  styled
-} from "@mui/material";
+import { Box, FormControl, InputLabel, MenuItem, Select, styled } from "@mui/material";
 import { useSelector, useDispatch } from "react-redux";
 import { setMainFrame } from "../actions";
 
@@ -29,7 +22,11 @@ const DropDownBox = styled(Box)(({ theme }) => ({
   },
 }));
 
-//Change of the layout with for the mobile device, tablet and pc
+/**
+ * Check if the device is a mobile device.
+ * Set the screen max and min screen width for a mobile device.
+ * @returns boolean if device is mobile or else
+ */
 function isMobileDevice() {
   if (window.screen.width < 1200 && window.screen.width >= 320) {
     return true;
@@ -44,7 +41,6 @@ const DropDownForm = styled(FormControl)(({ theme }) => ({
 }));
 
 const DropDownMenue = () => {
-
   const dispatch = useDispatch();
 
   const handleDropDownChange = (value: any) => {
@@ -54,12 +50,11 @@ const DropDownMenue = () => {
   return (
     <DropDownBox>
       <DropDownForm variant="standard">
-        {
-          !isMobileDevice() &&
-          <InputLabel variant="standard" id='format_chooser_label' style={{ color: "white" }}>
+        {!isMobileDevice() && (
+          <InputLabel variant="standard" id="format_chooser_label" style={{ color: "white" }}>
             Visualization
           </InputLabel>
-        }
+        )}
         <Select
           defaultValue={"text"}
           style={{

@@ -5,9 +5,7 @@
  * Bjarne Küper
  */
 
-import { QueryManager } from "../rdf/query-manager";
 import { Rdfcsa } from "../rdf/rdfcsa";
-import { QueryTriple } from "../rdf/models/query-triple";
 import { Triple } from "../rdf/models/triple";
 
 /**
@@ -35,6 +33,7 @@ export default function load_data(database: Rdfcsa, data: Triple[]) {
       object = object - database.gaps![2];
     }
     let subjectValue = database.dictionary.getElementById(subject) as string;
+
     //collect all nodes
     if (objectOriginalId !== -1) {
       arrayNodes.push({ id: object, origId: objectOriginalId });

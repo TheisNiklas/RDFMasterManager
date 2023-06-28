@@ -6,7 +6,7 @@
  * Karl Neitmann
  */
 import * as React from "react";
-import { ChangeEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { styled } from "@mui/system";
 import {
   Typography,
@@ -76,7 +76,7 @@ const Export = () => {
   const exportSelectedTriples = async () => {
     const result = await exporter.exportTriples(currentData, database.dictionary, exportFunction);
     dispatch(setLoading(false));
-  }
+  };
 
   //calls the interface function for the export of the current selected graph data. Don't call exportSelectedTriples directly. Otherwise backdrop wont be rendered
   const subgraphDataExport = async () => {
@@ -93,14 +93,13 @@ const Export = () => {
     const allData = queryManager.getTriples([new QueryTriple(null, null, null)]);
     const result = await exporter.exportTriples(allData, database.dictionary, exportFunction);
     dispatch(setLoading(false));
-  }
+  };
 
   //calls the interface function for the export of the complete data. Don't call exportAllTriples directly. Otherwise backdrop wont be rendered
   const graphDataExport = async () => {
     dispatch(setLoading(true));
     // Set timeout here to give components time to render backdrop
     setTimeout(exportAllTriples, 5);
-
   };
 
   /**
@@ -109,7 +108,7 @@ const Export = () => {
   const saveDatabase = async () => {
     const result = await database.saveDatabase();
     dispatch(setLoading(false));
-  }
+  };
 
   /**
    * Handle save database event. Don't call saveDatabase directly. Otherwise backdrop wont be rendered
@@ -118,13 +117,6 @@ const Export = () => {
     dispatch(setLoading(true));
     // Set timeout here to give components time to render backdrop
     setTimeout(saveDatabase, 5);
-  }
-
-  //State for the Dialog to open
-  const [open, setOpen] = React.useState(false);
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   return (

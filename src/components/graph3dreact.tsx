@@ -28,7 +28,6 @@ import Grid from "@mui/material/Grid";
 import { useSelector, useDispatch } from "react-redux";
 import { setCurrentData, setDatabase, setGraphData, setMetaData } from "../actions";
 import load_data from "./triple2graph";
-import { Box, Hidden, Stack } from "@mui/material";
 import { useEffect } from "react";
 import { QueryCall } from "../interface/query-call";
 import { setMainFrame } from "../actions";
@@ -36,7 +35,7 @@ import { setMainFrame } from "../actions";
 let widthValue = "30%";
 
 //No-SSR import because react-force-graph does not support SSR
-const NoSSRForceGraph = dynamic(() => import("../lib/NoSSRForceGraph"), {
+const NoSSRForceGraph3D = dynamic(() => import("../lib/NoSSRForceGraph3D"), {
   ssr: false,
 });
 
@@ -168,7 +167,7 @@ export default function Graph3DReact() {
       default:
         break;
     }
-  }
+  };
 
   /**
    * Update metadata if meta data node has changed
@@ -186,8 +185,7 @@ export default function Graph3DReact() {
         dispatch(setMainFrame("3d"));
       }, 1);
     }
-  }
-
+  };
 
   /**
    * Update database. Query all triples.
@@ -206,8 +204,7 @@ export default function Graph3DReact() {
       dispatch(setCurrentData([]));
       dispatch(setGraphData(newDatabase, currentData));
     }
-  }
-
+  };
 
   /**
    * Change value of a node. Update database.
@@ -217,7 +214,7 @@ export default function Graph3DReact() {
     if (formField === "") {
       showToast("Can not rename Node with empty String", "error");
       setOpenNodeLeft(false);
-      return
+      return;
     }
 
     const rdfOperations = new RdfOperations(database);
@@ -229,7 +226,6 @@ export default function Graph3DReact() {
     setOpenNodeLeft(false);
 
     updateCurrentData(newDatabase);
-
   };
 
   /**
@@ -241,7 +237,7 @@ export default function Graph3DReact() {
       setErrorToastOpen(true);
       setOpenLinkLeft(false);
       // Early exit
-      return
+      return;
     }
 
     const rdfOperations = new RdfOperations(database);
@@ -318,7 +314,7 @@ export default function Graph3DReact() {
 
   return (
     <div style={{ marginLeft: -16, marginTop: -16 }}>
-      <NoSSRForceGraph
+      <NoSSRForceGraph3D
         graphData={data}
         nodeColor={(node: any) => (node.color = nodeColor)}
         linkColor={(link: any) => (link.color = arrowColor)}
@@ -329,7 +325,7 @@ export default function Graph3DReact() {
         nodeOpacity={1}
         onNodeClick={(node: any) => handleNodeLeftClick(node)}
         onLinkClick={(link: any) => handleLinkLeftClick(link)}
-      ></NoSSRForceGraph>
+      ></NoSSRForceGraph3D>
       <Dialog open={openNodeLeft} onClose={handleNodeLeftClose}>
         <DialogTitle id="node-left-title">{"Node Informationen"}</DialogTitle>
         <DialogContent style={{ paddingTop: "10px" }}>

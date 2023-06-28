@@ -380,7 +380,6 @@ export class QueryManager {
       var result1 = varAssignmentByQuery.map((x) => x[i]).filter((element) => element !== undefined);
       resultVars[i] = new Set(result1.reduce((a, b) => [...a].filter((c) => [...b].includes(c))));
     }
-    console.log(resultVars);
 
     // get triples for visual representation
     const resultTriples = [];

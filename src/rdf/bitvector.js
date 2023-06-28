@@ -53,6 +53,7 @@ export class BitVector {
     this.superblocks[element] += 1;
     // set bits at element at index to 1
     this.bits[element] |= 1 << index % this.bitsPerElement;
+    console.log(this.toString());
   }
 
   /**
@@ -162,7 +163,7 @@ export class BitVector {
         }
       }
 
-      for (let index = max; index > min; index--) {
+      for (let index = max + element * this.bitsPerElement; index >= min + element * this.bitsPerElement; index--) {
         if (this.getBit(index) === 1) {
           return index;
         }
@@ -177,6 +178,10 @@ export class BitVector {
    */
   addBit(index) {
     // check if index is valid
+    console.log(this.toString() + " -- add: " + index);
+    if (index === 17) {
+      const deb = 0;
+    }
     if (index < this.bits.length * this.bitsPerElement) {
       // get the elment of the array bits, where the index is saved in
       let element = Math.floor(index / this.bitsPerElement);
@@ -185,12 +190,25 @@ export class BitVector {
       // get the length to be shifted
       let length = this.bitsPerElement - 1 - (index % this.bitsPerElement);
       // create a mask, where 1 are at the indices to shift
-      const mask = ((1 << length) - 1) << index % this.bitsPerElement;
+      let mask = 0;
+      // if index is last saved 1
+      if (
+        element === this.bits.length - 2 &&
+        this.bits[element] > 2 ** this.bitsPerElement - 2 ** (this.bitsPerElement - 1)
+      ) {
+        // create a mask, where 1 are at the indices to shift
+        mask = ((1 << (length + 1)) - 1) << index % this.bitsPerElement;
+      } else {
+        // create a mask, where 1 are at the indices to shift
+        mask = ((1 << length) - 1) << index % this.bitsPerElement;
+      }
+      console.log("mask: " + (mask >>> 0).toString(2));
       // get subpart of element of bits
       const subpart = (this.bits[element] & mask) >>> index % this.bitsPerElement;
+      console.log("subpart: " + (subpart >>> 0).toString(2));
       // left shift subpart by one
       const shiftedSubpart = subpart << 1;
-
+      console.log("shifted subpart: " + (shiftedSubpart >>> 0).toString(2));
       // save bit that is shifted to next element
       // shift the number (this.bitsPerElement - 1) bits to the right to keep only the last bit
       let prelastbit = (this.bits[element] >> (this.bitsPerElement - 1)) & 1;
@@ -209,7 +227,7 @@ export class BitVector {
             this.#addNewIntElement(this.bits.length + 1);
             stop = true;
           } else {
-            return;
+            break;
           }
         }
         // check prelast, if 1 => edit superblocks
@@ -224,6 +242,7 @@ export class BitVector {
         this.bits[i] = (this.bits[i] << 1) | prelastbit;
         prelastbit = temp;
       }
+      console.log(this.toString() + " -- finished add");
     }
   }
 

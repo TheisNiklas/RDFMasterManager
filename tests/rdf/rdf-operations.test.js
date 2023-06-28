@@ -789,16 +789,15 @@ describe("RDFOperation inserts Test", () => {
     expect(rdfcsa.psi).toEqual(rdfcsaOld.psi);
   });
 
-  test.skip("maxiTest 1000 triples insert, custom bitvector", () => {
+  test("maxiTest 1000 triples insert, custom bitvector", () => {
     // Runs forever due to bad performing custom bitvector
-    let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset)));
+    let rdfcsaOld = new Rdfcsa(JSON.parse(JSON.stringify(dataset_1k.dataset.slice(0, 24))));
 
     let rdfcsa = new Rdfcsa([]);
     let ops = new RdfOperations(rdfcsa);
-    dataset_1k.dataset.forEach((triple) => {
+    dataset_1k.dataset.slice(0, 24).forEach((triple) => {
       ops.addTriple(triple[0], triple[1], triple[2]);
     });
-
     expect(rdfcsa.dictionary.SO).toEqual(rdfcsaOld.dictionary.SO);
     expect(rdfcsa.dictionary.S).toEqual(rdfcsaOld.dictionary.S);
     expect(rdfcsa.dictionary.P).toEqual(rdfcsaOld.dictionary.P);

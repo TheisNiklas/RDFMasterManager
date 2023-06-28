@@ -107,7 +107,9 @@ export class RdfOperations {
       pInsertIndex = this.rdfcsa.select(oldPredicateId);
       pRange = [pInsertIndex, pInsertIndex];
     }
-
+    if (oldObjectId === 22) {
+      let deb = 0;
+    }
     // Get the range where the existing object is or the new object will be
     let oRange;
     if (!metadata.object.isNew) {

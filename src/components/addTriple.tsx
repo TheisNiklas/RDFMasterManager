@@ -72,7 +72,7 @@ const AddTripleForm = () => {
     }
   };
 
-  //user input for the additional triple subject
+  //User input for the additional triple subject
   const handleFormChangeAddSubject = (event: ChangeEvent<HTMLInputElement>) => {
     let data = JSON.parse(JSON.stringify(formFields));
     data.subject = event.target.value;
@@ -80,7 +80,7 @@ const AddTripleForm = () => {
     setFormFields(data);
   };
 
-  //user input for the additional triple predicat
+  //User input for the additional triple predicat
   const handleFormChangeAddPredicat = (event: ChangeEvent<HTMLInputElement>) => {
     let data = JSON.parse(JSON.stringify(formFields));
     data.predicate = event.target.value;
@@ -88,7 +88,7 @@ const AddTripleForm = () => {
     setFormFields(data);
   };
 
-  //user input for the additional triple object
+  //User input for the additional triple object
   const handleFormChangeAddObject = (event: ChangeEvent<HTMLInputElement>) => {
     let data = JSON.parse(JSON.stringify(formFields));
     data.object = event.target.value;
@@ -96,7 +96,7 @@ const AddTripleForm = () => {
     setFormFields(data);
   };
 
-  //call of the interface function for the additional triple
+  //Call of the interface function for the additional triple
   const addTriple = () => {
     const rdfOperations = new RdfOperations(database);
 

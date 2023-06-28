@@ -266,12 +266,14 @@ export class QueryManager {
   // step 4: append all solutions for each results of step3
   leftChainingJoinTwoQueries(queries) {
     //some join variable overlapping (you could check where they overlap and then skip some)
-    // MISSING: GAP AUSGLEICH
-    let allTriples; // for visual representation
+
+    var allTriples = new Set(); // for visual representation
     var joinVars = [];
-  
+    var allJoinVars = [];
     queries.forEach((query) => {
       const queryJoinVars = this.#getJoinVars(query);
+      allJoinVars.push(queryJoinVars);
+      console.log(allJoinVars);
       if (queryJoinVars[2] > 0 && this.rdfcsa.dictionary.isSubjectObjectById(queryJoinVars[2])) {
         queryJoinVars[2] = queryJoinVars[2] - this.rdfcsa.gaps[2];
       }
@@ -300,23 +302,34 @@ export class QueryManager {
         possibleObjects = [query.object && query.object.id]
         isJoinVarO = query.object ? query.object.isJoinVar: false;
       }
-      possibleSubjects.forEach((possibleSubject) => { // perform queries for every possible variable assignment
+      // perform queries for every possible variable assignment
+      possibleSubjects.forEach((possibleSubject) => {
         possibleObjects.forEach((possibleObject) => {
-          var subject = possibleSubject ? new QueryElement(possibleSubject, isJoinVarS): null
-          var object = possibleObject ? new QueryElement(possibleObject, isJoinVarO): null
-          const newQuery = new QueryTriple(subject, query.predicate, object)
+          if(possibleSubject !== null) {
+            if(possibleSubject > this.rdfcsa.gaps[1] && this.rdfcsa.dictionary.isSubjectObjectById(possibleSubject)) {
+              console.log("Reduced: " + possibleSubject)
+              possibleSubject = possibleSubject - this.rdfcsa.gaps[2];
+            }
+            possibleSubject = new QueryElement(possibleSubject, isJoinVarS);
+          }
+          if(possibleObject != null) {
+            if(possibleObject < this.rdfcsa.gaps[2] && this.rdfcsa.dictionary.isSubjectObjectById(possibleObject)) {
+              console.log("Enlarged: " + possibleObject)
+              possibleObject = possibleObject + this.rdfcsa.gaps[2];
+            }
+            possibleObject = new QueryElement(possibleObject, isJoinVarO);
+          }
+          const newQuery = new QueryTriple(possibleSubject, query.predicate, possibleObject)
           const immediateQueryResult = this.#getQueryTripleResult(newQuery)
           chainedResultTriples = [...chainedResultTriples, 
                                   ...immediateQueryResult]
-          console.log(subject ? subject.id: null);
-          console.log(query.predicate ? query.predicate.id: null);
-          console.log(object ? object.id: null);
-          console.log(immediateQueryResult);
+          console.log(chainedResultTriples)
         });
       });
       if(chainedResultTriples === []) {
-        return;
+        return [];
       }
+      allTriples.add(chainedResultTriples)
       // update used variable's allowed assignments
       queryJoinVars.forEach((joinVar) => {
         if(joinVar >= 0) {
@@ -326,16 +339,41 @@ export class QueryManager {
       chainedResultTriples.forEach((triple) => { // learn allowed variable values from result
         queryJoinVars.forEach((joinVar, joinIndex) => {
           if(joinVar >= 0){
-            if (joinIndex === 2 && this.rdfcsa.dictionary.isSubjectObjectById(triple[joinIndex])) {
-              triple[joinIndex] = triple[joinIndex] - this.rdfcsa.gaps[2];
-            }
             console.log("Adding... " + triple + " " + joinIndex)
             joinVars[joinVar].add(triple[joinIndex])
           }
         });
       });
-      console.log("AfterQueryJoinVars: " + [...joinVars[0]])
     });
+
+    console.log([...joinVars[0]])
+    console.log(allJoinVars)
+
+    // get triples for our visual representation
+    const resultTriples = [];
+    for (var i = 0; i < allTriples.length; i++) {
+      allTriples[i].forEach((triple) => {
+        var add = true;
+        allJoinVars[i].forEach((joinVar, joinIndex) => {
+          var element = triple[joinIndex];
+          if (joinIndex === 1 && this.rdfcsa.dictionary.isSubjectObjectById(element) && element > this.rdfcsa.gaps[1]) {
+            element = element - this.rdfcsa.gaps[2];
+          }
+          if (joinIndex === 2 && this.rdfcsa.dictionary.isSubjectObjectById(element) && element < this.rdfcsa.gaps[2]) {
+            // if SO
+            element = element + this.rdfcsa.gaps[2];
+          }
+          if (add && joinVar >= 0 && !joinVars[joinVar].has(element)) {
+            add = false;
+          }
+        });
+        // javascript can't check if an array is in an array using arrays includes, Set (has)
+        if (add && JSON.stringify(resultTriples).indexOf(JSON.stringify(triple)) == -1) {
+          resultTriples.push(triple);
+        }
+      });
+    }
+    return resultTriples; // returns only visual representation
   }
 
   /**
@@ -404,7 +442,6 @@ export class QueryManager {
       resultVars[i] = new Set(result1.reduce((a, b) => [...a].filter((c) => [...b].includes(c))));
     }
     // console.log(resultVars);
-
     // get triples for our visual representation
     const resultTriples = [];
     for (var i = 0; i < allTriples.length; i++) {
@@ -464,14 +501,21 @@ export class QueryManager {
     // evaluate subject
     if (query.subject === null || query.subject.isJoinVar) {
       countUnbound += 1;
+    } else if (query.subject.id > this.rdfcsa.gaps[1] && (!this.rdfcsa.dictionary.isSubjectObjectById(query.subject.id) || 
+              query.subject.id < this.rdfcsa.gaps[2])) {
+      return [];
     }
     // evaluate predicate
     if (query.predicate === null || query.predicate.isJoinVar) {
       countUnbound += 1;
+    } else if ((query.predicate.id < this.rdfcsa.gaps[1] || query.predicate.id > this.rdfcsa.gaps[2])) {
+      return [];
     }
     // evaluate object
     if (query.object === null || query.object.isJoinVar) {
       countUnbound += 1;
+    } else if (query.object.id < this.rdfcsa.gaps[2] && !this.rdfcsa.dictionary.isSubjectObjectById(query.object.id)) {
+      return [];
     }
     switch (countUnbound) {
       case 0:

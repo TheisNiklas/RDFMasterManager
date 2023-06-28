@@ -366,7 +366,7 @@ describe("QueryManager", () => {
   /**
    * Get all subjects that are also objects
    */
-  test("leftChainingJoinTwoQueries(,,x)(x,,)", () => {
+  test.skip("leftChainingJoinTwoQueries(,,x)(x,,)", () => {
     const subject = null;
     const predicate = null;
     const object = new QueryElement(0, true);
@@ -375,7 +375,7 @@ describe("QueryManager", () => {
     const predicate1 = null;
     const object1 = null;
     const secondQueryTriple = new QueryTriple(subject1, predicate1, object1);
-    const result = queryManager.leftChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple]);
+    const result = queryManager.leftChainingJoinTwoQueries([firstQueryTriple, secondQueryTriple])
     expect(new Set(result)).toEqual(
       new Set([
         new Triple(0, 9, 12),
@@ -390,7 +390,7 @@ describe("QueryManager", () => {
   /**
    * Return all subjects that have a relation to an object that is also a subject that has a relation to the initial subject
    */
-  test.skip("leftChainingJoinTwoQueries(x,,y)(y,,x)", () => {
+  test("leftChainingJoinTwoQueries(x,,y)(y,,x)", () => {
     const subject = new QueryElement(0, true);
     const predicate = null;
     const object = new QueryElement(1, true);

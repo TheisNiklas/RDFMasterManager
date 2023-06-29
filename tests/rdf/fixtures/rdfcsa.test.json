@@ -1,0 +1,41 @@
+{
+  "paperSample": {
+    "tripleList": [
+      ["Inception", "filmed in", "L.A."],
+      ["L.A.", "city of", "USA"],
+      ["E. Page", "appears in", "Inception"],
+      ["L. DiCaprio", "appears in", "Inception"],
+      ["J. Gordon", "appears in", "Inception"],
+      ["J. Gordon", "born in", "USA"],
+      ["J. Gordon", "lives in", "L.A."],
+      ["E. Page", "born in", "Canada"],
+      ["L. DiCaprio", "born in", "USA"],
+      ["L. DiCaprio", "awarded", "Oscar 2015"]
+    ],
+    "resultPsi": [
+      18, 17, 10, 14, 11, 15, 19, 12, 13, 16, 20, 21, 22, 26, 25, 28, 29, 27, 23, 24, 2, 4, 7, 0, 6, 3, 8, 1, 5, 9
+    ],
+    "resultGaps": [0, 5, 11],
+    "resultD": "011010010010011001111001011100"
+  },
+  "ourSample": {
+    "tripleList": [
+      ["Inception", "filmed in", "L.A."],
+      ["L.A.", "city of", "USA"],
+      ["E. Page", "appears in", "Inception"],
+      ["L. DiCaprio", "appears in", "Inception"],
+      ["J. Gordon", "appears in", "Inception"],
+      ["J. Gordon", "born in", "USA"],
+      ["J. Gordon", "lives in", "L.A."],
+      ["E. Page", "born in", "Canada"],
+      ["L. DiCaprio", "born in", "USA"],
+      ["L. DiCaprio", "awarded", "Oscar 2015"]
+    ],
+    "resultPsi": [
+      20, 19, 11, 12, 16, 13, 17, 21, 14, 15, 18, 27, 22, 23, 24, 29, 28, 31, 32, 30, 25, 26, 3, 5, 8, 0, 7, 2, 4, 9, 1,
+      6, 10
+    ],
+    "resultGaps": [0, 6, 13],
+    "resultD": "0111010010011001100111100101111"
+  }
+}
